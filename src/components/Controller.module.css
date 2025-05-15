@@ -1,0 +1,36 @@
+.component {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 30px;
+}
+.level {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  width: 40px;
+  font-size: 0.7rem;
+}
+.buttonLeft {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 30px;
+  padding: 10px;
+  border-radius: .5rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.buttonRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 30px;
+  padding: 10px;
+  border-radius: .5rem;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
