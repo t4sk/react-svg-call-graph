@@ -2,7 +2,7 @@ import { useRef, useState } from "react"
 import { ViewBox, Point, SvgNode, Graph } from "../lib/types"
 import * as svg from "../lib/svg"
 import styles from "./SvgUi.module.css"
-import { SvgRect, SvgDot, SvgCubicBezier, SvgCubicBezierArc } from "./Svg"
+import { SvgRect, SvgCircle, SvgDot, SvgArrow, SvgCubicBezier, SvgCubicBezierArc } from "./Svg"
 import { Controller } from "./Controller"
 
 const ARC_X_PADDING = 20
@@ -86,6 +86,23 @@ export const SvgGraph: React.FC<{
       viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
       style={{ backgroundColor }}
     >
+      <SvgCircle
+        x={100}
+        y={100}
+        radius={40}
+        />
+        <SvgArrow
+        x0={100}
+        y0={100}
+        x1={300}
+        y1={100}
+        />
+      <SvgCircle
+        x={300}
+        y={100}
+        radius={40}
+        />
+        {/*
       {layout.nodes.map((row, i) => {
         return row.map((node, j) => (
           <SvgRect
@@ -168,6 +185,7 @@ export const SvgGraph: React.FC<{
           </foreignObject>
         ))
       })}
+        */}
 
       {mouse && showDot ? <SvgDot x={svgX} y={svgY} radius={4} /> : null}
     </svg>

@@ -1,6 +1,18 @@
 import React from "react"
 import * as math from "../lib/math"
 
+export const SvgCircle: React.FC<{
+  x: number
+  y: number
+  radius: number
+  fill?: string
+  stroke?: string
+}> = ({x, y, radius, fill = "none", stroke = "black"}) => {
+  return (
+    <circle cx={x} cy={y} r={radius} stroke={stroke} strokeWidth="2" fill={fill} />
+  )
+}
+
 export const SvgRect: React.FC<{
   x: number
   y: number
@@ -42,6 +54,35 @@ export const SvgLine: React.FC<{
     <line x1={x0} y1={y0} x2={x1} y2={y1} stroke={stroke} strokeWidth="2" />
   )
 }
+
+export const SvgArrow: React.FC<{
+  x0: number
+  y0: number
+  x1: number
+  y1: number
+  stroke?: string
+}> = ({ x0, y0, x1, y1, stroke = "black" }) => {
+  return (
+  <>
+      <defs>
+        <marker
+          id="arrow"
+          markerWidth="5"
+          markerHeight="5"
+          refX="2.5"
+          refY="2.5"
+          orient="auto"
+        >
+          <path d="M 0 0 L 5 2.5 L 0 5 z" />
+        </marker>
+      </defs>
+    <line x1={x0} y1={y0} x2={x1} y2={y1} stroke={stroke} strokeWidth="2"
+        markerEnd={`url(#arrow)`}
+      />
+  </>
+  )
+}
+
 
 const DY = 10
 const ARROW = 4
