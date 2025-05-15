@@ -7,9 +7,16 @@ export const SvgCircle: React.FC<{
   radius: number
   fill?: string
   stroke?: string
-}> = ({x, y, radius, fill = "none", stroke = "black"}) => {
+}> = ({ x, y, radius, fill = "none", stroke = "black" }) => {
   return (
-    <circle cx={x} cy={y} r={radius} stroke={stroke} strokeWidth="2" fill={fill} />
+    <circle
+      cx={x}
+      cy={y}
+      r={radius}
+      stroke={stroke}
+      strokeWidth="2"
+      fill={fill}
+    />
   )
 }
 
@@ -63,26 +70,31 @@ export const SvgArrow: React.FC<{
   stroke?: string
 }> = ({ x0, y0, x1, y1, stroke = "black" }) => {
   return (
-  <>
+    <>
       <defs>
         <marker
           id="arrow"
           markerWidth="5"
           markerHeight="5"
-          refX="2.5"
+          refX="5"
           refY="2.5"
           orient="auto"
         >
           <path d="M 0 0 L 5 2.5 L 0 5 z" />
         </marker>
       </defs>
-    <line x1={x0} y1={y0} x2={x1} y2={y1} stroke={stroke} strokeWidth="2"
+      <line
+        x1={x0}
+        y1={y0}
+        x2={x1}
+        y2={y1}
+        stroke={stroke}
+        strokeWidth="2"
         markerEnd={`url(#arrow)`}
       />
-  </>
+    </>
   )
 }
-
 
 const DY = 10
 const ARROW = 4
@@ -106,7 +118,9 @@ export const SvgCubicBezier: React.FC<{
   // Cubic Bezier curve
   //   p0,    p1,    p2
   // C x0 y0, x1 y1, x y
-  const d = `M ${x0} ${y0 + dy} C ${x0_t} ${y0_t}, ${x1_t} ${y1_t}, ${x1} ${y1 - dy}`
+  const d = `M ${x0} ${y0 + dy} C ${x0_t} ${y0_t}, ${x1_t} ${y1_t}, ${x1} ${
+    y1 - dy
+  }`
 
   return (
     <>
@@ -172,7 +186,9 @@ export const SvgCubicBezierArc: React.FC<{
   // Cubic Bezier curve
   //   p0,    p1,    p2
   // C x0 y0, x1 y1, x y
-  const d = `M ${x0} ${y0 - dy} C ${x0_t} ${y0_t}, ${x1_t} ${y1_t}, ${x1} ${y1 - dy}`
+  const d = `M ${x0} ${y0 - dy} C ${x0_t} ${y0_t}, ${x1_t} ${y1_t}, ${x1} ${
+    y1 - dy
+  }`
 
   return (
     <>

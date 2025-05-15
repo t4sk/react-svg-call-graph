@@ -92,9 +92,9 @@ export const SvgGraph: React.FC<{
         radius={40}
         />
         <SvgArrow
-        x0={100}
+        x0={100+40}
         y0={100}
-        x1={300}
+        x1={300 - 40}
         y1={100}
         />
       <SvgCircle
