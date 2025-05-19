@@ -3,6 +3,8 @@ import { assert } from "./lib/utils"
 import * as dag from "./lib/dag"
 import { SvgUi } from "./components/SvgUi"
 
+import "./dev.ts"
+
 import { DATA } from "./data"
 
 const topic_to_id = DATA.reduce((z, d, i) => {
