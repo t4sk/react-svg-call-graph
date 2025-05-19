@@ -55,6 +55,7 @@ function bfs(graph: Graph, start: number, f?: (i: number, v: number) => void) {
   let i = 0
 
   while (i < q.length) {
+    // Avoid using shift() which is O(N) to get element from the head of q
     const [d, v] = q[i++]
 
     if (visited.has(v)) {
@@ -80,6 +81,27 @@ function bfs(graph: Graph, start: number, f?: (i: number, v: number) => void) {
 const graph = build(trace)
 console.log(graph)
 
+/*
 bfs(graph, 0, (i, v) => {
   console.log(i, v, graph.get(v))
+  const neighbors = graph.get(v)
+  if (neighbors) {
+    const n = neighbors.size
+    console.log(n, n >> 1)
+  }
 })
+*/
+
+const n = 1
+const m = n >> 1
+// Even
+/*
+for (let i = 0; i < n; i++) {
+  console.log(i, m - i - Math.floor(i / m))
+}
+*/
+
+// Odd
+for (let i = 0; i < n; i++) {
+  console.log(i, m - i)
+}
