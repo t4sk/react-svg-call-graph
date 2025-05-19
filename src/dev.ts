@@ -1,11 +1,11 @@
-console.log("dev")
-
 type Trace = {
   id: number
   parent: number | null
   depth: number
   children: number[] | null
 }
+
+type Graph = Map<number, Set<number>>
 
 const trace: Trace[] = [
   { id: 0, parent: null, depth: 0, children: [1, 2, 3, 4] },
@@ -28,8 +28,6 @@ const trace: Trace[] = [
   { id: 0, parent: 16, depth: 3, children: [99] },
   { id: 99, parent: 0, depth: 4, children: null },
 ]
-
-type Graph = Map<number, Set<number>>
 
 function build(trace: Trace[]): Graph {
   const graph: Graph = new Map()
@@ -54,9 +52,10 @@ function build(trace: Trace[]): Graph {
 function bfs(graph: Graph, start: number, f?: (i: number, v: number) => void) {
   const q: [number, number][] = [[0, start]]
   const visited: Set<number> = new Set()
+  let i = 0
 
-  while (q.length > 0) {
-    const [d, v] = q.pop() as [number, number]
+  while (i < q.length) {
+    const [d, v] = q[i++]
 
     if (visited.has(v)) {
       continue
@@ -81,4 +80,6 @@ function bfs(graph: Graph, start: number, f?: (i: number, v: number) => void) {
 const graph = build(trace)
 console.log(graph)
 
-bfs(graph, 0, (i, v) => console.log(i, v))
+bfs(graph, 0, (i, v) => {
+  console.log(i, v, graph.get(v))
+})
