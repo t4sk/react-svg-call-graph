@@ -131,6 +131,17 @@ function dfs(
 const { graph, parents } = build(trace)
 console.log(graph, parents)
 
+const pos: Map<number, {x:number, y:number}> = new Map()
+let i = 0
+for (const t of trace) {
+  if (!pos.has(t.id)) {
+    pos.set(t.id, {x: t.depth, y: i})
+  }
+  i++
+}
+
+console.log(pos)
+
 /*
 const pos: Map<number, number> = new Map()
 
