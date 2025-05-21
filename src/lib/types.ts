@@ -1,10 +1,15 @@
-// DAG
-export type Node = {
+// Call graph
+export type Call = {
   id: number
-  parents: Set<number>
+  parent: number | null
+  depth: number
+  children: number[] | null
 }
 
+// Directed graph
 export type Graph = Map<number, Set<number>>
+
+export type Parents = Map<number, number>
 
 // SVG
 export type ViewBox = {
@@ -61,11 +66,11 @@ export type Layout = {
   rect: Rect
   mid: MidPoints
   boxes: Rect[]
-  nodes: SvgNode[][]
+  nodes: SvgNode[]
   arrows: Arrow[]
   map: Map<number, SvgNode>
   // Sorted x coordinates of box boundries for each row
-  xs: number[][]
+  xs: number[]
   // Sorted y coordinates of row boundries
   ys: number[]
 }

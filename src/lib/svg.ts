@@ -1,5 +1,5 @@
 import {
-  Graph,
+  Call,
   Point,
   Rect,
   MidPoints,
@@ -8,42 +8,8 @@ import {
   SvgNode,
   Layout,
 } from "./types"
-import * as dag from "./dag"
+import * as graph from "./graph"
 import * as math from "./math"
-import { assert } from "./utils"
-
-// binary search
-export function bsearch<A>(
-  arr: A[],
-  get: (a: A) => number,
-  x: number,
-): number | null {
-  if (arr.length == 0) {
-    return null
-  }
-
-  if (arr.length == 1) {
-    return 0
-  }
-
-  let low = 0
-  let high = arr.length - 1
-
-  assert(get(arr[low]) < get(arr[high]), "data not sorted")
-
-  // Binary search
-  while (low < high) {
-    let mid = ((low + high) / 2) >> 0
-
-    if (get(arr[mid]) > x) {
-      high = mid
-    } else {
-      low = mid + 1
-    }
-  }
-
-  return low
-}
 
 export function getViewBoxX(
   width: number,
@@ -140,16 +106,8 @@ function arrow(map: Map<number, SvgNode>, start: number, end: number): Arrow {
   let p0 = { x: 0, y: 0 }
   let p1 = { x: 0, y: 0 }
 
-  if (s.rect.y > e.rect.y) {
-    p0 = m0.top
-    p1 = m1.bottom
-  } else if (s.rect.y < e.rect.y) {
-    p0 = m0.bottom
-    p1 = m1.top
-  } else {
-    p0 = m0.top
-    p1 = m1.top
-  }
+  p0 = m0.right
+  p1 = m1.left
 
   return {
     s: s.id,
@@ -168,71 +126,83 @@ export function isInside(p: Point, rect: Rect): boolean {
   )
 }
 
-export function map(graph: Graph, starts: number[], canvas: Canvas): Layout {
-  const rows = dag.group(graph, starts)
+/*
+export function map(calls: Call[]): Map<number, Point> {
+  const pos: Map<number, Point> = new Map()
+  for (let i = 0; i < calls.length; i++) {
+    const c = calls[i]
+    if (!pos.has(c.id)) {
+      pos.set(c.id, { x: c.depth, y: i })
+    }
+  }
+  return pos
+}
+*/
 
-  // Height of the graph
-  const height =
-    rows.length * canvas.node.height + (rows.length - 1) * canvas.node.gap
-  const y0 = canvas.center.y - (height >> 1)
-
-  // Bounding boxes around each row
-  const boxes = rows.map((r, i) =>
-    box(canvas, r.length, {
-      x: canvas.center.x,
-      y:
-        y0 +
-        (canvas.node.height >> 1) +
-        i * (canvas.node.height + canvas.node.gap),
-    }),
-  )
-
-  const nodes: SvgNode[][] = []
-  const map: Map<number, SvgNode> = new Map()
-  const xs: number[][] = []
-  const ys: number[] = []
-  for (let i = 0; i < rows.length; i++) {
-    const row: SvgNode[] = []
-    const box = boxes[i]
-    xs.push([])
-    for (let j = 0; j < rows[i].length; j++) {
-      const id = rows[i][j]
-      const rect: Rect = {
-        x: box.x + j * (canvas.node.width + canvas.node.gap),
-        y: box.y,
-        width: canvas.node.width,
-        height: canvas.node.height,
-      }
-      const mid = getMidPoints(rect)
-      const node = {
-        id,
-        rect,
-        mid,
-      }
-      row.push(node)
-      map.set(id, node)
-      xs[i].push(mid.left.x, mid.right.x)
-      if (j == 0) {
-        ys.push(mid.top.y, mid.bottom.y)
+export function map(calls: Call[], canvas: Canvas): Layout {
+  let maxDepth = 0
+  {
+    const visited = new Set()
+    for (let i = 0; i < calls.length; i++) {
+      const c = calls[i]
+      if (!visited.has(c.id)) {
+        visited.add(c.id)
+        maxDepth = Math.max(maxDepth, c.depth)
       }
     }
-    nodes.push(row)
+  }
+
+  const height =
+    calls.length * canvas.node.height + (calls.length - 1) * canvas.node.gap
+  const width = maxDepth * canvas.node.width + (maxDepth - 1) * canvas.node.gap
+
+  const x0 = canvas.center.x - (width >> 1)
+  const y0 = canvas.center.y - (height >> 1)
+
+  const nodes: SvgNode[] = []
+  const map: Map<number, SvgNode> = new Map()
+  const xs: number[] = []
+  const ys: number[] = []
+
+  for (let i = 0; i < calls.length; i++) {
+    const c = calls[i]
+
+    if (map.has(c.id)) {
+      continue
+    }
+
+    const { height, width, gap } = canvas.node
+    const rect = {
+      x: x0 + (width >> 1) + c.depth * (width + gap),
+      y: y0 + (height >> 1) + i * (height + gap),
+      width: width,
+      height: height,
+    }
+    const mid = getMidPoints(rect)
+    const node = {
+      id: c.id,
+      rect,
+      mid,
+    }
+    nodes.push(node)
+    map.set(c.id, node)
+
+    /*
+    xs[i].push(mid.left.x, mid.right.x)
+    ys.push(mid.top.y, mid.bottom.y)
+    */
   }
 
   const arrows: Arrow[] = []
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = 0; j < nodes[i].length; j++) {
-      const v = nodes[i][j].id
-      const es = graph.get(v)
-      if (es) {
-        for (const e of es) {
-          arrows.push(arrow(map, v, e))
-        }
+  for (let i = 0; i < calls.length; i++) {
+    const c = calls[i]
+    const neighbors = c.children
+    if (neighbors) {
+      for (let j = 0; j < neighbors.length; j++) {
+        arrows.push(arrow(map, c.id, neighbors[j]))
       }
     }
   }
-
-  const width = Math.max(...boxes.map((b) => b.width))
 
   const rect = {
     x: canvas.center.x - (width >> 1),
@@ -246,7 +216,7 @@ export function map(graph: Graph, starts: number[], canvas: Canvas): Layout {
   return {
     rect,
     mid,
-    boxes,
+    boxes: [],
     nodes,
     arrows,
     map,

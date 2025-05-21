@@ -1,8 +1,11 @@
-import { CallGraph } from "./components/CallGraph"
+import { CallGraphUi } from "./components/CallGraphUi"
+
+import { calls } from "./dev"
 
 function App() {
   return (
-    <CallGraph
+    <CallGraphUi
+      calls={calls}
       backgroundColor="pink"
       width={600}
       height={500}
@@ -11,6 +14,9 @@ function App() {
       nodeWidth={100}
       nodeHeight={50}
       nodeGap={60}
+      renderNode={(node) => {
+        return node.id
+      }}
     />
   )
 }

@@ -1,12 +1,13 @@
 import { useRef, useState } from "react"
-import { ViewBox, Point, SvgNode, Graph } from "../lib/types"
+import { Call, ViewBox, Point, SvgNode } from "../lib/types"
 import * as svg from "../lib/svg"
-import styles from "./CallGraph.module.css"
+import styles from "./CallGraphUi.module.css"
 import {
   SvgRect,
   SvgCircle,
   SvgDot,
   SvgArrow,
+  SvgLine,
   SvgCubicBezier,
   SvgCubicBezierArc,
 } from "./Svg"
@@ -14,8 +15,8 @@ import { Controller } from "./Controller"
 
 const ARC_X_PADDING = 20
 
-export const SvgGraph: React.FC<{
-  graph: Graph
+export const CallGraph: React.FC<{
+  calls: Call[]
   backgroundColor: string
   width: number
   height: number
@@ -32,7 +33,7 @@ export const SvgGraph: React.FC<{
   nodeGap?: number
   renderNode: (node: SvgNode) => React.ReactNode
 }> = ({
-  graph,
+  calls,
   backgroundColor,
   width,
   height,
@@ -48,8 +49,7 @@ export const SvgGraph: React.FC<{
   nodeHeight = 50,
   nodeGap = 60,
 }) => {
-  const starts: number[] = []
-  const layout = svg.map(graph, starts, {
+  const layout = svg.map(calls, {
     width,
     height,
     center: {
@@ -72,17 +72,19 @@ export const SvgGraph: React.FC<{
 
   let hover = null
   if (mouse && svgX != 0 && svgY != 0) {
+    /*
     // Binary search y
-    const i = (svg.bsearch(layout.ys, (y) => y, svgY) || 0) >> 1
+    const i = (search(layout.ys, (y) => y, svgY) || 0) >> 1
     const xs = layout.xs[i]
     if (xs) {
       // Binary search x
-      const j = (svg.bsearch(xs, (x) => x, svgX) || 0) >> 1
+      const j = (search(xs, (x) => x, svgX) || 0) >> 1
       const node = layout.nodes[i][j]
       if (node && svg.isInside({ x: svgX, y: svgY }, node.rect)) {
         hover = node.id
       }
     }
+    */
   }
 
   const circles = [
@@ -103,72 +105,36 @@ export const SvgGraph: React.FC<{
       viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
       style={{ backgroundColor }}
     >
-      {circles.map((c, i) => (
+      {/*circles.map((c, i) => (
         <SvgCircle key={i} x={c.x} y={c.y} radius={40} />
+      ))*/}
+      {layout.nodes.map((node, i) => (
+        <SvgRect
+          key={i}
+          x={node.rect.x}
+          y={node.rect.y}
+          width={node.rect.width}
+          height={node.rect.height}
+          fill={rectFill}
+          stroke={rectStroke}
+        />
       ))}
-      {/*
-      {layout.nodes.map((row, i) => {
-        return row.map((node, j) => (
-          <SvgRect
-            key={`${i}-${j}`}
-            x={node.rect.x}
-            y={node.rect.y}
-            width={node.rect.width}
-            height={node.rect.height}
-            fill={rectFill}
-            stroke={rectStroke}
-          />
-        ))
-      })}
       {layout.arrows.map((a, i) => {
-        if (a.start.y == a.end.y) {
-          if (a.start.x <= a.end.x) {
-            return (
-              <SvgCubicBezierArc
-                key={i}
-                x0={a.start.x + ARC_X_PADDING}
-                y0={a.start.y}
-                x1={a.end.x - ARC_X_PADDING}
-                y1={a.end.y}
-                t={0.1}
-                color={
-                  a.s == hover || a.e == hover ? lineHoverColor : lineColor
-                }
-              />
-            )
-          } else {
-            return (
-              <SvgCubicBezierArc
-                key={i}
-                x0={a.start.x - ARC_X_PADDING}
-                y0={a.start.y}
-                x1={a.end.x + ARC_X_PADDING}
-                y1={a.end.y}
-                t={0.1}
-                color={
-                  a.s == hover || a.e == hover ? lineHoverColor : lineColor
-                }
-              />
-            )
-          }
-        }
         return (
-          <SvgCubicBezier
+          <SvgArrow
             key={i}
             x0={a.start.x}
             y0={a.start.y}
             x1={a.end.x}
             y1={a.end.y}
-            t={0.2}
-            color={a.s == hover || a.e == hover ? lineHoverColor : lineColor}
           />
         )
       })}
 
-      {layout.nodes.map((row, i) => {
-        return row.map((node, j) => (
+      {layout.nodes.map((node, i) => {
+        return (
           <foreignObject
-            key={`${i}-${j}`}
+            key={i}
             x={node.rect.x}
             y={node.rect.y}
             width={node.rect.width}
@@ -187,16 +153,13 @@ export const SvgGraph: React.FC<{
               {renderNode(node)}
             </div>
           </foreignObject>
-        ))
+        )
       })}
-        */}
 
       {mouse && showDot ? <SvgDot x={svgX} y={svgY} radius={4} /> : null}
     </svg>
   )
 }
-
-// TODO: layout nodes by "nearest" distance
 
 const ZOOMS: number[] = [
   0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6,
@@ -212,8 +175,8 @@ export type Drag = {
   startViewBoxY: number
 }
 
-export const CallGraph: React.FC<{
-  graph: Graph
+export const CallGraphUi: React.FC<{
+  calls: Call[]
   backgroundColor: string
   width: number
   height: number
@@ -227,7 +190,7 @@ export const CallGraph: React.FC<{
   nodeHeight?: number
   nodeGap?: number
 }> = ({
-  graph,
+  calls,
   backgroundColor,
   width,
   height,
@@ -287,7 +250,7 @@ export const CallGraph: React.FC<{
 
   function getMouse(
     ref: HTMLDivElement | null,
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ): Point | null {
     if (!ref) {
       return null
@@ -355,8 +318,8 @@ export const CallGraph: React.FC<{
       onMouseUp={onMouseUp}
       onMouseMove={onMouseMove}
     >
-      <SvgGraph
-        graph={graph}
+      <CallGraph
+        calls={calls}
         backgroundColor={backgroundColor}
         width={width}
         height={height}
