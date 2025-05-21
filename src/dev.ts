@@ -1,14 +1,20 @@
-type Trace = {
+export type Call = {
   id: number
   parent: number | null
   depth: number
   children: number[] | null
 }
 
-type Graph = Map<number, Set<number>>
-type Parents = Map<number, number>
+export type Graph = Map<number, Set<number>>
 
-const trace: Trace[] = [
+export type Parents = Map<number, number>
+
+export type Point = {
+  x: number
+  y: number
+}
+
+export const calls: Call[] = [
   { id: 0, parent: null, depth: 0, children: [1, 2, 3, 4] },
   { id: 1, parent: 0, depth: 1, children: [5, 6, 7] },
   { id: 5, parent: 1, depth: 2, children: null },
@@ -31,12 +37,12 @@ const trace: Trace[] = [
   // { id: 99, parent: 0, depth: 4, children: null },
 ]
 
-function build(trace: Trace[]): {graph: Graph, parents: Parents} {
+function build(calls: Call[]): {graph: Graph, parents: Parents} {
   const graph: Graph = new Map()
   const parents: Parents = new Map()
 
-  for (let i = 0; i < trace.length; i++) {
-    const t = trace[i]
+  for (let i = 0; i < calls.length; i++) {
+    const t = calls[i]
 
     if (!graph.has(t.id)) {
       graph.set(t.id, new Set())
@@ -128,19 +134,17 @@ function dfs(
   return true
 }
 
-const { graph, parents } = build(trace)
-console.log(graph, parents)
-
-const pos: Map<number, {x:number, y:number}> = new Map()
-let i = 0
-for (const t of trace) {
-  if (!pos.has(t.id)) {
-    pos.set(t.id, {x: t.depth, y: i})
+export function map(calls: Call[]): Map<number, Point> {
+  const pos: Map<number, {x:number, y:number}> = new Map()
+  for (let i = 0; i < calls.length; i++) {
+    const c = calls[i]
+    if (!pos.has(c.id)) {
+      pos.set(c.id, {x: c.depth, y: i})
+    }
   }
-  i++
+  return pos
 }
 
-console.log(pos)
 
 /*
 const pos: Map<number, number> = new Map()

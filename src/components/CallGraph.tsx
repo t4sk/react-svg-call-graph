@@ -1,7 +1,7 @@
 import { useRef, useState } from "react"
 import { ViewBox, Point, SvgNode, Graph } from "../lib/types"
 import * as svg from "../lib/svg"
-import styles from "./SvgUi.module.css"
+import styles from "./CallGraph.module.css"
 import {
   SvgRect,
   SvgCircle,
@@ -16,7 +16,6 @@ const ARC_X_PADDING = 20
 
 export const SvgGraph: React.FC<{
   graph: Graph
-  starts: number[]
   backgroundColor: string
   width: number
   height: number
@@ -34,7 +33,6 @@ export const SvgGraph: React.FC<{
   renderNode: (node: SvgNode) => React.ReactNode
 }> = ({
   graph,
-  starts,
   backgroundColor,
   width,
   height,
@@ -50,6 +48,7 @@ export const SvgGraph: React.FC<{
   nodeHeight = 50,
   nodeGap = 60,
 }) => {
+  const starts: number[] = []
   const layout = svg.map(graph, starts, {
     width,
     height,
@@ -213,9 +212,8 @@ export type Drag = {
   startViewBoxY: number
 }
 
-export const SvgUi: React.FC<{
+export const CallGraph: React.FC<{
   graph: Graph
-  starts: number[]
   backgroundColor: string
   width: number
   height: number
@@ -230,7 +228,6 @@ export const SvgUi: React.FC<{
   nodeGap?: number
 }> = ({
   graph,
-  starts,
   backgroundColor,
   width,
   height,
@@ -360,7 +357,6 @@ export const SvgUi: React.FC<{
     >
       <SvgGraph
         graph={graph}
-        starts={starts}
         backgroundColor={backgroundColor}
         width={width}
         height={height}
