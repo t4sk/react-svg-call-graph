@@ -91,21 +91,6 @@ export const CallGraph: React.FC<{
       viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
       style={{ backgroundColor }}
     >
-      {layout.nodes.map((nodes, i) => {
-        return nodes.map((node, j) => {
-          return (
-            <SvgRect
-              key={`${i}-${j}`}
-              x={node.rect.x}
-              y={node.rect.y}
-              width={node.rect.width}
-              height={node.rect.height}
-              fill={rectFill}
-              stroke={rectStroke}
-            />
-          )
-        })
-      })}
       {layout.arrows.map((a, i) => {
         if (a.start.y == a.end.y) {
           return (
@@ -128,6 +113,22 @@ export const CallGraph: React.FC<{
             y1={a.end.y}
           />
         )
+      })}
+
+      {layout.nodes.map((nodes, i) => {
+        return nodes.map((node, j) => {
+          return (
+            <SvgRect
+              key={`${i}-${j}`}
+              x={node.rect.x}
+              y={node.rect.y}
+              width={node.rect.width}
+              height={node.rect.height}
+              fill={rectFill}
+              stroke={rectStroke}
+            />
+          )
+        })
       })}
 
       {layout.nodes.map((nodes, i) => {
