@@ -138,6 +138,9 @@ export function map(calls: Call[], canvas: Canvas): Layout {
   const xs: number[] = []
   // depth => y positions
   const ys: number[][] = []
+  // depth => offset
+  const offsets: Map<number, number> = new Map()
+  offsets.set(0, 0)
 
   for (let i = 0; i < calls.length; i++) {
     const c = calls[i]
@@ -146,10 +149,16 @@ export function map(calls: Call[], canvas: Canvas): Layout {
       continue
     }
 
+    const offset = offsets.get(c.depth) || 0
+    // Next depth is shifted up
+    offsets.set(c.depth + 1, offset - 1)
+    // Previous depth is shifted up
+    offsets.set(c.depth - 1, offset)
+
     const { height, width, gap } = canvas.node
     const rect = {
       x: x0 + (width >> 1) + c.depth * (width + gap),
-      y: y0 + (height >> 1) + i * (height + gap),
+      y: y0 + (height >> 1) + (i + offset) * (height + gap),
       width: width,
       height: height,
     }
