@@ -75,7 +75,7 @@ export const SvgZigZagArrow: React.FC<{
     <>
       <defs>
         <marker
-          id="arrow"
+          id="zig-zag-arrow"
           markerWidth="5"
           markerHeight="5"
           refX="5"
@@ -108,7 +108,68 @@ export const SvgZigZagArrow: React.FC<{
         y2={y1}
         stroke={stroke}
         strokeWidth="2"
-        markerEnd={`url(#arrow)`}
+        markerEnd={`url(#zig-zag-arrow)`}
+      />
+    </>
+  )
+}
+
+export const SvgCallBackArrow: React.FC<{
+  x0: number
+  y0: number
+  x1: number
+  y1: number
+  xPadd: number
+  yPadd: number
+  stroke?: string
+}> = ({ x0, y0, x1, y1, xPadd, yPadd, stroke = "black" }) => {
+  // x0 >= x1 and y1 >= y0
+  return (
+    <>
+      <defs>
+        <marker
+          id="call-back-arrow"
+          markerWidth="5"
+          markerHeight="5"
+          refX="5"
+          refY="2.5"
+          orient="auto"
+        >
+          <path d="M 0 0 L 5 2.5 L 0 5 z" />
+        </marker>
+      </defs>
+      <line
+        x1={x0}
+        y1={y0}
+        x2={x0 + xPadd}
+        y2={y0}
+        stroke={stroke}
+        strokeWidth="2"
+      />
+      <line
+        x1={x0 + xPadd}
+        y1={y0}
+        x2={x0 + xPadd}
+        y2={y1 - yPadd}
+        stroke={stroke}
+        strokeWidth="2"
+      />
+      <line
+        x1={x0 + xPadd}
+        y1={y1 - yPadd}
+        x2={x1}
+        y2={y1 - yPadd}
+        stroke={stroke}
+        strokeWidth="2"
+      />
+      <line
+        x1={x1}
+        y1={y1 - yPadd}
+        x2={x1}
+        y2={y1}
+        stroke={stroke}
+        strokeWidth="2"
+        markerEnd={`url(#call-back-arrow)`}
       />
     </>
   )

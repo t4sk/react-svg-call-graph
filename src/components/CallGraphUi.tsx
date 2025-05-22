@@ -8,6 +8,7 @@ import {
   SvgDot,
   SvgArrow,
   SvgZigZagArrow,
+  SvgCallBackArrow,
   SvgLine,
   SvgCubicBezier,
   SvgCubicBezierArc,
@@ -102,6 +103,19 @@ export const CallGraph: React.FC<{
               y1={a.end.y}
             />
           )
+        }
+
+        if (a.start.x >= a.end.x) {
+            return (
+              <SvgCallBackArrow
+                x0={a.start.x}
+                y0={a.start.y}
+                x1={a.end.x}
+                y1={a.end.y}
+                xPadd={nodeGap >> 1}
+                yPadd={nodeGap >> 1}
+              />
+            )
         }
 
         return (

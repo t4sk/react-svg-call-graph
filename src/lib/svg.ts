@@ -93,8 +93,13 @@ function arrow(map: Map<number, SvgNode>, start: number, end: number): Arrow {
   let p0 = { x: 0, y: 0 }
   let p1 = { x: 0, y: 0 }
 
-  p0 = m0.right
-  p1 = m1.left
+  if (start <= end) {
+    p0 = m0.right
+    p1 = m1.left
+  } else {
+    p0 = m0.right
+    p1 = m1.top
+  }
 
   return {
     s: s.id,
@@ -149,11 +154,12 @@ export function map(calls: Call[], canvas: Canvas): Layout {
       continue
     }
 
+    // TODO: offset to make diagram compact?
     const offset = offsets.get(c.depth) || 0
     // Next depth is shifted up
-    offsets.set(c.depth + 1, offset - 1)
+    // offsets.set(c.depth + 1, offset - 1)
     // Previous depth is shifted up
-    offsets.set(c.depth - 1, offset)
+    // offsets.set(c.depth - 1, offset)
 
     const { height, width, gap } = canvas.node
     const rect = {
