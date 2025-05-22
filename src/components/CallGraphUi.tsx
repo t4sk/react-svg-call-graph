@@ -7,11 +7,12 @@ import {
   SvgCircle,
   SvgDot,
   SvgArrow,
+  SvgZigZagArrow,
   SvgLine,
   SvgCubicBezier,
   SvgCubicBezierArc,
 } from "./Svg"
-import {search} from "../lib/utils"
+import { search } from "../lib/utils"
 import { Controller } from "./Controller"
 
 export const CallGraph: React.FC<{
@@ -91,23 +92,35 @@ export const CallGraph: React.FC<{
       style={{ backgroundColor }}
     >
       {layout.nodes.map((nodes, i) => {
-          return nodes.map((node, j) => {
-            return (
-              <SvgRect
-                key={`${i}-${j}`}
-                x={node.rect.x}
-                y={node.rect.y}
-                width={node.rect.width}
-                height={node.rect.height}
-                fill={rectFill}
-                stroke={rectStroke}
-              />
-            )
-          })
+        return nodes.map((node, j) => {
+          return (
+            <SvgRect
+              key={`${i}-${j}`}
+              x={node.rect.x}
+              y={node.rect.y}
+              width={node.rect.width}
+              height={node.rect.height}
+              fill={rectFill}
+              stroke={rectStroke}
+            />
+          )
+        })
       })}
       {layout.arrows.map((a, i) => {
+        if (a.start.y == a.end.y) {
+          return (
+            <SvgArrow
+              key={i}
+              x0={a.start.x}
+              y0={a.start.y}
+              x1={a.end.x}
+              y1={a.end.y}
+            />
+          )
+        }
+
         return (
-          <SvgArrow
+          <SvgZigZagArrow
             key={i}
             x0={a.start.x}
             y0={a.start.y}
@@ -118,30 +131,30 @@ export const CallGraph: React.FC<{
       })}
 
       {layout.nodes.map((nodes, i) => {
-          return nodes.map((node, j) => {
-            return (
-              <foreignObject
-                key={`${i}-${j}`}
-                x={node.rect.x}
-                y={node.rect.y}
-                width={node.rect.width}
-                height={node.rect.height}
+        return nodes.map((node, j) => {
+          return (
+            <foreignObject
+              key={`${i}-${j}`}
+              x={node.rect.x}
+              y={node.rect.y}
+              width={node.rect.width}
+              height={node.rect.height}
+            >
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
               >
-                <div
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  {renderNode(node)}
-                </div>
-              </foreignObject>
-          )}
-        )
+                {renderNode(node)}
+              </div>
+            </foreignObject>
+          )
+        })
       })}
 
       {mouse && showDot ? <SvgDot x={svgX} y={svgY} radius={4} /> : null}
@@ -238,7 +251,7 @@ export const CallGraphUi: React.FC<{
 
   function getMouse(
     ref: HTMLDivElement | null,
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ): Point | null {
     if (!ref) {
       return null

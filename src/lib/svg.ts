@@ -14,7 +14,7 @@ export function getViewBoxX(
   width: number,
   mouseX: number,
   viewBoxWidth: number,
-  viewBoxX: number,
+  viewBoxX: number
 ): number {
   return math.lin(viewBoxWidth, width, mouseX, viewBoxX)
 }
@@ -23,7 +23,7 @@ export function getViewBoxY(
   height: number,
   mouseY: number,
   viewBoxHeight: number,
-  viewBoxY: number,
+  viewBoxY: number
 ): number {
   return math.lin(viewBoxHeight, height, mouseY, viewBoxY)
 }
@@ -187,8 +187,8 @@ export function map(calls: Call[], canvas: Canvas): Layout {
 
   // Check xs sorted
   for (let i = 0; i < xs.length; i++) {
-    if (xs[i] >= xs[i+1]) {
-      console.warn("x not sorted", i, xs[i], xs[i+1])
+    if (xs[i] >= xs[i + 1]) {
+      console.warn("x not sorted", i, xs[i], xs[i + 1])
     }
   }
 
@@ -196,7 +196,7 @@ export function map(calls: Call[], canvas: Canvas): Layout {
   for (let i = 0; i < ys.length; i++) {
     for (let j = 0; j < ys[i].length - 1; j++) {
       if (ys[i][j] >= ys[i][j + 1]) {
-        console.warn("y not sorted", i, j, ys[i][j], ys[i][j+1])
+        console.warn("y not sorted", i, j, ys[i][j], ys[i][j + 1])
       }
     }
   }

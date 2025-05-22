@@ -25,7 +25,7 @@ export function build(calls: Call[]): { graph: Graph; parents: Parents } {
 export function bfs(
   graph: Graph,
   start: number,
-  f?: (i: number, v: number) => void,
+  f?: (i: number, v: number) => void
 ) {
   const q: [number, number][] = [[0, start]]
   const visited: Set<number> = new Set()
@@ -58,7 +58,7 @@ export function bfs(
 export function dfs(
   graph: Graph,
   start: number,
-  f?: (d: number, v: number) => void,
+  f?: (d: number, v: number) => void
 ): boolean {
   type Node = { p: number | null; v: number }
 

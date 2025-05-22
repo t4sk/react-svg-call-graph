@@ -62,6 +62,58 @@ export const SvgLine: React.FC<{
   )
 }
 
+export const SvgZigZagArrow: React.FC<{
+  x0: number
+  y0: number
+  x1: number
+  y1: number
+  stroke?: string
+}> = ({ x0, y0, x1, y1, stroke = "black" }) => {
+  const mid = (x1 - x0) >> 1
+
+  return (
+    <>
+      <defs>
+        <marker
+          id="arrow"
+          markerWidth="5"
+          markerHeight="5"
+          refX="5"
+          refY="2.5"
+          orient="auto"
+        >
+          <path d="M 0 0 L 5 2.5 L 0 5 z" />
+        </marker>
+      </defs>
+      <line
+        x1={x0}
+        y1={y0}
+        x2={x0 + mid}
+        y2={y0}
+        stroke={stroke}
+        strokeWidth="2"
+      />
+      <line
+        x1={x0 + mid}
+        y1={y0}
+        x2={x0 + mid}
+        y2={y1}
+        stroke={stroke}
+        strokeWidth="2"
+      />
+      <line
+        x1={x1 - mid}
+        y1={y1}
+        x2={x1}
+        y2={y1}
+        stroke={stroke}
+        strokeWidth="2"
+        markerEnd={`url(#arrow)`}
+      />
+    </>
+  )
+}
+
 export const SvgArrow: React.FC<{
   x0: number
   y0: number
