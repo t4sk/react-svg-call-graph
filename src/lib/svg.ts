@@ -8,7 +8,6 @@ import {
   SvgNode,
   Layout,
 } from "./types"
-import * as graph from "./graph"
 import * as math from "./math"
 
 export function getViewBoxX(
@@ -84,18 +83,6 @@ export function iter(mids: {
   return [top, left, bottom, right, center]
 }
 
-function box(canvas: Canvas, n: number, p0: Point): Rect {
-  const height = canvas.node.height
-  const width = n * canvas.node.width + (n - 1) * canvas.node.gap
-
-  return {
-    x: p0.x - (width >> 1),
-    y: p0.y - (height >> 1),
-    width,
-    height,
-  }
-}
-
 function arrow(map: Map<number, SvgNode>, start: number, end: number): Arrow {
   const s = map.get(start) as SvgNode
   const e = map.get(end) as SvgNode
@@ -126,19 +113,6 @@ export function isInside(p: Point, rect: Rect): boolean {
   )
 }
 
-/*
-export function map(calls: Call[]): Map<number, Point> {
-  const pos: Map<number, Point> = new Map()
-  for (let i = 0; i < calls.length; i++) {
-    const c = calls[i]
-    if (!pos.has(c.id)) {
-      pos.set(c.id, { x: c.depth, y: i })
-    }
-  }
-  return pos
-}
-*/
-
 export function map(calls: Call[], canvas: Canvas): Layout {
   let maxDepth = 0
   {
@@ -159,10 +133,11 @@ export function map(calls: Call[], canvas: Canvas): Layout {
   const x0 = canvas.center.x - (width >> 1)
   const y0 = canvas.center.y - (height >> 1)
 
-  const nodes: SvgNode[] = []
+  const nodes: SvgNode[][] = []
   const map: Map<number, SvgNode> = new Map()
   const xs: number[] = []
-  const ys: number[] = []
+  // depth => y positions
+  const ys: number[][] = []
 
   for (let i = 0; i < calls.length; i++) {
     const c = calls[i]
@@ -184,13 +159,37 @@ export function map(calls: Call[], canvas: Canvas): Layout {
       rect,
       mid,
     }
-    nodes.push(node)
+
+    while (nodes.length <= c.depth) {
+      nodes.push([])
+    }
+    nodes[c.depth].push(node)
     map.set(c.id, node)
 
-    /*
-    xs[i].push(mid.left.x, mid.right.x)
-    ys.push(mid.top.y, mid.bottom.y)
-    */
+    while (ys.length <= c.depth) {
+      ys.push([])
+    }
+
+    if (ys[c.depth].length == 0) {
+      xs.push(mid.left.x, mid.right.x)
+    }
+    ys[c.depth].push(mid.top.y, mid.bottom.y)
+  }
+
+  // Check xs sorted
+  for (let i = 0; i < xs.length; i++) {
+    if (xs[i] >= xs[i+1]) {
+      console.warn("x not sorted", i, xs[i], xs[i+1])
+    }
+  }
+
+  // Check ys sorted
+  for (let i = 0; i < ys.length; i++) {
+    for (let j = 0; j < ys[i].length - 1; j++) {
+      if (ys[i][j] >= ys[i][j + 1]) {
+        console.warn("y not sorted", i, j, ys[i][j], ys[i][j+1])
+      }
+    }
   }
 
   const arrows: Arrow[] = []

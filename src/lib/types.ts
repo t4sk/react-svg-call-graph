@@ -66,11 +66,11 @@ export type Layout = {
   rect: Rect
   mid: MidPoints
   boxes: Rect[]
-  nodes: SvgNode[]
+  nodes: SvgNode[][]
   arrows: Arrow[]
   map: Map<number, SvgNode>
-  // Sorted x coordinates of box boundries for each row
+  // Sorted x coordinates
   xs: number[]
-  // Sorted y coordinates of row boundries
-  ys: number[]
+  // Sorted y coordinates for each column
+  ys: number[][]
 }

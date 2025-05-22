@@ -11,9 +11,8 @@ import {
   SvgCubicBezier,
   SvgCubicBezierArc,
 } from "./Svg"
+import {search} from "../lib/utils"
 import { Controller } from "./Controller"
-
-const ARC_X_PADDING = 20
 
 export const CallGraph: React.FC<{
   calls: Call[]
@@ -49,6 +48,7 @@ export const CallGraph: React.FC<{
   nodeHeight = 50,
   nodeGap = 60,
 }) => {
+  // TODO: don't call on every render
   const layout = svg.map(calls, {
     width,
     height,
@@ -72,31 +72,16 @@ export const CallGraph: React.FC<{
 
   let hover = null
   if (mouse && svgX != 0 && svgY != 0) {
-    /*
-    // Binary search y
-    const i = (search(layout.ys, (y) => y, svgY) || 0) >> 1
-    const xs = layout.xs[i]
-    if (xs) {
-      // Binary search x
-      const j = (search(xs, (x) => x, svgX) || 0) >> 1
+    const i = (search(layout.xs, (x) => x, svgX) || 0) >> 1
+    const ys = layout.ys[i]
+    if (ys) {
+      const j = (search(ys, (y) => y, svgY) || 0) >> 1
       const node = layout.nodes[i][j]
       if (node && svg.isInside({ x: svgX, y: svgY }, node.rect)) {
         hover = node.id
       }
     }
-    */
   }
-
-  const circles = [
-    {
-      x: 100,
-      y: 100,
-    },
-    {
-      x: 300,
-      y: 100,
-    },
-  ]
 
   return (
     <svg
@@ -105,20 +90,21 @@ export const CallGraph: React.FC<{
       viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
       style={{ backgroundColor }}
     >
-      {/*circles.map((c, i) => (
-        <SvgCircle key={i} x={c.x} y={c.y} radius={40} />
-      ))*/}
-      {layout.nodes.map((node, i) => (
-        <SvgRect
-          key={i}
-          x={node.rect.x}
-          y={node.rect.y}
-          width={node.rect.width}
-          height={node.rect.height}
-          fill={rectFill}
-          stroke={rectStroke}
-        />
-      ))}
+      {layout.nodes.map((nodes, i) => {
+          return nodes.map((node, j) => {
+            return (
+              <SvgRect
+                key={`${i}-${j}`}
+                x={node.rect.x}
+                y={node.rect.y}
+                width={node.rect.width}
+                height={node.rect.height}
+                fill={rectFill}
+                stroke={rectStroke}
+              />
+            )
+          })
+      })}
       {layout.arrows.map((a, i) => {
         return (
           <SvgArrow
@@ -131,28 +117,30 @@ export const CallGraph: React.FC<{
         )
       })}
 
-      {layout.nodes.map((node, i) => {
-        return (
-          <foreignObject
-            key={i}
-            x={node.rect.x}
-            y={node.rect.y}
-            width={node.rect.width}
-            height={node.rect.height}
-          >
-            <div
-              style={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {renderNode(node)}
-            </div>
-          </foreignObject>
+      {layout.nodes.map((nodes, i) => {
+          return nodes.map((node, j) => {
+            return (
+              <foreignObject
+                key={`${i}-${j}`}
+                x={node.rect.x}
+                y={node.rect.y}
+                width={node.rect.width}
+                height={node.rect.height}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  {renderNode(node)}
+                </div>
+              </foreignObject>
+          )}
         )
       })}
 
