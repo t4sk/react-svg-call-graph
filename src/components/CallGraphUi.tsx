@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { Call, ViewBox, Point, SvgNode } from "../lib/types"
 import * as svg from "../lib/svg"
 import styles from "./CallGraphUi.module.css"
@@ -237,9 +237,10 @@ export const CallGraphUi: React.FC<{
     y: viewBox.y + (viewBox.height >> 1),
   }
 
-  function onClickPlus() {
+  function zoom(up: boolean) {
     // Zoom in -> view box decrease width and height
-    const nextZoomIndex = Math.min(zoomIndex + 1, MAX_ZOOM_INDEX)
+    // Zoom out -> view box increase width and height
+    const nextZoomIndex = up ? Math.min(zoomIndex + 1, MAX_ZOOM_INDEX) : Math.max(zoomIndex - 1, MIN_ZOOM_INDEX)
     const w = Math.floor(width / ZOOMS[nextZoomIndex])
     const h = Math.floor(height / ZOOMS[nextZoomIndex])
     setZoomIndex(nextZoomIndex)
@@ -251,18 +252,12 @@ export const CallGraphUi: React.FC<{
     })
   }
 
+  function onClickPlus() {
+    zoom(true)
+  }
+
   function onClickMinus() {
-    // Zoom out -> view box increase width and height
-    const nextZoomIndex = Math.max(zoomIndex - 1, MIN_ZOOM_INDEX)
-    const w = Math.floor(width / ZOOMS[nextZoomIndex])
-    const h = Math.floor(height / ZOOMS[nextZoomIndex])
-    setZoomIndex(nextZoomIndex)
-    setViewBox({
-      x: center.x - (w >> 1),
-      y: center.y - (h >> 1),
-      width: w,
-      height: h,
-    })
+    zoom(false)
   }
 
   function getMouse(
@@ -320,7 +315,7 @@ export const CallGraphUi: React.FC<{
     setDrag(null)
   }
 
-  const percentage = Math.floor((width / viewBox.width) * 100)
+  const zoomPercentage = Math.floor((width / viewBox.width) * 100)
 
   return (
     <div
@@ -370,7 +365,7 @@ export const CallGraphUi: React.FC<{
         <Controller
           onClickPlus={onClickPlus}
           onClickMinus={onClickMinus}
-          percentage={percentage}
+          zoomPercentage={zoomPercentage}
         />
       </div>
     </div>

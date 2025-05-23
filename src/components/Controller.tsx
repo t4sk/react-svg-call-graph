@@ -2,13 +2,13 @@ import React from "react"
 import styles from "./Controller.module.css"
 
 export const Controller: React.FC<{
-  percentage: number
+  zoomPercentage: number
   onClickPlus: () => void
   onClickMinus: () => void
   color?: string
   backgroundColor?: string
 }> = ({
-  percentage,
+  zoomPercentage,
   onClickPlus,
   onClickMinus,
   color = "white",
@@ -24,7 +24,7 @@ export const Controller: React.FC<{
         -
       </button>
       <div className={styles.level} style={{ color, backgroundColor }}>
-        {Math.round(percentage)}%
+        {Math.round(zoomPercentage)}%
       </div>
       <button
         className={styles.buttonRight}
