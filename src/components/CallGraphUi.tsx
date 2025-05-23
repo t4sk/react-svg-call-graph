@@ -108,6 +108,7 @@ export const CallGraph: React.FC<{
         if (a.start.x >= a.end.x) {
             return (
               <SvgCallBackArrow
+                key={i}
                 x0={a.start.x}
                 y0={a.start.y}
                 x1={a.end.x}

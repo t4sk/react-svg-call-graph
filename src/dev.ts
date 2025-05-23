@@ -1,5 +1,67 @@
 import { Call } from "./lib/types"
 
+import TX from "../tmp/tx.json"
+
+type TxCall = {
+  from: string
+  to: string
+  input: string
+  calls?: TxCall[]
+}
+
+export function dfs(
+  call: TxCall,
+  f: (d: number, call: TxCall) => void
+) {
+  const q = [[0, call]]
+
+  while (q.length > 0) {
+    const [d, c] = q.pop() as [number, TxCall]
+
+    f(d, c)
+
+    const calls = c?.calls || []
+    if (calls.length > 0) {
+      for (const c of [...calls].reverse()) {
+        q.push([d + 1, c])
+      }
+    }
+  }
+}
+
+// @ts-ignore
+let id = 0
+const ids: Map<string, number> = new Map()
+// @ts-ignore
+const flat = []
+
+dfs(TX.result, (d, c) => {
+  if (!ids.has(c.from)) {
+    id += 1
+    ids.set(c.from, id)
+  }
+  if (!ids.has(c.to)) {
+    id += 1
+    ids.set(c.to, id)
+  }
+  flat.push([d, c])
+})
+
+// @ts-ignore
+console.log(ids, flat)
+
+/*
+const cs = flat.map(([d, c]) => {
+  const calls = c.children || []
+  return {
+    id: ids.get(c.from),
+    depth: d
+    children: calls.map(c => ids.get(c.
+  }
+})
+*/
+
+
 export const calls: Call[] = [
   { id: 0, parent: null, depth: 0, children: [1, 2, 3, 4] },
   { id: 1, parent: 0, depth: 1, children: [5, 6, 7] },
