@@ -105,7 +105,7 @@ export const CallGraph: React.FC<{
           )
         }
 
-        if (a.start.x >= a.end.x) {
+        if (a.end.x <= a.start.x) {
             return (
               <SvgCallBackArrow
                 key={i}
@@ -192,6 +192,8 @@ export type Drag = {
   startViewBoxY: number
 }
 
+// TODO: fix smoother drag
+// TODO: default zoom
 export const CallGraphUi: React.FC<{
   calls: Call[]
   backgroundColor: string
@@ -240,7 +242,7 @@ export const CallGraphUi: React.FC<{
   function zoom(up: boolean) {
     // Zoom in -> view box decrease width and height
     // Zoom out -> view box increase width and height
-    const nextZoomIndex = up ? Math.min(zoomIndex + 1, MAX_ZOOM_INDEX) : Math.max(zoomIndex - 1, MIN_ZOOM_INDEX)
+    const nextZoomIndex = up ? Math.min(zoomIndex + 1, MAX_ZOOM_INDEX) : Math.max(zoomIndex - 3, MIN_ZOOM_INDEX)
     const w = Math.floor(width / ZOOMS[nextZoomIndex])
     const h = Math.floor(height / ZOOMS[nextZoomIndex])
     setZoomIndex(nextZoomIndex)

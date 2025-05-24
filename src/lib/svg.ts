@@ -93,7 +93,7 @@ function arrow(map: Map<number, SvgNode>, start: number, end: number): Arrow {
   let p0 = { x: 0, y: 0 }
   let p1 = { x: 0, y: 0 }
 
-  if (start <= end) {
+  if (m0.center.x < m1.center.x) {
     p0 = m0.right
     p1 = m1.left
   } else {
@@ -147,10 +147,13 @@ export function map(calls: Call[], canvas: Canvas): Layout {
   const offsets: Map<number, number> = new Map()
   offsets.set(0, 0)
 
+  let dup = 0
+
   for (let i = 0; i < calls.length; i++) {
     const c = calls[i]
 
     if (map.has(c.id)) {
+      dup += 1
       continue
     }
 
@@ -164,7 +167,7 @@ export function map(calls: Call[], canvas: Canvas): Layout {
     const { height, width, gap } = canvas.node
     const rect = {
       x: x0 + (width >> 1) + c.depth * (width + gap),
-      y: y0 + (height >> 1) + (i + offset) * (height + gap),
+      y: y0 + (height >> 1) + (i + offset - dup) * (height + gap),
       width: width,
       height: height,
     }
