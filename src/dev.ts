@@ -51,16 +51,23 @@ dfs(TX.result, (d, c) => {
 console.log(ids, flat)
 
 // @ts-ignore
-const cs = flat.map(([d, c]) => {
-  const calls = c.calls || []
-  return {
-    id: ids.get(c.to),
-    parent: ids.get(c.from),
-    depth: d,
+const cs = [{
+  id: 1, parent: null, depth: 0, children: [2]
+}]
+
 // @ts-ignore
+for (const [d, c] of flat) {
+  const calls = c.calls || []
+  cs.push({
+    // @ts-ignore
+    id: ids.get(c.to),
+    // @ts-ignore
+    parent: ids.get(c.from),
+    depth: d + 1,
+    // @ts-ignore
     children: calls.map(c => ids.get(c.to))
-  }
-})
+  })
+}
 
 console.log(cs)
 
