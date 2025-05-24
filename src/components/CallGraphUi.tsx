@@ -193,7 +193,6 @@ export type Drag = {
 }
 
 // TODO: fix smoother drag
-// TODO: default zoom
 export const CallGraphUi: React.FC<{
   calls: Call[]
   backgroundColor: string
@@ -234,17 +233,22 @@ export const CallGraphUi: React.FC<{
   })
   const [zoomIndex, setZoomIndex] = useState<number>(9)
 
-  const center = {
-    x: viewBox.x + (viewBox.width >> 1),
-    y: viewBox.y + (viewBox.height >> 1),
-  }
+  useEffect(() => {
+    zoom(3)
+  }, [])
 
-  function zoom(up: boolean) {
+  function zoom(next: number) {
     // Zoom in -> view box decrease width and height
     // Zoom out -> view box increase width and height
-    const nextZoomIndex = up ? Math.min(zoomIndex + 1, MAX_ZOOM_INDEX) : Math.max(zoomIndex - 3, MIN_ZOOM_INDEX)
+    const up = next >= zoomIndex
+    const nextZoomIndex = up ? Math.min(next, MAX_ZOOM_INDEX) : Math.max(next, MIN_ZOOM_INDEX)
     const w = Math.floor(width / ZOOMS[nextZoomIndex])
     const h = Math.floor(height / ZOOMS[nextZoomIndex])
+    const center = {
+      x: viewBox.x + (viewBox.width >> 1),
+      y: viewBox.y + (viewBox.height >> 1),
+    }
+
     setZoomIndex(nextZoomIndex)
     setViewBox({
       x: center.x - (w >> 1),
@@ -255,11 +259,11 @@ export const CallGraphUi: React.FC<{
   }
 
   function onClickPlus() {
-    zoom(true)
+    zoom(zoomIndex + 1)
   }
 
   function onClickMinus() {
-    zoom(false)
+    zoom(zoomIndex - 1)
   }
 
   function getMouse(
