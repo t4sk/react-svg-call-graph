@@ -71,18 +71,6 @@ export function getMidPoints(rect: Rect): MidPoints {
   }
 }
 
-export function iter(mids: {
-  top: Point
-  bottom: Point
-  left: Point
-  right: Point
-  center: Point
-}): Point[] {
-  const { top, left, bottom, right, center } = mids
-  // clockwise
-  return [top, left, bottom, right, center]
-}
-
 function arrow(map: Map<number, SvgNode>, start: number, end: number): Arrow {
   const s = map.get(start) as SvgNode
   const e = map.get(end) as SvgNode
@@ -119,34 +107,18 @@ export function isInside(p: Point, rect: Rect): boolean {
 }
 
 export function map(calls: Call[], canvas: Canvas): Layout {
-  let maxDepth = 0
-  {
-    const visited = new Set()
-    for (let i = 0; i < calls.length; i++) {
-      const c = calls[i]
-      if (!visited.has(c.id)) {
-        visited.add(c.id)
-        maxDepth = Math.max(maxDepth, c.depth)
-      }
-    }
-  }
-
-  const height =
-    calls.length * canvas.node.height + (calls.length - 1) * canvas.node.gap
-  const width = maxDepth * canvas.node.width + (maxDepth - 1) * canvas.node.gap
-
-  const x0 = canvas.center.x - (width >> 1)
-  const y0 = canvas.center.y - (height >> 1)
-
   const nodes: SvgNode[][] = []
   const map: Map<number, SvgNode> = new Map()
+
   const xs: number[] = []
   // depth => y positions
   const ys: number[][] = []
+  let xMax = 0
+  let yMax = 0
+
   // depth => offset
   const offsets: Map<number, number> = new Map()
   offsets.set(0, 0)
-
   let dup = 0
 
   for (let i = 0; i < calls.length; i++) {
@@ -168,8 +140,8 @@ export function map(calls: Call[], canvas: Canvas): Layout {
 
     const { height, width, gap } = canvas.node
     const rect = {
-      x: x0 + (width >> 1) + c.depth * (width + gap),
-      y: y0 + (height >> 1) + (i + offset - dup) * (height + gap),
+      x: (width >> 1) + c.depth * (width + gap),
+      y: (height >> 1) + (i + offset - dup) * (height + gap),
       width: width,
       height: height,
     }
@@ -192,8 +164,10 @@ export function map(calls: Call[], canvas: Canvas): Layout {
 
     if (ys[c.depth].length == 0) {
       xs.push(mid.left.x, mid.right.x)
+      xMax = Math.max(xMax, mid.right.x)
     }
     ys[c.depth].push(mid.top.y, mid.bottom.y)
+    yMax = Math.max(yMax, mid.bottom.y)
   }
 
   // Check xs sorted
@@ -212,6 +186,29 @@ export function map(calls: Call[], canvas: Canvas): Layout {
     }
   }
 
+  // Set final positions of the nodes
+  const x0 = canvas.center.x - (xMax >> 1)
+  const y0 = canvas.center.y - (yMax >> 1)
+
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = 0; j < nodes[i].length; j++) {
+      const node = nodes[i][j]
+      const rect = {
+        x: x0 + node.rect.x,
+        y: y0 + node.rect.y,
+        width: node.rect.width,
+        height: node.rect.height,
+      }
+      const mid = getMidPoints(rect)
+      nodes[i][j] = {
+        ...node,
+        rect,
+        mid,
+      }
+      map.set(node.id, nodes[i][j])
+    }
+  }
+
   const arrows: Arrow[] = []
   for (let i = 0; i < calls.length; i++) {
     const c = calls[i]
@@ -224,10 +221,10 @@ export function map(calls: Call[], canvas: Canvas): Layout {
   }
 
   const rect = {
-    x: canvas.center.x - (width >> 1),
-    y: canvas.center.y - (height >> 1),
-    width,
-    height,
+    x: x0,
+    y: y0,
+    width: xMax,
+    height: yMax,
   }
 
   const mid = getMidPoints(rect)
