@@ -1,6 +1,6 @@
 import { CallGraphUi } from "./components/CallGraphUi"
 
-import { calls } from "./dev"
+import { calls, map } from "./dev"
 
 function App() {
   return (
@@ -15,7 +15,9 @@ function App() {
       nodeHeight={50}
       nodeGap={60}
       renderNode={(node) => {
-        return node.id
+        // return node.id
+        // @ts-ignore
+        return map.get(node.id).data.address
       }}
     />
   )

@@ -48,15 +48,22 @@ dfs(TX.result, (d, c) => {
 })
 
 // @ts-ignore
-console.log(ids, flat)
+console.log("ids", ids)
+// @ts-ignore
+console.log("flat", flat)
 
 // @ts-ignore
 const cs = [{
-  id: 1, parent: null, depth: 0, children: [2]
+  id: 1, parent: null, depth: 0, children: [2],
+  data: {
+    // @ts-ignore
+    address: flat[0][1].from
+  }
 }]
 
 // @ts-ignore
 for (const [d, c] of flat) {
+  const i = cs.length - 1
   const calls = c.calls || []
   cs.push({
     // @ts-ignore
@@ -65,13 +72,23 @@ for (const [d, c] of flat) {
     parent: ids.get(c.from),
     depth: d + 1,
     // @ts-ignore
-    children: calls.map(c => ids.get(c.to))
+    children: calls.map(c => ids.get(c.to)),
+    data: {
+      // @ts-ignore
+      address: flat[i][1].to
+    }
   })
 }
 
-console.log(cs)
+console.log("cs", cs)
 
 export const calls = cs
+
+export const map = new Map()
+for (const c of cs) {
+  map.set(c.id, c)
+}
+
 
 /*
 export const calls: Call[] = [
