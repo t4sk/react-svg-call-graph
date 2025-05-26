@@ -4,7 +4,6 @@ export type Call = {
   parent: number | null
   depth: number
   children: number[] | null
-  data: any
 }
 
 // Directed graph

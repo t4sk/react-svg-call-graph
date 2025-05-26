@@ -173,6 +173,10 @@ export const CallGraph: React.FC<{
         })
       })}
 
+      {Object.values(layout.mid).map((p, i) => (
+        <SvgDot x={p.x} y={p.y} key={i} radius={4} />
+      ))}
+
       {mouse && showDot ? <SvgDot x={svgX} y={svgY} radius={4} /> : null}
     </svg>
   )

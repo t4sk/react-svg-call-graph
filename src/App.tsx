@@ -1,6 +1,8 @@
 import { CallGraphUi } from "./components/CallGraphUi"
 
-import { calls, map } from "./dev"
+import { calls, objs } from "./dev"
+
+// TODO: dark mode
 
 function App() {
   return (
@@ -15,9 +17,8 @@ function App() {
       nodeHeight={50}
       nodeGap={60}
       renderNode={(node) => {
-        // return node.id
-        // @ts-ignore
-        return map.get(node.id).data.address
+        const obj = objs.get(node.id)
+        return obj?.name || obj?.address || node.id
       }}
     />
   )
