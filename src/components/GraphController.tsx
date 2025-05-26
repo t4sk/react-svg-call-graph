@@ -1,7 +1,7 @@
 import React from "react"
-import styles from "./Controller.module.css"
+import styles from "./GraphController.module.css"
 
-export const Controller: React.FC<{
+export const GraphController: React.FC<{
   zoomPercentage: number
   onClickPlus: () => void
   onClickMinus: () => void

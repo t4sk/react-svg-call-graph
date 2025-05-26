@@ -14,7 +14,7 @@ import {
   SvgCubicBezierArc,
 } from "./Svg"
 import { search } from "../lib/utils"
-import { Controller } from "./Controller"
+import { GraphController } from "./GraphController"
 
 export const CallGraph: React.FC<{
   calls: Call[]
@@ -371,8 +371,8 @@ export const CallGraphUi: React.FC<{
           onMouseOut={onMouseOut}
         ></div>
       ) : null}
-      <div className={styles.controller}>
-        <Controller
+      <div className={styles.controllers}>
+        <GraphController
           onClickPlus={onClickPlus}
           onClickMinus={onClickMinus}
           zoomPercentage={zoomPercentage}
