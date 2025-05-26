@@ -30,13 +30,13 @@ export function dfs(
   }
 }
 
-// DFS to flatten tx calls
 export type Obj = {
   address: string
   name: string | null
 }
 
 
+// DFS to flatten tx calls
 let id = 0
 // Address => id
 const ids: Map<string, number> = new Map()

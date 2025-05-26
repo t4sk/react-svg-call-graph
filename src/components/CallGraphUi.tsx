@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect, useMemo } from "react"
 import { Call, ViewBox, Point, SvgNode } from "../lib/types"
 import * as svg from "../lib/svg"
 import styles from "./CallGraphUi.module.css"
@@ -50,20 +50,21 @@ export const CallGraph: React.FC<{
   nodeHeight = 50,
   nodeGap = 60,
 }) => {
-  // TODO: don't call on every render
-  const layout = svg.map(calls, {
-    width,
-    height,
-    center: {
-      x: width >> 1,
-      y: height >> 1,
-    },
-    node: {
-      width: nodeWidth,
-      height: nodeHeight,
-      gap: nodeGap,
-    },
-  })
+  const layout = useMemo(() => {
+    return svg.map(calls, {
+      width,
+      height,
+      center: {
+        x: width >> 1,
+        y: height >> 1,
+      },
+      node: {
+        width: nodeWidth,
+        height: nodeHeight,
+        gap: nodeGap,
+      },
+    })
+  }, [calls, width, height])
 
   const svgX = mouse
     ? svg.getViewBoxX(width, mouse.x, viewBox.width, viewBox.x)
