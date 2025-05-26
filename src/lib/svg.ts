@@ -209,6 +209,16 @@ export function map(calls: Call[], canvas: Canvas): Layout {
     }
   }
 
+  for (let i = 0; i < xs.length; i++) {
+    xs[i] += x0
+  }
+
+  for (let i = 0; i < ys.length; i++) {
+    for (let j = 0; j < ys[i].length; j++) {
+      ys[i][j] += y0
+    }
+  }
+
   const arrows: Arrow[] = []
   for (let i = 0; i < calls.length; i++) {
     const c = calls[i]

@@ -86,6 +86,8 @@ export const CallGraph: React.FC<{
     }
   }
 
+  console.log(hover)
+
   return (
     <svg
       width={width}
