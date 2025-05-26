@@ -58,7 +58,7 @@ export const SvgLine: React.FC<{
   stroke?: string
 }> = ({ x0, y0, x1, y1, stroke }) => {
   return (
-    <line x1={x0} y1={y0} x2={x1} y2={y1} stroke={stroke} strokeWidth="2" />
+      <line x1={x0} y1={y0} x2={x1} y2={y1} stroke={stroke} strokeWidth="2" />
   )
 }
 
@@ -69,7 +69,7 @@ export const SvgZigZagArrow: React.FC<{
   y1: number
   stroke?: string
 }> = ({ x0, y0, x1, y1, stroke = "black" }) => {
-  const mid = (x1 - x0) >> 1
+  const mid = (x0 + x1) >> 1
 
   return (
     <>
@@ -88,21 +88,21 @@ export const SvgZigZagArrow: React.FC<{
       <line
         x1={x0}
         y1={y0}
-        x2={x0 + mid}
+        x2={mid}
         y2={y0}
         stroke={stroke}
         strokeWidth="2"
       />
       <line
-        x1={x0 + mid}
+        x1={mid}
         y1={y0}
-        x2={x0 + mid}
+        x2={mid}
         y2={y1}
         stroke={stroke}
         strokeWidth="2"
       />
       <line
-        x1={x1 - mid}
+        x1={mid}
         y1={y1}
         x2={x1}
         y2={y1}
