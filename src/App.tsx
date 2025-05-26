@@ -13,12 +13,22 @@ function App() {
       height={800}
       rectFill="blue"
       showDot={true}
-      nodeWidth={100}
+      nodeWidth={200}
       nodeHeight={50}
       nodeGap={60}
       renderNode={(node) => {
         const obj = objs.get(node.id)
-        return obj?.name || obj?.address || node.id
+        return (
+          <span style={{
+            width: 140,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            textAlign: "center"
+          }}>
+          {obj?.name || obj?.address || node.id}
+          </span>
+        )
       }}
     />
   )
