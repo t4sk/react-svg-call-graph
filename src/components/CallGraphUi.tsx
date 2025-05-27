@@ -40,6 +40,7 @@ export const CallGraph: React.FC<{
   height,
   viewBox,
   mouse,
+  isDragging,
   showDot = false,
   rectFill = "none",
   rectStroke = "black",
@@ -74,7 +75,7 @@ export const CallGraph: React.FC<{
     : 0
 
   let hover = null
-  if (mouse && svgX != 0 && svgY != 0) {
+  if (!isDragging && mouse && svgX != 0 && svgY != 0) {
     const i = (search(layout.xs, (x) => x, svgX) || 0) >> 1
     const ys = layout.ys[i]
     if (ys) {
@@ -96,6 +97,7 @@ export const CallGraph: React.FC<{
       style={{ backgroundColor }}
     >
       {layout.arrows.map((a, i) => {
+        const stroke = a.s == hover || a.e == hover ? lineHoverColor : lineColor
         if (a.start.y == a.end.y) {
           return (
             <SvgArrow
@@ -104,6 +106,7 @@ export const CallGraph: React.FC<{
               y0={a.start.y}
               x1={a.end.x}
               y1={a.end.y}
+              stroke={stroke}
             />
           )
         }
@@ -118,6 +121,7 @@ export const CallGraph: React.FC<{
                 y1={a.end.y}
                 xPadd={nodeGap >> 1}
                 yPadd={nodeGap >> 1}
+                stroke={stroke}
               />
             )
         }
@@ -129,6 +133,7 @@ export const CallGraph: React.FC<{
             y0={a.start.y}
             x1={a.end.x}
             y1={a.end.y}
+            stroke={stroke}
           />
         )
       })}
@@ -148,6 +153,7 @@ export const CallGraph: React.FC<{
           )
         })
       })}
+
 
       {layout.nodes.map((nodes, i) => {
         return nodes.map((node, j) => {

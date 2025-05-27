@@ -70,19 +70,21 @@ export const SvgZigZagArrow: React.FC<{
   stroke?: string
 }> = ({ x0, y0, x1, y1, stroke = "black" }) => {
   const mid = (x0 + x1) >> 1
+  const id = `zig-zag-arrow-${stroke}`
 
   return (
     <>
       <defs>
         <marker
-          id="zig-zag-arrow"
+          id={id}
           markerWidth="5"
           markerHeight="5"
           refX="5"
           refY="2.5"
           orient="auto"
+          stroke={stroke}
         >
-          <path d="M 0 0 L 5 2.5 L 0 5 z" />
+          <path fill={stroke} color={stroke} d="M 0 0 L 5 2.5 L 0 5 z" />
         </marker>
       </defs>
       <line
@@ -108,7 +110,7 @@ export const SvgZigZagArrow: React.FC<{
         y2={y1}
         stroke={stroke}
         strokeWidth="2"
-        markerEnd={`url(#zig-zag-arrow)`}
+        markerEnd={`url(#${id})`}
       />
     </>
   )
@@ -124,18 +126,19 @@ export const SvgCallBackArrow: React.FC<{
   stroke?: string
 }> = ({ x0, y0, x1, y1, xPadd, yPadd, stroke = "black" }) => {
   // x0 >= x1 and y1 >= y0
+  const id = `call-back-arrow-${stroke}`
   return (
     <>
       <defs>
         <marker
-          id="call-back-arrow"
+          id={id}
           markerWidth="5"
           markerHeight="5"
           refX="5"
           refY="2.5"
           orient="auto"
         >
-          <path d="M 0 0 L 5 2.5 L 0 5 z" />
+          <path fill={stroke} stroke={stroke} d="M 0 0 L 5 2.5 L 0 5 z" />
         </marker>
       </defs>
       <line
@@ -169,7 +172,7 @@ export const SvgCallBackArrow: React.FC<{
         y2={y1}
         stroke={stroke}
         strokeWidth="2"
-        markerEnd={`url(#call-back-arrow)`}
+        markerEnd={`url(#${id})`}
       />
     </>
   )
@@ -182,18 +185,19 @@ export const SvgArrow: React.FC<{
   y1: number
   stroke?: string
 }> = ({ x0, y0, x1, y1, stroke = "black" }) => {
+  const id = `arrow-${stroke}`
   return (
     <>
       <defs>
         <marker
-          id="arrow"
+          id={id}
           markerWidth="5"
           markerHeight="5"
           refX="5"
           refY="2.5"
           orient="auto"
         >
-          <path d="M 0 0 L 5 2.5 L 0 5 z" />
+          <path fill={stroke} stroke={stroke} d="M 0 0 L 5 2.5 L 0 5 z" />
         </marker>
       </defs>
       <line
@@ -201,9 +205,10 @@ export const SvgArrow: React.FC<{
         y1={y0}
         x2={x1}
         y2={y1}
+        fill="none"
         stroke={stroke}
         strokeWidth="2"
-        markerEnd={`url(#arrow)`}
+        markerEnd={`url(#${id})`}
       />
     </>
   )
