@@ -28,21 +28,6 @@ export function getViewBoxY(
   return math.lin(viewBoxHeight, height, mouseY, viewBoxY)
 }
 
-export function getCenterX(rect: Rect): number {
-  return rect.x + (rect.width >> 1)
-}
-
-export function getCenterY(rect: Rect): number {
-  return rect.y + (rect.height >> 1)
-}
-
-export function getCenter(rect: Rect): Point {
-  return {
-    x: rect.x + (rect.width >> 1),
-    y: rect.y + (rect.height >> 1),
-  }
-}
-
 export function getMidPoints(rect: Rect): MidPoints {
   const midWidth = rect.width >> 1
   const midHeight = rect.height >> 1

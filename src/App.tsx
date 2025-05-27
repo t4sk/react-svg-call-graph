@@ -2,10 +2,6 @@ import { CallGraphUi } from "./components/CallGraphUi"
 
 import { calls, objs } from "./dev"
 
-// TODO: dark mode
-// TODO: hover
-// TODO: sequence
-
 function App() {
   return (
     <CallGraphUi

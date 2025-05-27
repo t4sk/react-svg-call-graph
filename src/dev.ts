@@ -1,5 +1,4 @@
 import { Call } from "./lib/types"
-
 import TX from "../tmp/tx.json"
 import NAMES from "../tmp/names.json"
 
@@ -54,7 +53,7 @@ dfs(TX.result, (d, c) => {
   flat.push([d, c])
 })
 
-export const calls = [{
+export const calls: Call[] = [{
   id: 1, parent: null, depth: 0, children: [2],
 }]
 
@@ -69,9 +68,6 @@ for (const [d, c] of flat) {
     children: (c.calls ||[]).map(c => ids.get(c.to)),
   })
 }
-
-console.log(ids.keys())
-
 
 /*
 export const calls: Call[] = [

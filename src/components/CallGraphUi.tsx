@@ -4,14 +4,10 @@ import * as svg from "../lib/svg"
 import styles from "./CallGraphUi.module.css"
 import {
   SvgRect,
-  SvgCircle,
   SvgDot,
   SvgArrow,
   SvgZigZagArrow,
   SvgCallBackArrow,
-  SvgLine,
-  SvgCubicBezier,
-  SvgCubicBezierArc,
 } from "./Svg"
 import { search } from "../lib/utils"
 import { GraphController } from "./GraphController"
@@ -88,36 +84,9 @@ export const CallGraph: React.FC<{
   }
 
   function renderArrow(i: number, a: Arrow, lineColor: string) {
-      if (a.start.y == a.end.y) {
-        return (
-          <SvgArrow
-            key={i}
-            x0={a.start.x}
-            y0={a.start.y}
-            x1={a.end.x}
-            y1={a.end.y}
-            stroke={lineColor}
-          />
-        )
-      }
-
-      if (a.end.x <= a.start.x) {
-          return (
-            <SvgCallBackArrow
-              key={i}
-              x0={a.start.x}
-              y0={a.start.y}
-              x1={a.end.x}
-              y1={a.end.y}
-              xPadd={nodeGap >> 1}
-              yPadd={nodeGap >> 1}
-              stroke={lineColor}
-            />
-          )
-      }
-
+    if (a.start.y == a.end.y) {
       return (
-        <SvgZigZagArrow
+        <SvgArrow
           key={i}
           x0={a.start.x}
           y0={a.start.y}
@@ -126,6 +95,33 @@ export const CallGraph: React.FC<{
           stroke={lineColor}
         />
       )
+    }
+
+    if (a.end.x <= a.start.x) {
+      return (
+        <SvgCallBackArrow
+          key={i}
+          x0={a.start.x}
+          y0={a.start.y}
+          x1={a.end.x}
+          y1={a.end.y}
+          xPadd={nodeGap >> 1}
+          yPadd={nodeGap >> 1}
+          stroke={lineColor}
+        />
+      )
+    }
+
+    return (
+      <SvgZigZagArrow
+        key={i}
+        x0={a.start.x}
+        y0={a.start.y}
+        x1={a.end.x}
+        y1={a.end.y}
+        stroke={lineColor}
+      />
+    )
   }
 
   return (
@@ -137,9 +133,9 @@ export const CallGraph: React.FC<{
     >
       {layout.arrows.map((a, i) => {
         if (a.s == hover || a.e == hover) {
-            return null
+          return null
         }
-          return renderArrow(i, a, lineColor)
+        return renderArrow(i, a, lineColor)
       })}
 
       {layout.nodes.map((nodes, i) => {
@@ -187,9 +183,9 @@ export const CallGraph: React.FC<{
 
       {layout.arrows.map((a, i) => {
         if (a.s != hover && a.e != hover) {
-            return null
+          return null
         }
-          return renderArrow(i, a, a.s == hover ? "red" : "blue")
+        return renderArrow(i, a, a.s == hover ? "red" : "blue")
       })}
 
       {Object.values(layout.mid).map((p, i) => (
@@ -264,7 +260,9 @@ export const CallGraphUi: React.FC<{
     // Zoom in -> view box decrease width and height
     // Zoom out -> view box increase width and height
     const up = next >= zoomIndex
-    const nextZoomIndex = up ? Math.min(next, MAX_ZOOM_INDEX) : Math.max(next, MIN_ZOOM_INDEX)
+    const nextZoomIndex = up
+      ? Math.min(next, MAX_ZOOM_INDEX)
+      : Math.max(next, MIN_ZOOM_INDEX)
     const w = Math.floor(width / ZOOMS[nextZoomIndex])
     const h = Math.floor(height / ZOOMS[nextZoomIndex])
     const center = {
