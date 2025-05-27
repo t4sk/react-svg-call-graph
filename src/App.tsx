@@ -14,6 +14,9 @@ function App() {
       nodeWidth={200}
       nodeHeight={50}
       nodeGap={60}
+      getLineHoverColor={(hover, arrow) => {
+        return hover == arrow.s ? "red" : "blue"
+      }}
       renderNode={(node) => {
         const obj = objs.get(node.id)
         // return node.id

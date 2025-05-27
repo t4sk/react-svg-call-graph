@@ -24,7 +24,7 @@ export const CallGraph: React.FC<{
   rectFill?: string
   rectStroke?: string
   lineColor?: string
-  lineHoverColor?: string
+  getLineHoverColor?: (hover: number, arrow: Arrow) => string
   nodeWidth?: number
   nodeHeight?: number
   nodeGap?: number
@@ -41,7 +41,7 @@ export const CallGraph: React.FC<{
   rectFill = "none",
   rectStroke = "black",
   lineColor = "black",
-  lineHoverColor = "red",
+  getLineHoverColor = () => "red",
   renderNode,
   nodeWidth = 100,
   nodeHeight = 50,
@@ -185,7 +185,7 @@ export const CallGraph: React.FC<{
         if (a.s != hover && a.e != hover) {
           return null
         }
-        return renderArrow(i, a, a.s == hover ? "red" : "blue")
+        return renderArrow(i, a, getLineHoverColor(hover, a))
       })}
 
       {Object.values(layout.mid).map((p, i) => (
@@ -220,7 +220,7 @@ export const CallGraphUi: React.FC<{
   rectFill?: string
   rectStroke?: string
   lineColor?: string
-  lineHoverColor?: string
+  getLineHoverColor?: (hover: number, arrow: Arrow) => string
   renderNode?: (node: SvgNode) => React.ReactNode
   showDot?: boolean
   nodeWidth?: number
@@ -234,7 +234,7 @@ export const CallGraphUi: React.FC<{
   rectFill,
   rectStroke,
   lineColor,
-  lineHoverColor,
+  getLineHoverColor,
   renderNode = (node) => node.id,
   showDot = false,
   nodeWidth,
@@ -369,7 +369,7 @@ export const CallGraphUi: React.FC<{
         rectFill={rectFill}
         rectStroke={rectStroke}
         lineColor={lineColor}
-        lineHoverColor={lineHoverColor}
+        getLineHoverColor={getLineHoverColor}
         renderNode={renderNode}
         nodeWidth={nodeWidth}
         nodeHeight={nodeHeight}
