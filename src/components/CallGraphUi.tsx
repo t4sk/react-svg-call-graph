@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useMemo } from "react"
-import { Call, ViewBox, Point, SvgNode } from "../lib/types"
+import { Call, ViewBox, Point, SvgNode, Arrow } from "../lib/types"
 import * as svg from "../lib/svg"
 import styles from "./CallGraphUi.module.css"
 import {
@@ -87,7 +87,46 @@ export const CallGraph: React.FC<{
     }
   }
 
-  console.log(hover)
+  function renderArrow(i: number, a: Arrow, lineColor: string) {
+      if (a.start.y == a.end.y) {
+        return (
+          <SvgArrow
+            key={i}
+            x0={a.start.x}
+            y0={a.start.y}
+            x1={a.end.x}
+            y1={a.end.y}
+            stroke={lineColor}
+          />
+        )
+      }
+
+      if (a.end.x <= a.start.x) {
+          return (
+            <SvgCallBackArrow
+              key={i}
+              x0={a.start.x}
+              y0={a.start.y}
+              x1={a.end.x}
+              y1={a.end.y}
+              xPadd={nodeGap >> 1}
+              yPadd={nodeGap >> 1}
+              stroke={lineColor}
+            />
+          )
+      }
+
+      return (
+        <SvgZigZagArrow
+          key={i}
+          x0={a.start.x}
+          y0={a.start.y}
+          x1={a.end.x}
+          y1={a.end.y}
+          stroke={lineColor}
+        />
+      )
+  }
 
   return (
     <svg
@@ -97,45 +136,10 @@ export const CallGraph: React.FC<{
       style={{ backgroundColor }}
     >
       {layout.arrows.map((a, i) => {
-        const stroke = a.s == hover || a.e == hover ? lineHoverColor : lineColor
-        if (a.start.y == a.end.y) {
-          return (
-            <SvgArrow
-              key={i}
-              x0={a.start.x}
-              y0={a.start.y}
-              x1={a.end.x}
-              y1={a.end.y}
-              stroke={stroke}
-            />
-          )
+        if (a.s == hover || a.e == hover) {
+            return null
         }
-
-        if (a.end.x <= a.start.x) {
-            return (
-              <SvgCallBackArrow
-                key={i}
-                x0={a.start.x}
-                y0={a.start.y}
-                x1={a.end.x}
-                y1={a.end.y}
-                xPadd={nodeGap >> 1}
-                yPadd={nodeGap >> 1}
-                stroke={stroke}
-              />
-            )
-        }
-
-        return (
-          <SvgZigZagArrow
-            key={i}
-            x0={a.start.x}
-            y0={a.start.y}
-            x1={a.end.x}
-            y1={a.end.y}
-            stroke={stroke}
-          />
-        )
+          return renderArrow(i, a, lineColor)
       })}
 
       {layout.nodes.map((nodes, i) => {
@@ -153,7 +157,6 @@ export const CallGraph: React.FC<{
           )
         })
       })}
-
 
       {layout.nodes.map((nodes, i) => {
         return nodes.map((node, j) => {
@@ -180,6 +183,13 @@ export const CallGraph: React.FC<{
             </foreignObject>
           )
         })
+      })}
+
+      {layout.arrows.map((a, i) => {
+        if (a.s != hover && a.e != hover) {
+            return null
+        }
+          return renderArrow(i, a, a.s == hover ? "red" : "blue")
       })}
 
       {Object.values(layout.mid).map((p, i) => (

@@ -20,7 +20,7 @@ function App() {
       nodeGap={60}
       renderNode={(node) => {
         const obj = objs.get(node.id)
-        return node.id
+        // return node.id
         return (
           <span style={{
             width: 140,
