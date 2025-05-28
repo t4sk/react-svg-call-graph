@@ -93,6 +93,7 @@ export const CallGraph: React.FC<{
           x1={a.end.x}
           y1={a.end.y}
           stroke={lineColor}
+          text={a.i}
         />
       )
     }
@@ -108,6 +109,7 @@ export const CallGraph: React.FC<{
           xPadd={nodeGap >> 1}
           yPadd={nodeGap >> 1}
           stroke={lineColor}
+          text={a.i}
         />
       )
     }
@@ -120,6 +122,7 @@ export const CallGraph: React.FC<{
         x1={a.end.x}
         y1={a.end.y}
         stroke={lineColor}
+        text={a.i}
       />
     )
   }
@@ -212,6 +215,7 @@ export type Drag = {
 }
 
 // TODO: fix smoother drag
+// TODO: dynamic node width and height
 export const CallGraphUi: React.FC<{
   calls: Call[]
   backgroundColor: string

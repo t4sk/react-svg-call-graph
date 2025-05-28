@@ -32,6 +32,8 @@ export type Rect = {
 }
 
 export type Arrow = {
+  // Call index
+  i: number
   // Starting node id
   s: number
   // Ending node id

@@ -56,7 +56,7 @@ export function getMidPoints(rect: Rect): MidPoints {
   }
 }
 
-function arrow(map: Map<number, SvgNode>, start: number, end: number): Arrow {
+function arrow(map: Map<number, SvgNode>, i: number, start: number, end: number): Arrow {
   const s = map.get(start) as SvgNode
   const e = map.get(end) as SvgNode
 
@@ -75,6 +75,7 @@ function arrow(map: Map<number, SvgNode>, start: number, end: number): Arrow {
   }
 
   return {
+    i,
     s: s.id,
     e: e.id,
     start: p0,
@@ -210,7 +211,7 @@ export function map(calls: Call[], canvas: Canvas): Layout {
     const neighbors = c.children
     if (neighbors) {
       for (let j = 0; j < neighbors.length; j++) {
-        arrows.push(arrow(map, c.id, neighbors[j]))
+        arrows.push(arrow(map, i, c.id, neighbors[j]))
       }
     }
   }
