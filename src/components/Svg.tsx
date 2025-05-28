@@ -9,6 +9,7 @@ export const SvgRect: React.FC<{
   ry?: number
   fill?: string
   stroke?: string
+  strokeWidth?: number
 }> = ({
   x,
   y,
@@ -16,6 +17,7 @@ export const SvgRect: React.FC<{
   height,
   fill = "none",
   stroke = "black",
+  strokeWidth = 2,
   rx = 8,
   ry = 8,
 }) => {
@@ -27,7 +29,7 @@ export const SvgRect: React.FC<{
       height={height}
       fill={fill}
       stroke={stroke}
-      strokeWidth="2"
+      strokeWidth={strokeWidth}
       rx={rx}
       ry={ry}
     />
@@ -40,9 +42,10 @@ export const SvgArrow: React.FC<{
   x1: number
   y1: number
   stroke?: string
+  strokeWidth?: number
   text?: string | number
   textYGap?: number
-}> = ({ x0, y0, x1, y1, stroke = "black", text, textYGap = -10 }) => {
+}> = ({ x0, y0, x1, y1, stroke = "black", strokeWidth, text, textYGap = -10 }) => {
   const id = `arrow-${stroke}`
   return (
     <>
@@ -65,7 +68,7 @@ export const SvgArrow: React.FC<{
         y2={y1}
         fill="none"
         stroke={stroke}
-        strokeWidth="2"
+        strokeWidth={strokeWidth}
         markerEnd={`url(#${id})`}
       />
       {text ? (
@@ -91,6 +94,7 @@ export const SvgZigZagArrow: React.FC<{
   x1: number
   y1: number
   stroke?: string
+  strokeWidth?: number
   text?: string | number
   textXGap?: number
   textYGap?: number
@@ -100,6 +104,7 @@ export const SvgZigZagArrow: React.FC<{
   x1,
   y1,
   stroke = "black",
+  strokeWidth = 2,
   text,
   textXGap = -14,
   textYGap = -14,
@@ -130,7 +135,7 @@ export const SvgZigZagArrow: React.FC<{
         x2={x1}
         y2={y1}
         stroke={stroke}
-        strokeWidth="2"
+        strokeWidth={strokeWidth}
         markerEnd={`url(#${id})`}
       />
       {text ? (
@@ -158,6 +163,7 @@ export const SvgCallBackArrow: React.FC<{
   xPadd: number
   yPadd: number
   stroke?: string
+  strokeWidth?: number,
   text?: string | number
   textXGap?: number
   textYGap?: number
@@ -169,6 +175,7 @@ export const SvgCallBackArrow: React.FC<{
   xPadd,
   yPadd,
   stroke = "black",
+  strokeWidth = 2,
   text,
   textXGap = 0,
   textYGap = -14,
@@ -195,7 +202,7 @@ export const SvgCallBackArrow: React.FC<{
         x2={x0 + xPadd}
         y2={y0}
         stroke={stroke}
-        strokeWidth="2"
+        strokeWidth={strokeWidth}
       />
       <line
         x1={x0 + xPadd}
@@ -203,7 +210,7 @@ export const SvgCallBackArrow: React.FC<{
         x2={x0 + xPadd}
         y2={y1 + yPadd}
         stroke={stroke}
-        strokeWidth="2"
+        strokeWidth={strokeWidth}
       />
       <line
         x1={x0 + xPadd}
@@ -211,7 +218,7 @@ export const SvgCallBackArrow: React.FC<{
         x2={x1}
         y2={y1 + yPadd}
         stroke={stroke}
-        strokeWidth="2"
+        strokeWidth={strokeWidth}
       />
       <line
         x1={x1}
@@ -219,7 +226,7 @@ export const SvgCallBackArrow: React.FC<{
         x2={x1}
         y2={y1}
         stroke={stroke}
-        strokeWidth="2"
+        strokeWidth={strokeWidth}
         markerEnd={`url(#${id})`}
       />
       {text ? (
