@@ -9,21 +9,22 @@ type TxCall = {
   calls?: TxCall[]
 }
 
-export function dfs(
-  call: TxCall,
-  f: (d: number, call: TxCall) => void
+export function dfs<A>(
+  a: A,
+  get: (a: A) => A[],
+  f: (d: number, a: A) => void
 ) {
-  const q = [[0, call]]
+  const q = [[0, a]]
 
   while (q.length > 0) {
-    const [d, c] = q.pop() as [number, TxCall]
+    const [d, a] = q.pop() as [number, A]
 
-    f(d, c)
+    f(d, a)
 
-    const calls = c?.calls || []
-    if (calls.length > 0) {
-      for (const c of [...calls].reverse()) {
-        q.push([d + 1, c])
+    const next = get(a)
+    if (next.length > 0) {
+      for (const a of [...next].reverse()) {
+        q.push([d + 1, a])
       }
     }
   }
@@ -42,11 +43,12 @@ const ids: Map<string, number> = new Map()
 const flat: [number, TxCall][] = []
 export const objs: Map<number, Obj> = new Map()
 
-dfs(TX.result, (d, c) => {
+dfs<TxCall>(TX.result, c => c?.calls || [], (d, c) => {
   for (const addr of [c.from, c.to]) {
     if (!ids.has(addr)) {
       id += 1
       ids.set(addr, id)
+      // @ts-ignore
       objs.set(id, { address: addr, name: NAMES[addr] || null })
     }
   }

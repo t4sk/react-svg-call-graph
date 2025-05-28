@@ -95,7 +95,7 @@ export const SvgZigZagArrow: React.FC<{
   text?: string | number
   textXGap?: number
   textYGap?: number
-}> = ({ x0, y0, x1, y1, stroke = "black", text, textXGap = -14, textYGap = 0 }) => {
+}> = ({ x0, y0, x1, y1, stroke = "black", text, textXGap = -14, textYGap = -14 }) => {
   const mid = (x0 + x1) >> 1
   const id = `zig-zag-arrow-${stroke}`
 
@@ -127,8 +127,8 @@ export const SvgZigZagArrow: React.FC<{
       />
       {text ? (
         <text
-          x={((x0 + x1) >> 1) + textXGap}
-          y={((y0 + y1) >> 1) + textYGap}
+          x={mid + textXGap}
+          y={y1 + textYGap}
           fontSize="16"
           fill="none"
           stroke={stroke}
@@ -153,7 +153,7 @@ export const SvgCallBackArrow: React.FC<{
   text?: string | number
   textXGap?: number
   textYGap?: number
-}> = ({ x0, y0, x1, y1, xPadd, yPadd, stroke = "black", text, textXGap = 18, textYGap = 0 }) => {
+}> = ({ x0, y0, x1, y1, xPadd, yPadd, stroke = "black", text, textXGap = 0, textYGap = -14 }) => {
   // x0 >= x1 and y1 >= y0
   const id = `call-back-arrow-${stroke}`
   return (
@@ -182,21 +182,21 @@ export const SvgCallBackArrow: React.FC<{
         x1={x0 + xPadd}
         y1={y0}
         x2={x0 + xPadd}
-        y2={y1 - yPadd}
+        y2={y1 + yPadd}
         stroke={stroke}
         strokeWidth="2"
       />
       <line
         x1={x0 + xPadd}
-        y1={y1 - yPadd}
+        y1={y1 + yPadd}
         x2={x1}
-        y2={y1 - yPadd}
+        y2={y1 + yPadd}
         stroke={stroke}
         strokeWidth="2"
       />
       <line
         x1={x1}
-        y1={y1 - yPadd}
+        y1={y1 + yPadd}
         x2={x1}
         y2={y1}
         stroke={stroke}
@@ -205,8 +205,8 @@ export const SvgCallBackArrow: React.FC<{
       />
       {text ? (
         <text
-          x={x0 + xPadd + textXGap}
-          y={((y0 + y1) >> 1) + textYGap}
+          x={x1 + textXGap}
+          y={y1 + yPadd + textYGap}
           fontSize="16"
           fill="none"
           stroke={stroke}

@@ -107,7 +107,7 @@ export const CallGraph: React.FC<{
           x1={a.end.x}
           y1={a.end.y}
           xPadd={nodeGap >> 1}
-          yPadd={nodeGap >> 1}
+          yPadd={-(nodeGap >> 1)}
           stroke={lineColor}
           text={a.i}
         />
@@ -139,6 +139,13 @@ export const CallGraph: React.FC<{
           return null
         }
         return renderArrow(i, a, lineColor)
+      })}
+
+      {layout.arrows.map((a, i) => {
+        if (a.s != hover && a.e != hover) {
+          return null
+        }
+        return renderArrow(i, a, getLineHoverColor(hover, a))
       })}
 
       {layout.nodes.map((nodes, i) => {
@@ -182,13 +189,6 @@ export const CallGraph: React.FC<{
             </foreignObject>
           )
         })
-      })}
-
-      {layout.arrows.map((a, i) => {
-        if (a.s != hover && a.e != hover) {
-          return null
-        }
-        return renderArrow(i, a, getLineHoverColor(hover, a))
       })}
 
       {Object.values(layout.mid).map((p, i) => (
