@@ -23,8 +23,7 @@ export const CallGraph: React.FC<{
   showDot?: boolean
   rectFill?: string
   rectStroke?: string
-  lineColor?: string
-  getLineHoverColor?: (hover: number, arrow: Arrow) => string
+  getLineColor?: (hover: number | null, arrow: Arrow) => string
   nodeWidth?: number
   nodeHeight?: number
   nodeGap?: number
@@ -40,8 +39,7 @@ export const CallGraph: React.FC<{
   showDot = false,
   rectFill = "none",
   rectStroke = "black",
-  lineColor = "black",
-  getLineHoverColor = () => "red",
+  getLineColor = () => "black",
   renderNode,
   nodeWidth = 100,
   nodeHeight = 50,
@@ -138,14 +136,14 @@ export const CallGraph: React.FC<{
         if (a.s == hover || a.e == hover) {
           return null
         }
-        return renderArrow(i, a, lineColor)
+        return renderArrow(i, a, getLineColor(hover, a))
       })}
 
       {layout.arrows.map((a, i) => {
         if (a.s != hover && a.e != hover) {
           return null
         }
-        return renderArrow(i, a, getLineHoverColor(hover, a))
+        return renderArrow(i, a, getLineColor(hover, a))
       })}
 
       {layout.nodes.map((nodes, i) => {
@@ -223,8 +221,7 @@ export const CallGraphUi: React.FC<{
   height: number
   rectFill?: string
   rectStroke?: string
-  lineColor?: string
-  getLineHoverColor?: (hover: number, arrow: Arrow) => string
+  getLineColor?: (hover: number | null, arrow: Arrow) => string
   renderNode?: (node: SvgNode) => React.ReactNode
   showDot?: boolean
   nodeWidth?: number
@@ -237,8 +234,7 @@ export const CallGraphUi: React.FC<{
   height,
   rectFill,
   rectStroke,
-  lineColor,
-  getLineHoverColor,
+  getLineColor,
   renderNode = (node) => node.id,
   showDot = false,
   nodeWidth,
@@ -372,8 +368,7 @@ export const CallGraphUi: React.FC<{
         showDot={showDot}
         rectFill={rectFill}
         rectStroke={rectStroke}
-        lineColor={lineColor}
-        getLineHoverColor={getLineHoverColor}
+        getLineColor={getLineColor}
         renderNode={renderNode}
         nodeWidth={nodeWidth}
         nodeHeight={nodeHeight}

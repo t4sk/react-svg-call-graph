@@ -9,13 +9,19 @@ function App() {
       backgroundColor="pink"
       width={800}
       height={800}
-      rectFill="blue"
+      rectFill="rgba(0, 0, 255, 1)"
       showDot={true}
       nodeWidth={200}
       nodeHeight={50}
       nodeGap={60}
-      getLineHoverColor={(hover, arrow) => {
-        return hover == arrow.s ? "red" : "blue"
+      getLineColor={(hover, arrow) => {
+        if (hover == arrow.s) {
+            return "red"
+        }
+        if (hover == arrow.e) {
+            return "blue"
+        }
+        return "black"
       }}
       renderNode={(node) => {
         const obj = objs.get(node.id)

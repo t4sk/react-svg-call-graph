@@ -117,11 +117,11 @@ export function map(calls: Call[], canvas: Canvas): Layout {
 
     const offset = offsets.get(c.depth) || 0
     // Next depth is shifted up
-    // offsets.set(c.depth + 1, offset - 1)
+    offsets.set(c.depth + 1, offset - 1)
     // Previous depths are shifted up
-    // offsets.set(c.depth - 1, offset)
+    offsets.set(c.depth - 1, offset)
     for (let i = 0; i <= c.depth - 1; i++) {
-      // offsets.set(i, offset)
+      offsets.set(i, offset)
     }
 
     const { height, width, gap } = canvas.node
