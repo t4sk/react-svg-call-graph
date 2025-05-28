@@ -85,7 +85,6 @@ export const SvgArrow: React.FC<{
   )
 }
 
-
 export const SvgZigZagArrow: React.FC<{
   x0: number
   y0: number
@@ -95,7 +94,16 @@ export const SvgZigZagArrow: React.FC<{
   text?: string | number
   textXGap?: number
   textYGap?: number
-}> = ({ x0, y0, x1, y1, stroke = "black", text, textXGap = -14, textYGap = -14 }) => {
+}> = ({
+  x0,
+  y0,
+  x1,
+  y1,
+  stroke = "black",
+  text,
+  textXGap = -14,
+  textYGap = -14,
+}) => {
   const mid = (x0 + x1) >> 1
   const id = `zig-zag-arrow-${stroke}`
 
@@ -153,7 +161,18 @@ export const SvgCallBackArrow: React.FC<{
   text?: string | number
   textXGap?: number
   textYGap?: number
-}> = ({ x0, y0, x1, y1, xPadd, yPadd, stroke = "black", text, textXGap = 0, textYGap = -14 }) => {
+}> = ({
+  x0,
+  y0,
+  x1,
+  y1,
+  xPadd,
+  yPadd,
+  stroke = "black",
+  text,
+  textXGap = 0,
+  textYGap = -14,
+}) => {
   // x0 >= x1 and y1 >= y0
   const id = `call-back-arrow-${stroke}`
   return (

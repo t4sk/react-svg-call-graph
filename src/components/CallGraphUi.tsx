@@ -21,8 +21,8 @@ export const CallGraph: React.FC<{
   mouse: Point | null
   isDragging: boolean
   showDot?: boolean
-  rectFill?: string
-  rectStroke?: string
+  getNodeFillColor?: (hover: number | null, node: SvgNode) => string
+  getNodeStrokeColor?: (hover: number | null, node: SvgNode) => string
   getLineColor?: (hover: number | null, arrow: Arrow) => string
   nodeWidth?: number
   nodeHeight?: number
@@ -37,8 +37,8 @@ export const CallGraph: React.FC<{
   mouse,
   isDragging,
   showDot = false,
-  rectFill = "none",
-  rectStroke = "black",
+  getNodeFillColor = () => "none",
+  getNodeStrokeColor = () => "black",
   getLineColor = () => "black",
   renderNode,
   nodeWidth = 100,
@@ -95,7 +95,6 @@ export const CallGraph: React.FC<{
         />
       )
     }
-
     if (a.end.x <= a.start.x) {
       return (
         <SvgCallBackArrow
@@ -111,7 +110,6 @@ export const CallGraph: React.FC<{
         />
       )
     }
-
     return (
       <SvgZigZagArrow
         key={i}
@@ -155,8 +153,8 @@ export const CallGraph: React.FC<{
               y={node.rect.y}
               width={node.rect.width}
               height={node.rect.height}
-              fill={rectFill}
-              stroke={rectStroke}
+              fill={getNodeFillColor(hover, node)}
+              stroke={getNodeStrokeColor(hover, node)}
             />
           )
         })
@@ -219,8 +217,8 @@ export const CallGraphUi: React.FC<{
   backgroundColor: string
   width: number
   height: number
-  rectFill?: string
-  rectStroke?: string
+  getNodeFillColor?: (hover: number | null, node: SvgNode) => string
+  getNodeStrokeColor?: (hover: number | null, node: SvgNode) => string
   getLineColor?: (hover: number | null, arrow: Arrow) => string
   renderNode?: (node: SvgNode) => React.ReactNode
   showDot?: boolean
@@ -232,8 +230,8 @@ export const CallGraphUi: React.FC<{
   backgroundColor,
   width,
   height,
-  rectFill,
-  rectStroke,
+  getNodeFillColor,
+  getNodeStrokeColor,
   getLineColor,
   renderNode = (node) => node.id,
   showDot = false,
@@ -366,8 +364,8 @@ export const CallGraphUi: React.FC<{
         mouse={mouse}
         isDragging={!!drag}
         showDot={showDot}
-        rectFill={rectFill}
-        rectStroke={rectStroke}
+        getNodeFillColor={getNodeFillColor}
+        getNodeStrokeColor={getNodeStrokeColor}
         getLineColor={getLineColor}
         renderNode={renderNode}
         nodeWidth={nodeWidth}
