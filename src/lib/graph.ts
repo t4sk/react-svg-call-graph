@@ -1,8 +1,7 @@
-import { Call, Graph, Parents } from "./types"
+import { Call, Graph } from "./types"
 
-export function build(calls: Call[]): { graph: Graph; parents: Parents } {
+export function build(calls: Call[]): { graph: Graph; } {
   const graph: Graph = new Map()
-  const parents: Parents = new Map()
 
   for (let i = 0; i < calls.length; i++) {
     const t = calls[i]
@@ -14,17 +13,16 @@ export function build(calls: Call[]): { graph: Graph; parents: Parents } {
     if (t.children) {
       for (const v of t.children) {
         graph.get(t.id)?.add(v)
-        parents.set(v, t.id)
       }
     }
   }
 
-  return { graph, parents }
+  return { graph }
 }
 
 export function bfs(
-  graph: Graph,
   start: number,
+  get: (v: number) => number[] | null,
   f?: (i: number, v: number) => void
 ) {
   const q: [number, number][] = [[0, start]]
@@ -44,7 +42,7 @@ export function bfs(
       f(d, v)
     }
 
-    const neighbors = graph.get(v)
+    const neighbors = get(v)
     if (neighbors) {
       for (const w of neighbors) {
         if (!visited.has(w)) {
@@ -56,18 +54,16 @@ export function bfs(
 }
 
 export function dfs(
-  graph: Graph,
   start: number,
+  get: (v: number) => number[] | null,
   f?: (d: number, v: number) => void
 ): boolean {
-  type Node = { p: number | null; v: number }
-
-  const q: Node[] = [{ p: null, v: start }]
+  const q: [number | null, number][] = [[null, start]]
   const visited: Set<number> = new Set()
   const path: number[] = []
 
   while (q.length > 0) {
-    const { p, v } = q.pop() as Node
+    const [p, v] = q.pop() as [number | null, number]
 
     // Cycle detected - invalid DAG
     if (visited.has(v)) {
@@ -87,10 +83,10 @@ export function dfs(
       f(path.length - 1, v)
     }
 
-    const neighbors = graph.get(v)
+    const neighbors = get(v)
     if (neighbors) {
       for (const w of [...neighbors].reverse()) {
-        q.push({ p: v, v: w })
+        q.push([v, w])
       }
     }
   }

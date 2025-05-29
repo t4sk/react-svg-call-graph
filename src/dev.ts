@@ -14,7 +14,7 @@ export function dfs<A>(
   get: (a: A) => A[],
   f: (d: number, a: A) => void
 ) {
-  const q = [[0, a]]
+  const q: [number, A][] = [[0, a]]
 
   while (q.length > 0) {
     const [d, a] = q.pop() as [number, A]

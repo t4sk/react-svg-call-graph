@@ -9,8 +9,6 @@ export type Call = {
 // Directed graph
 export type Graph = Map<number, Set<number>>
 
-export type Parents = Map<number, number>
-
 // SVG
 export type ViewBox = {
   x: number
