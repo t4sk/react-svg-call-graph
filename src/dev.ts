@@ -1,4 +1,5 @@
 import { Call } from "./lib/types"
+import { dfs } from "./lib/graph"
 import TX from "../tmp/tx.json"
 import NAMES from "../tmp/names.json"
 
@@ -9,32 +10,10 @@ type TxCall = {
   calls?: TxCall[]
 }
 
-export function dfs<A>(
-  a: A,
-  get: (a: A) => A[],
-  f: (d: number, a: A) => void
-) {
-  const q: [number, A][] = [[0, a]]
-
-  while (q.length > 0) {
-    const [d, a] = q.pop() as [number, A]
-
-    f(d, a)
-
-    const next = get(a)
-    if (next.length > 0) {
-      for (const a of [...next].reverse()) {
-        q.push([d + 1, a])
-      }
-    }
-  }
-}
-
 export type Obj = {
   address: string
   name: string | null
 }
-
 
 // DFS to flatten tx calls
 let id = 0
@@ -43,21 +22,30 @@ const ids: Map<string, number> = new Map()
 const flat: [number, TxCall][] = []
 export const objs: Map<number, Obj> = new Map()
 
-dfs<TxCall>(TX.result, c => c?.calls || [], (d, c) => {
-  for (const addr of [c.from, c.to]) {
-    if (!ids.has(addr)) {
-      id += 1
-      ids.set(addr, id)
-      // @ts-ignore
-      objs.set(id, { address: addr, name: NAMES[addr] || null })
+dfs<TxCall>(
+  TX.result,
+  (c) => c?.calls || [],
+  (d, c) => {
+    for (const addr of [c.from, c.to]) {
+      if (!ids.has(addr)) {
+        id += 1
+        ids.set(addr, id)
+        // @ts-ignore
+        objs.set(id, { address: addr, name: NAMES[addr] || null })
+      }
     }
+    flat.push([d, c])
   }
-  flat.push([d, c])
-})
+)
 
-export const calls: Call[] = [{
-  id: 1, parent: null, depth: 0, children: [2],
-}]
+export const calls: Call[] = [
+  {
+    id: 1,
+    parent: null,
+    depth: 0,
+    children: [2],
+  },
+]
 
 for (const [d, c] of flat) {
   calls.push({
@@ -67,7 +55,7 @@ for (const [d, c] of flat) {
     parent: ids.get(c.from),
     depth: d + 1,
     // @ts-ignore
-    children: (c.calls ||[]).map(c => ids.get(c.to)),
+    children: (c.calls || []).map((c) => ids.get(c.to)),
   })
 }
 
