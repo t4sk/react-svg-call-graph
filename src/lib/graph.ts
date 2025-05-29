@@ -1,23 +1,28 @@
-import { Call, Graph } from "./types"
+import { Call, Neighbors, Graph } from "./types"
 
-export function build(calls: Call[]): { graph: Graph; } {
-  const graph: Graph = new Map()
+export function build(calls: Call[]): Graph {
+  const inbound: Neighbors = new Map()
+  const outbound: Neighbors = new Map()
 
   for (let i = 0; i < calls.length; i++) {
-    const t = calls[i]
+    const c = calls[i]
 
-    if (!graph.has(t.id)) {
-      graph.set(t.id, new Set())
+    if (!outbound.has(c.id)) {
+      outbound.set(c.id, new Set())
     }
 
-    if (t.children) {
-      for (const v of t.children) {
-        graph.get(t.id)?.add(v)
+    if (c.children) {
+      for (const v of c.children) {
+        if (!inbound.has(v)) {
+          inbound.set(v, new Set())
+        }
+        inbound.get(v)?.add(c.id)
+        outbound.get(c.id)?.add(v)
       }
     }
   }
 
-  return { graph }
+  return { inbound, outbound }
 }
 
 export function bfs(

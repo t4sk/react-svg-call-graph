@@ -1,6 +1,8 @@
 import { CallGraphUi } from "./components/CallGraphUi"
-
+import { build } from "./lib/graph"
 import { calls, objs } from "./dev"
+
+const graph = build(calls)
 
 function App() {
   return (
@@ -17,8 +19,7 @@ function App() {
         if (hover == null) {
           return "rgba(0, 0, 255, 1)"
         }
-        // TODO: Need set of parents and childrens to highlight all adjacent nodes
-        if (hover == node.id) {
+        if (hover == node.id || graph.inbound.get(hover)?.has(node.id) || graph.outbound.get(hover)?.has(node.id)) {
           return "rgba(0, 0, 255, 1)"
         }
         return "rgba(0, 0, 255, 0.3)"

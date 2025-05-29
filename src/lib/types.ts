@@ -7,7 +7,14 @@ export type Call = {
 }
 
 // Directed graph
-export type Graph = Map<number, Set<number>>
+export type Neighbors = Map<number, Set<number>>
+
+export type Graph = {
+  // Child => parents
+  inbound: Neighbors,
+  // Parent => children
+  outbound: Neighbors
+}
 
 // SVG
 export type ViewBox = {
