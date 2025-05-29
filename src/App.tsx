@@ -26,13 +26,16 @@ function App() {
       }}
       getNodeStrokeColor={(hover, node) => "black"}
       getLineColor={(hover, arrow) => {
+        if (hover == null) {
+          return "black"
+        }
         if (hover == arrow.s) {
           return "red"
         }
         if (hover == arrow.e) {
           return "blue"
         }
-        return "black"
+        return "rgba(0, 0, 0, 0.2)"
       }}
       renderNode={(node) => {
         const obj = objs.get(node.id)
