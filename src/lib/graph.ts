@@ -7,22 +7,18 @@ export function build(calls: Call[]): Graph {
   for (let i = 0; i < calls.length; i++) {
     const c = calls[i]
 
-    if (!inbound.has(c.id)) {
-      inbound.set(c.id, new Set())
+    if (!inbound.has(c.dst)) {
+      inbound.set(c.dst, new Set())
     }
 
-    if (!outbound.has(c.id)) {
-      outbound.set(c.id, new Set())
-    }
+    if (c.src) {
+      inbound.get(c.dst)?.add(c.src)
 
-    if (c.parent) {
-      inbound.get(c.id)?.add(c.parent)
-    }
-
-    if (c.children) {
-      for (const v of c.children) {
-        outbound.get(c.id)?.add(v)
+      if (!outbound.has(c.src)) {
+        outbound.set(c.src, new Set())
       }
+
+      outbound.get(c.src)?.add(c.dst)
     }
   }
 

@@ -1,7 +1,7 @@
 // Call graph
 export type Call = {
-  id: number
-  parent: number | null
+  src: number | null
+  dst: number
   depth: number
   children: number[] | null
 }

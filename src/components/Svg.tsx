@@ -45,7 +45,16 @@ export const SvgArrow: React.FC<{
   strokeWidth?: number
   text?: string | number
   textYGap?: number
-}> = ({ x0, y0, x1, y1, stroke = "black", strokeWidth, text, textYGap = -10 }) => {
+}> = ({
+  x0,
+  y0,
+  x1,
+  y1,
+  stroke = "black",
+  strokeWidth,
+  text,
+  textYGap = -10,
+}) => {
   const id = `arrow-${stroke}`
   return (
     <>
@@ -163,7 +172,7 @@ export const SvgCallBackArrow: React.FC<{
   xPadd: number
   yPadd: number
   stroke?: string
-  strokeWidth?: number,
+  strokeWidth?: number
   text?: string | number
   textXGap?: number
   textYGap?: number

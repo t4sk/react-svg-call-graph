@@ -4,6 +4,9 @@ import { calls, objs } from "./dev"
 
 const graph = build(calls)
 
+console.log(calls, graph)
+
+// TODO: fix incorrect inbounds, outbounds and depth? BorrowLogic?
 function App() {
   return (
     <CallGraphUi
@@ -19,6 +22,7 @@ function App() {
         if (hover == null) {
           return "rgba(0, 0, 255, 1)"
         }
+        // console.log(hover, node.id, graph.inbound.get(hover))
         if (hover == node.id || graph.inbound.get(hover)?.has(node.id) || graph.outbound.get(hover)?.has(node.id)) {
           return "rgba(0, 0, 255, 1)"
         }
@@ -39,7 +43,7 @@ function App() {
       }}
       renderNode={(node) => {
         const obj = objs.get(node.id)
-        // return node.id
+        return node.id
         return (
           <span
             style={{
@@ -50,7 +54,7 @@ function App() {
               textAlign: "center",
             }}
           >
-            {obj?.name || obj?.address || node.id}
+              {node.id} - {obj?.address || obj?.name}
           </span>
         )
       }}

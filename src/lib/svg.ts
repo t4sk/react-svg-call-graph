@@ -110,7 +110,7 @@ export function map(calls: Call[], canvas: Canvas): Layout {
   for (let i = 0; i < calls.length; i++) {
     const c = calls[i]
 
-    if (map.has(c.id)) {
+    if (map.has(c.dst)) {
       dup += 1
       continue
     }
@@ -133,7 +133,7 @@ export function map(calls: Call[], canvas: Canvas): Layout {
     }
     const mid = getMidPoints(rect)
     const node = {
-      id: c.id,
+      id: c.dst,
       rect,
       mid,
     }
@@ -142,7 +142,7 @@ export function map(calls: Call[], canvas: Canvas): Layout {
       nodes.push([])
     }
     nodes[c.depth].push(node)
-    map.set(c.id, node)
+    map.set(c.dst, node)
 
     while (ys.length <= c.depth) {
       ys.push([])
@@ -208,8 +208,10 @@ export function map(calls: Call[], canvas: Canvas): Layout {
   const arrows: Arrow[] = []
   for (let i = 0; i < calls.length; i++) {
     const c = calls[i]
-    if (c.parent) {
-        arrows.push(arrow(map, i, c.parent, c.id))
+    if (c.children) {
+      for (const e of c.children) {
+        arrows.push(arrow(map, i, c.dst, e))
+      }
     }
   }
 
