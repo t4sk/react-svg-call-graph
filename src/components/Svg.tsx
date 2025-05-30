@@ -44,6 +44,7 @@ export const SvgArrow: React.FC<{
   stroke?: string
   strokeWidth?: number
   text?: string | number
+  textXGap?: number
   textYGap?: number
 }> = ({
   x0,
@@ -53,6 +54,7 @@ export const SvgArrow: React.FC<{
   stroke = "black",
   strokeWidth,
   text,
+  textXGap = 0,
   textYGap = -10,
 }) => {
   const id = `arrow-${stroke}`
@@ -82,7 +84,7 @@ export const SvgArrow: React.FC<{
       />
       {text ? (
         <text
-          x={(x0 + x1) >> 1}
+          x={((x0 + x1) >> 1) + textXGap}
           y={y0 + textYGap}
           fontSize="16"
           fill="none"
