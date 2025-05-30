@@ -208,10 +208,8 @@ export function map(calls: Call[], canvas: Canvas): Layout {
   const arrows: Arrow[] = []
   for (let i = 0; i < calls.length; i++) {
     const c = calls[i]
-    if (c.children) {
-      for (const e of c.children) {
-        arrows.push(arrow(map, i, c.dst, e))
-      }
+    if (c.src) {
+      arrows.push(arrow(map, i, c.src, c.dst))
     }
   }
 

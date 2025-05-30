@@ -3,7 +3,6 @@ export type Call = {
   src: number | null
   dst: number
   depth: number
-  children: number[] | null
 }
 
 // Directed graph

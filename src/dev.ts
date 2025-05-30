@@ -45,7 +45,6 @@ export const calls: Call[] = [
     src: null,
     dst: 1,
     depth: 0,
-    children: [2],
   },
 ]
 
@@ -56,8 +55,6 @@ for (const [d, c] of flat) {
     // @ts-ignore
     dst: ids.get(c.to),
     depth: d + 1,
-    // @ts-ignore
-    children: (c.calls || []).map((c) => ids.get(c.to)),
   })
 }
 
