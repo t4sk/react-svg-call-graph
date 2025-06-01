@@ -1,7 +1,7 @@
 import React from "react"
 
 const FONT = "sans-serif"
-const FONT_SIZE = 20
+const FONT_SIZE = 18
 
 export const SvgRect: React.FC<{
   x: number
@@ -95,6 +95,7 @@ export const SvgArrow: React.FC<{
           stroke={stroke}
           textAnchor="middle"
           dominantBaseline="baseline"
+          textRendering="optimizeLegibility"
         >
           {text}
         </text>
@@ -163,6 +164,7 @@ export const SvgZigZagArrow: React.FC<{
           stroke={stroke}
           textAnchor="middle"
           dominantBaseline="middle"
+          textRendering="optimizeLegibility"
         >
           {text}
         </text>
@@ -255,6 +257,7 @@ export const SvgCallBackArrow: React.FC<{
           stroke={stroke}
           textAnchor="middle"
           dominantBaseline="middle"
+          textRendering="optimizeLegibility"
         >
           {text}
         </text>

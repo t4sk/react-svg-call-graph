@@ -17,7 +17,7 @@ function App() {
       nodeWidth={200}
       nodeHeight={50}
       nodeXGap={100}
-      nodeYGap={50}
+      nodeYGap={60}
       getNodeFillColor={(hover, node) => {
         if (hover == null) {
           return "rgba(120, 0, 255, 1)"

@@ -10,6 +10,8 @@ import {
 } from "./Svg"
 import { search } from "../lib/utils"
 
+const TEXT_GAP = -30
+
 export const CallGraph: React.FC<{
   calls: Call[]
   backgroundColor: string
@@ -100,7 +102,7 @@ export const CallGraph: React.FC<{
           y1={a.end.y}
           stroke={lineColor}
           text={a.i}
-          textYGap={offset * (-30)}
+          textYGap={offset * TEXT_GAP}
         />
       )
     }
@@ -116,7 +118,7 @@ export const CallGraph: React.FC<{
           yPadd={-(nodeYGap >> 1)}
           stroke={lineColor}
           text={a.i}
-          textYGap={offset * (-30)}
+          textYGap={offset * TEXT_GAP}
         />
       )
     }
@@ -129,7 +131,7 @@ export const CallGraph: React.FC<{
         y1={a.end.y}
         stroke={lineColor}
         text={a.i}
-        textXGap={offset * (-30)}
+        textXGap={offset * TEXT_GAP}
       />
     )
   }
