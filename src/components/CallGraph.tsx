@@ -24,7 +24,8 @@ export const CallGraph: React.FC<{
   getLineColor?: (hover: number | null, arrow: Arrow) => string
   nodeWidth?: number
   nodeHeight?: number
-  nodeGap?: number
+  nodeXGap?: number
+  nodeYGap?: number
   renderNode: (node: SvgNode) => React.ReactNode
 }> = ({
   calls,
@@ -41,7 +42,8 @@ export const CallGraph: React.FC<{
   renderNode,
   nodeWidth = 100,
   nodeHeight = 50,
-  nodeGap = 60,
+  nodeXGap = 50,
+  nodeYGap = 50,
 }) => {
   const layout = useMemo(() => {
     return svg.map(calls, {
@@ -54,10 +56,13 @@ export const CallGraph: React.FC<{
       node: {
         width: nodeWidth,
         height: nodeHeight,
-        gap: nodeGap,
+        gapX: nodeXGap,
+        gapY: nodeYGap,
       },
     })
   }, [calls, width, height])
+
+  const overlaps = svg.overlaps(layout.arrows)
 
   const svgX = mouse
     ? svg.getViewBoxX(width, mouse.x, viewBox.width, viewBox.x)
@@ -81,6 +86,10 @@ export const CallGraph: React.FC<{
 
   function renderArrow(i: number, a: Arrow, lineColor: string) {
     // TODO: reposition overlapping texts
+    const key = `${a.s},${a.e}`
+    const offset = overlaps.get(key) || 0
+    overlaps.set(key, offset > 0 ? offset - 1 : 0)
+
     if (a.start.y == a.end.y) {
       return (
         <SvgArrow
@@ -91,6 +100,7 @@ export const CallGraph: React.FC<{
           y1={a.end.y}
           stroke={lineColor}
           text={a.i}
+          textYGap={offset * (-30)}
         />
       )
     }
@@ -102,10 +112,11 @@ export const CallGraph: React.FC<{
           y0={a.start.y}
           x1={a.end.x}
           y1={a.end.y}
-          xPadd={nodeGap >> 1}
-          yPadd={-(nodeGap >> 1)}
+          xPadd={nodeXGap >> 1}
+          yPadd={-(nodeYGap >> 1)}
           stroke={lineColor}
           text={a.i}
+          textYGap={offset * (-30)}
         />
       )
     }
@@ -118,6 +129,7 @@ export const CallGraph: React.FC<{
         y1={a.end.y}
         stroke={lineColor}
         text={a.i}
+        textXGap={offset * (-30)}
       />
     )
   }

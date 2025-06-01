@@ -32,7 +32,8 @@ export const CallGraphUi: React.FC<{
   showDot?: boolean
   nodeWidth?: number
   nodeHeight?: number
-  nodeGap?: number
+  nodeXGap?: number
+  nodeYGap?: number
 }> = ({
   calls,
   backgroundColor,
@@ -45,7 +46,8 @@ export const CallGraphUi: React.FC<{
   showDot = false,
   nodeWidth,
   nodeHeight,
-  nodeGap,
+  nodeXGap,
+  nodeYGap,
 }) => {
   const ref = useRef<HTMLDivElement | null>(null)
   const [drag, setDrag] = useState<Drag | null>(null)
@@ -178,7 +180,8 @@ export const CallGraphUi: React.FC<{
         renderNode={renderNode}
         nodeWidth={nodeWidth}
         nodeHeight={nodeHeight}
-        nodeGap={nodeGap}
+        nodeXGap={nodeXGap}
+        nodeYGap={nodeYGap}
       />
       {drag ? (
         <div

@@ -16,15 +16,16 @@ function App() {
       showDot={true}
       nodeWidth={200}
       nodeHeight={50}
-      nodeGap={60}
+      nodeXGap={100}
+      nodeYGap={50}
       getNodeFillColor={(hover, node) => {
         if (hover == null) {
-          return "rgba(0, 0, 255, 1)"
+          return "rgba(120, 0, 255, 1)"
         }
         if (hover == node.id || graph.inbound.get(hover)?.has(node.id) || graph.outbound.get(hover)?.has(node.id)) {
-          return "rgba(0, 0, 255, 1)"
+          return "rgba(120, 0, 255, 1)"
         }
-        return "rgba(0, 0, 255, 0.3)"
+        return "rgba(120, 0, 255, 0.3)"
       }}
       getNodeStrokeColor={(hover, node) => "black"}
       getLineColor={(hover, arrow) => {
@@ -32,10 +33,10 @@ function App() {
           return "black"
         }
         if (hover == arrow.s) {
-          return "red"
+          return "blue"
         }
         if (hover == arrow.e) {
-          return "blue"
+          return "red"
         }
         return "rgba(0, 0, 0, 0.2)"
       }}

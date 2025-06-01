@@ -1,5 +1,8 @@
 import React from "react"
 
+const FONT = "sans-serif"
+const FONT_SIZE = 20
+
 export const SvgRect: React.FC<{
   x: number
   y: number
@@ -86,8 +89,9 @@ export const SvgArrow: React.FC<{
         <text
           x={((x0 + x1) >> 1) + textXGap}
           y={y0 + textYGap}
-          fontSize="16"
-          fill="none"
+          fontFamily={FONT}
+          fontSize={FONT_SIZE}
+          fill={stroke}
           stroke={stroke}
           textAnchor="middle"
           dominantBaseline="baseline"
@@ -153,8 +157,9 @@ export const SvgZigZagArrow: React.FC<{
         <text
           x={mid + textXGap}
           y={y1 + textYGap}
-          fontSize="16"
-          fill="none"
+          fontFamily={FONT}
+          fontSize={FONT_SIZE}
+          fill={stroke}
           stroke={stroke}
           textAnchor="middle"
           dominantBaseline="middle"
@@ -244,8 +249,9 @@ export const SvgCallBackArrow: React.FC<{
         <text
           x={x1 + textXGap}
           y={y1 + yPadd + textYGap}
-          fontSize="16"
-          fill="none"
+          fontFamily={FONT}
+          fontSize={FONT_SIZE}
+          fill={stroke}
           stroke={stroke}
           textAnchor="middle"
           dominantBaseline="middle"

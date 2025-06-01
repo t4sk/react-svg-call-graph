@@ -28,6 +28,15 @@ export function getViewBoxY(
   return math.lin(viewBoxHeight, height, mouseY, viewBoxY)
 }
 
+export function isInside(p: Point, rect: Rect): boolean {
+  return (
+    p.x >= rect.x &&
+    p.x <= rect.x + rect.width &&
+    p.y >= rect.y &&
+    p.y <= rect.y + rect.height
+  )
+}
+
 export function getMidPoints(rect: Rect): MidPoints {
   const midWidth = rect.width >> 1
   const midHeight = rect.height >> 1
@@ -83,15 +92,6 @@ function arrow(map: Map<number, SvgNode>, i: number, start: number, end: number)
   }
 }
 
-export function isInside(p: Point, rect: Rect): boolean {
-  return (
-    p.x >= rect.x &&
-    p.x <= rect.x + rect.width &&
-    p.y >= rect.y &&
-    p.y <= rect.y + rect.height
-  )
-}
-
 export function map(calls: Call[], canvas: Canvas): Layout {
   const nodes: SvgNode[][] = []
   const map: Map<number, SvgNode> = new Map()
@@ -124,10 +124,10 @@ export function map(calls: Call[], canvas: Canvas): Layout {
       offsets.set(i, offset)
     }
 
-    const { height, width, gap } = canvas.node
+    const { height, width, gapX, gapY } = canvas.node
     const rect = {
-      x: (width >> 1) + c.depth * (width + gap),
-      y: (height >> 1) + (i + offset - dup) * (height + gap),
+      x: (width >> 1) + c.depth * (width + gapX),
+      y: (height >> 1) + (i + offset - dup) * (height + gapY),
       width: width,
       height: height,
     }
@@ -232,4 +232,14 @@ export function map(calls: Call[], canvas: Canvas): Layout {
     xs,
     ys,
   }
+}
+
+export function overlaps(arrows: Arrow[]): Map<string, number> {
+  const m: Map<string, number> = new Map()
+  for (let i = 0; i < arrows.length; i++) {
+    const a = arrows[i]
+    const key = `${a.s},${a.e}`
+    m.set(key, (m.get(key) ?? 0) + 1)
+  }
+  return m
 }
