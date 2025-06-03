@@ -8,6 +8,7 @@ export function lin(dy: number, dx: number, x: number, y0: number): number {
   return (dy / dx) * x + y0
 }
 
+// Polyline interpolation
 export function poly(points: Point[], t: number): Point {
   const segs = []
   let len = 0
