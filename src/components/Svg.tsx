@@ -5,6 +5,33 @@ import {Point} from "../lib/types"
 const FONT = "sans-serif"
 const FONT_SIZE = 18
 
+export type ArrowType = "arrow" | "zigzag" | "callback"
+
+export function poly(type: ArrowType, p0: Point, p1: Point, xPadd: number = 0, yPadd: number = 0): Point[] {
+  switch (type) {
+    case "zigzag": {
+      const mid = (p0.x + p1.x) >> 1
+      return [
+        p0,
+        { x: mid, y: p0.y },
+        { x: mid, y: p1.y },
+        p1
+      ]
+    }
+    case "callback": {
+      return [
+        p0,
+        { x: p0.x + xPadd, y: p0.y },
+        { x: p0.x + xPadd, y: p1.y + yPadd},
+        { x: p1.x, y: p1.y + yPadd},
+        p1
+      ]
+    }
+    default:
+      return [p0, p1]
+  }
+}
+
 export const SvgRect: React.FC<{
   x: number
   y: number

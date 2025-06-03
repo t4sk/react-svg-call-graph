@@ -8,10 +8,9 @@ export function lin(dy: number, dx: number, x: number, y0: number): number {
   return (dy / dx) * x + y0
 }
 
-// Polyline interpolation
-export function poly(points: Point[], t: number): Point {
+export function len(points: Point[]): [number, number[]] {
   const segs = []
-  let len = 0
+  let l = 0
   for (let i = 0; i < points.length - 1; i++) {
     const p0 = points[i]
     const p1 = points[i + 1]
@@ -19,10 +18,17 @@ export function poly(points: Point[], t: number): Point {
     const dy = p0.y - p1.y
     const d = Math.sqrt(dx*dx + dy*dy)
     segs.push(d)
-    len += d
+    l += d
   }
 
-  const d = t * len
+  return [l, segs]
+}
+
+// Polyline interpolation
+export function perp(points: Point[], t: number): Point {
+  const [l, segs] = len(points)
+
+  const d = t * l
   let a = 0
   for (let i = 0; i < segs.length; i++) {
     const s = segs[i]

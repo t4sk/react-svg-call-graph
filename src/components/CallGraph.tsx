@@ -7,7 +7,9 @@ import {
   SvgArrow,
   SvgZigZagArrow,
   SvgCallBackArrow,
+  poly,
 } from "./Svg"
+import * as math from "../lib/math"
 import { search } from "../lib/utils"
 
 const TEXT_GAP = -30
@@ -94,7 +96,11 @@ export const CallGraph: React.FC<{
     overlaps.set(key, offset > 0 ? offset - 1 : 0)
 
     if (a.start.y == a.end.y) {
+      let points = [0, 0.25, 0.5, 0.75, 1].map(t => math.perp(poly("arrow", a.start, a.end), t))
+
       return (
+        <>
+          {points.map(p => (<SvgDot x={p.x} y={p.y} radius={4} />))}
         <SvgArrow
           key={i}
           x0={a.start.x}
@@ -105,10 +111,16 @@ export const CallGraph: React.FC<{
           text={a.i}
           textYGap={offset * TEXT_GAP}
         />
+        </>
       )
     }
     if (a.end.x <= a.start.x) {
+      let points = [0, 0.25, 0.5, 0.75, 1].map(t => math.perp(poly("callback", a.start, a.end, nodeXGap / 2, - nodeYGap / 2), t))
+      points = []
+
       return (
+        <>
+          {points.map(p => (<SvgDot x={p.x} y={p.y} radius={4} />))}
         <SvgCallBackArrow
           key={i}
           x0={a.start.x}
@@ -121,9 +133,14 @@ export const CallGraph: React.FC<{
           text={a.i}
           textYGap={offset * TEXT_GAP}
         />
+        </>
       )
     }
+
+    let points = [0, 0.25, 0.5, 0.75, 1].map(t => math.perp(poly("zigzag", a.start, a.end), t))
     return (
+        <>
+          {points.map(p => (<SvgDot x={p.x} y={p.y} radius={4} />))}
       <SvgZigZagArrow
         key={i}
         x0={a.start.x}
@@ -134,6 +151,7 @@ export const CallGraph: React.FC<{
         text={a.i}
         textXGap={offset * TEXT_GAP}
       />
+      </>
     )
   }
 
