@@ -1,4 +1,6 @@
 import React from "react"
+import * as math from "../lib/math"
+import {Point} from "../lib/types"
 
 const FONT = "sans-serif"
 const FONT_SIZE = 18

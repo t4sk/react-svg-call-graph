@@ -18,8 +18,10 @@ export type Drag = {
 }
 
 // TODO: click on node shows popup of incoming and outgoing calls
-// TODO: fix smoother drag
+// TODO: hover line?
+// TODO: quadtree
 // TODO: dynamic node width and height
+// TODO: fix smoother drag
 export const CallGraphUi: React.FC<{
   calls: Call[]
   backgroundColor: string

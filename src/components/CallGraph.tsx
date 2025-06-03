@@ -73,6 +73,7 @@ export const CallGraph: React.FC<{
     ? svg.getViewBoxY(height, mouse.y, viewBox.height, viewBox.y)
     : 0
 
+  // TODO: use quadtree?
   let hover = null
   if (!isDragging && mouse && svgX != 0 && svgY != 0) {
     const i = (search(layout.xs, (x) => x, svgX) || 0) >> 1
