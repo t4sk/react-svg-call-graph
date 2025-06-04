@@ -1,10 +1,5 @@
 import {Point} from "./types"
 
-export const ZERO: Point = {
-  x: 0,
-  y: 0
-}
-
 export function lerp(a: number, b: number, t: number): number {
   return a * (1 - t) + t * b
 }

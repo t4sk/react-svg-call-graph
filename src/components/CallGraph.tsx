@@ -12,13 +12,13 @@ import {
   poly,
 } from "./Svg"
 import * as math from "../lib/math"
-import {ZERO} from "../lib/math"
 import { search } from "../lib/utils"
 
 const TEXT_GAP = -30
-const STEP = 40
+const STEP = 50
 const MIN_STEPS = 4
-const R = 10
+// R >= STEP / 2?
+const R = 25
 
 function sample(type: ArrowType, a: Arrow, xPadd: number = 0, yPadd: number = 0): Point[] {
     const ps = poly(type, a.start, a.end, xPadd, yPadd)
@@ -107,12 +107,12 @@ export const CallGraph: React.FC<{
     }
 
     for (const a of layout.arrows) {
+      // TODO: cache
       const points = sample(getArrowType(a), a, nodeXGap / 2, - nodeYGap / 2)
       for (const p of points) {
-        if (math.dist(p, ZERO) < R) {
-          const d = math.dist(p, ZERO)
-          console.log("D", d)
-          console.log(a)
+        if (math.dist(p, {x: svgX, y: svgY}) < R) {
+          const d = math.dist(p, {x: svgX, y: svgY})
+          console.log("D", d, a.s, a.e)
         }
       }
     }
@@ -123,47 +123,60 @@ export const CallGraph: React.FC<{
     const offset = overlaps.get(key) || 0
     overlaps.set(key, offset > 0 ? offset - 1 : 0)
 
+    const points = sample(getArrowType(a), a, nodeXGap / 2, - nodeYGap / 2)
+
     if (a.start.y == a.end.y) {
       return (
-        <SvgArrow
-          key={i}
-          x0={a.start.x}
-          y0={a.start.y}
-          x1={a.end.x}
-          y1={a.end.y}
-          stroke={lineColor}
-          text={a.i}
-          textYGap={offset * TEXT_GAP}
-        />
+        <>
+          {points.map((p, i) => <SvgDot x={p.x} y={p.y} radius={4} key={i}/>)}
+          <SvgArrow
+            key={i}
+            x0={a.start.x}
+            y0={a.start.y}
+            x1={a.end.x}
+            y1={a.end.y}
+            stroke={lineColor}
+            text={a.i}
+            textYGap={offset * TEXT_GAP}
+          />
+        </>
       )
     }
     if (a.end.x <= a.start.x) {
       return (
-        <SvgCallBackArrow
+        <>
+          {points.map((p, i) => <SvgDot x={p.x} y={p.y} radius={4} key={i}/>)}
+          <SvgCallBackArrow
+            key={i}
+            x0={a.start.x}
+            y0={a.start.y}
+            x1={a.end.x}
+            y1={a.end.y}
+            xPadd={nodeXGap >> 1}
+            yPadd={-(nodeYGap >> 1)}
+            stroke={lineColor}
+            text={a.i}
+            textYGap={offset * TEXT_GAP}
+          />
+        </>
+      )
+    }
+
+
+    return (
+      <>
+        {points.map((p, i) => <SvgDot x={p.x} y={p.y} radius={4} key={i}/>)}
+        <SvgZigZagArrow
           key={i}
           x0={a.start.x}
           y0={a.start.y}
           x1={a.end.x}
           y1={a.end.y}
-          xPadd={nodeXGap >> 1}
-          yPadd={-(nodeYGap >> 1)}
           stroke={lineColor}
           text={a.i}
-          textYGap={offset * TEXT_GAP}
+          textXGap={offset * TEXT_GAP}
         />
-      )
-    }
-    return (
-      <SvgZigZagArrow
-        key={i}
-        x0={a.start.x}
-        y0={a.start.y}
-        x1={a.end.x}
-        y1={a.end.y}
-        stroke={lineColor}
-        text={a.i}
-        textXGap={offset * TEXT_GAP}
-      />
+      </>
     )
   }
 
@@ -235,7 +248,7 @@ export const CallGraph: React.FC<{
         <SvgDot x={p.x} y={p.y} key={i} radius={4} />
       ))}
 
-      {mouse && showDot ? <SvgDot x={svgX} y={svgY} radius={4} /> : null}
+      {mouse && showDot ? <SvgDot x={svgX} y={svgY} radius={R} fill="rgba(255, 0, 0, 0.5)"/> : null}
     </svg>
   )
 }
