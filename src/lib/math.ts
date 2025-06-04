@@ -1,5 +1,10 @@
 import {Point} from "./types"
 
+export const ZERO: Point = {
+  x: 0,
+  y: 0
+}
+
 export function lerp(a: number, b: number, t: number): number {
   return a * (1 - t) + t * b
 }
@@ -8,15 +13,19 @@ export function lin(dy: number, dx: number, x: number, y0: number): number {
   return (dy / dx) * x + y0
 }
 
+export function dist(p0: Point, p1: Point): number {
+    const dx = p0.x - p1.x
+    const dy = p0.y - p1.y
+    return Math.sqrt(dx*dx + dy*dy)
+}
+
 export function len(points: Point[]): [number, number[]] {
   const segs = []
   let l = 0
   for (let i = 0; i < points.length - 1; i++) {
     const p0 = points[i]
     const p1 = points[i + 1]
-    const dx = p0.x - p1.x
-    const dy = p0.y - p1.y
-    const d = Math.sqrt(dx*dx + dy*dy)
+    const d = dist(p0, p1)
     segs.push(d)
     l += d
   }
@@ -50,3 +59,13 @@ export function perp(points: Point[], t: number): Point {
     y: last.y,
   }
 }
+
+// Samples from i = 0 to n
+export function sample<A>(n: number, f: (i: number) => A): A[] {
+  const data = []
+  for (let i = 0; i <= n; i++) {
+    data.push(f(i))
+  }
+  return data
+}
+

@@ -1,11 +1,20 @@
 import React from "react"
-import * as math from "../lib/math"
-import {Point} from "../lib/types"
+import {Arrow, Point} from "../lib/types"
 
 const FONT = "sans-serif"
 const FONT_SIZE = 18
 
 export type ArrowType = "arrow" | "zigzag" | "callback"
+
+export function getArrowType(a: Arrow): ArrowType {
+  if (a.start.y == a.end.y) {
+    return "arrow"
+  }
+  if (a.end.x <= a.start.x) {
+    return "callback"
+  }
+  return "zigzag"
+}
 
 export function poly(type: ArrowType, p0: Point, p1: Point, xPadd: number = 0, yPadd: number = 0): Point[] {
   switch (type) {
