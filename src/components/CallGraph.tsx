@@ -12,7 +12,6 @@ import {
   poly,
 } from "./Svg"
 import * as math from "../lib/math"
-import { search } from "../lib/utils"
 
 const TEXT_GAP = -30
 const STEP = 50
@@ -111,12 +110,9 @@ export const CallGraph: React.FC<{
   let hover: Hover = { node: null, arrows: null }
   if (!isDragging && mouse && svgX != 0 && svgY != 0) {
     const m = { x: svgX, y: svgY }
-    const i = (search(layout.xs, (x) => x, svgX) || 0) >> 1
-    const ys = layout.ys[i]
-    if (ys) {
-      const j = (search(ys, (y) => y, svgY) || 0) >> 1
-      const node = layout.nodes[i][j]
-      if (node && svg.isInside(m, node.rect)) {
+    for (let i = 0; i < layout.nodes.length; i++) {
+      const node = layout.nodes[i]
+      if (svg.isInside(m, node.rect)) {
         hover.node = node.id
       }
     }
@@ -223,47 +219,43 @@ export const CallGraph: React.FC<{
         return renderArrow(i, a, getArrowColor(hover, a))
       })}
 
-      {layout.nodes.map((nodes, i) => {
-        return nodes.map((node, j) => {
-          return (
-            <SvgRect
-              key={`${i}-${j}`}
-              x={node.rect.x}
-              y={node.rect.y}
-              width={node.rect.width}
-              height={node.rect.height}
-              fill={getNodeFillColor(hover, node)}
-              stroke={getNodeStrokeColor(hover, node)}
-            />
-          )
-        })
+      {layout.nodes.map((node, i) => {
+        return (
+          <SvgRect
+            key={i}
+            x={node.rect.x}
+            y={node.rect.y}
+            width={node.rect.width}
+            height={node.rect.height}
+            fill={getNodeFillColor(hover, node)}
+            stroke={getNodeStrokeColor(hover, node)}
+          />
+        )
       })}
 
-      {layout.nodes.map((nodes, i) => {
-        return nodes.map((node, j) => {
-          return (
-            <foreignObject
-              key={`${i}-${j}`}
-              x={node.rect.x}
-              y={node.rect.y}
-              width={node.rect.width}
-              height={node.rect.height}
+      {layout.nodes.map((node, i) => {
+        return (
+          <foreignObject
+            key={i}
+            x={node.rect.x}
+            y={node.rect.y}
+            width={node.rect.width}
+            height={node.rect.height}
+          >
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              <div
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                {renderNode(node)}
-              </div>
-            </foreignObject>
-          )
-        })
+              {renderNode(node)}
+            </div>
+          </foreignObject>
+        )
       })}
 
       {Object.values(layout.mid).map((p, i) => (

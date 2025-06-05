@@ -12,8 +12,8 @@ function App() {
     <CallGraphUi
       calls={calls}
       backgroundColor="pink"
-      width={800}
-      height={800}
+      width={900}
+      height={600}
       showDot={true}
       nodeWidth={200}
       nodeHeight={50}

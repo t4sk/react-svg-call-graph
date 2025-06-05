@@ -4,6 +4,7 @@ import {Arrow, Point} from "../lib/types"
 const FONT = "sans-serif"
 const FONT_SIZE = 18
 
+// TODO: animate line flow
 export type ArrowType = "arrow" | "zigzag" | "callback"
 
 export function getArrowType(a: Arrow): ArrowType {

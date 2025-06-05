@@ -93,12 +93,9 @@ function arrow(map: Map<number, SvgNode>, i: number, start: number, end: number)
 }
 
 export function map(calls: Call[], canvas: Canvas): Layout {
-  const nodes: SvgNode[][] = []
+  const nodes: SvgNode[] = []
   const map: Map<number, SvgNode> = new Map()
 
-  const xs: number[] = []
-  // depth => y positions
-  const ys: number[][] = []
   let xMax = 0
   let yMax = 0
 
@@ -138,38 +135,11 @@ export function map(calls: Call[], canvas: Canvas): Layout {
       mid,
     }
 
-    while (nodes.length <= c.depth) {
-      nodes.push([])
-    }
-    nodes[c.depth].push(node)
+    nodes.push(node)
     map.set(c.dst, node)
 
-    while (ys.length <= c.depth) {
-      ys.push([])
-    }
-
-    if (ys[c.depth].length == 0) {
-      xs.push(mid.left.x, mid.right.x)
-      xMax = Math.max(xMax, mid.right.x)
-    }
-    ys[c.depth].push(mid.top.y, mid.bottom.y)
+    xMax = Math.max(xMax, mid.right.x)
     yMax = Math.max(yMax, mid.bottom.y)
-  }
-
-  // Check xs sorted
-  for (let i = 0; i < xs.length; i++) {
-    if (xs[i] >= xs[i + 1]) {
-      console.warn("x not sorted", i, xs[i], xs[i + 1])
-    }
-  }
-
-  // Check ys sorted
-  for (let i = 0; i < ys.length; i++) {
-    for (let j = 0; j < ys[i].length - 1; j++) {
-      if (ys[i][j] >= ys[i][j + 1]) {
-        console.warn("y not sorted", i, j, ys[i][j], ys[i][j + 1])
-      }
-    }
   }
 
   // Set final positions of the nodes
@@ -177,32 +147,20 @@ export function map(calls: Call[], canvas: Canvas): Layout {
   const y0 = canvas.center.y - (yMax >> 1)
 
   for (let i = 0; i < nodes.length; i++) {
-    for (let j = 0; j < nodes[i].length; j++) {
-      const node = nodes[i][j]
-      const rect = {
-        x: x0 + node.rect.x,
-        y: y0 + node.rect.y,
-        width: node.rect.width,
-        height: node.rect.height,
-      }
-      const mid = getMidPoints(rect)
-      nodes[i][j] = {
-        ...node,
-        rect,
-        mid,
-      }
-      map.set(node.id, nodes[i][j])
+    const node = nodes[i]
+    const rect = {
+      x: x0 + node.rect.x,
+      y: y0 + node.rect.y,
+      width: node.rect.width,
+      height: node.rect.height,
     }
-  }
-
-  for (let i = 0; i < xs.length; i++) {
-    xs[i] += x0
-  }
-
-  for (let i = 0; i < ys.length; i++) {
-    for (let j = 0; j < ys[i].length; j++) {
-      ys[i][j] += y0
+    const mid = getMidPoints(rect)
+    nodes[i] = {
+      ...node,
+      rect,
+      mid,
     }
+    map.set(node.id, nodes[i])
   }
 
   const arrows: Arrow[] = []
@@ -225,12 +183,9 @@ export function map(calls: Call[], canvas: Canvas): Layout {
   return {
     rect,
     mid,
-    boxes: [],
     nodes,
     arrows,
     map,
-    xs,
-    ys,
   }
 }
 
