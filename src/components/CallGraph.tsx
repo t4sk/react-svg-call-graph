@@ -15,6 +15,8 @@ const STEP = 50
 const MIN_STEPS = 4
 // R >= STEP / 2?
 const R = 25
+const BOX_X_PADD = 10
+const BOX_Y_PADD = 10
 
 function sample(
   a: Arrow,
@@ -102,6 +104,9 @@ export const CallGraph: React.FC<{
     ? svg.getViewBoxY(height, mouse.y, viewBox.height, viewBox.y)
     : 0
 
+  const xPadd = nodeXGap / 2
+  const yPadd = -nodeYGap / 2
+
   // TODO: use quadtree?
   let hover: Hover = { node: null, arrows: null }
   if (!isDragging && mouse && svgX != 0 && svgY != 0) {
@@ -113,15 +118,20 @@ export const CallGraph: React.FC<{
       }
     }
 
-    hover.arrows = new Set()
+    if (hover.node == null) {
+      hover.arrows = new Set()
 
-    for (let i = 0; i < layout.arrows.length; i++) {
-      const a = layout.arrows[i]
-      // TODO: cache
-      const points = sample(a, nodeXGap / 2, -nodeYGap / 2)
-      for (let i = 0; i < points.length; i++) {
-        if (math.dist(points[i], m) < R) {
-          hover.arrows.add(getArrowKey(a))
+      for (let i = 0; i < layout.arrows.length; i++) {
+        const a = layout.arrows[i]
+        const box = svg.box(svg.poly(a.type, a.start, a.end, xPadd, yPadd), BOX_X_PADD, BOX_Y_PADD)
+        if (svg.isInside(m, box)) {
+          // TODO: cache
+          const points = sample(a, nodeXGap / 2, -nodeYGap / 2)
+          for (let i = 0; i < points.length; i++) {
+            if (math.dist(points[i], m) < R) {
+              hover.arrows.add(getArrowKey(a))
+            }
+          }
         }
       }
     }

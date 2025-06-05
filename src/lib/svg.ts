@@ -101,6 +101,36 @@ export function poly(type: ArrowType, p0: Point, p1: Point, xPadd: number = 0, y
   }
 }
 
+export function box(points: Point[], xPadd: number = 0, yPadd: number = 0): Rect {
+  let xMin = points[0].x
+  let xMax = points[0].x
+  let yMin = points[0].y
+  let yMax = points[0].y
+
+  for (let i = 1; i < points.length; i++) {
+    const p = points[i]
+    if (p.x < xMin) {
+      xMin = p.x
+    }
+    if (p.y < yMin) {
+      yMin = p.y
+    }
+    if (p.x > xMax) {
+      xMax = p.x
+    }
+    if (p.y > yMax) {
+      yMax = p.y
+    }
+  }
+
+  return {
+    x: xMin - xPadd,
+    y: yMin - yPadd,
+    width: xMax - xMin + 2 * xPadd,
+    height: yMax - yMin + 2 * yPadd
+  }
+}
+
 function arrow(map: Map<number, SvgNode>, i: number, start: number, end: number): Arrow {
   const s = map.get(start) as SvgNode
   const e = map.get(end) as SvgNode
