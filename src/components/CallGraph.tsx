@@ -7,9 +7,6 @@ import {
   SvgArrow,
   SvgZigZagArrow,
   SvgCallBackArrow,
-  ArrowType,
-  getArrowType,
-  poly,
 } from "./Svg"
 import * as math from "../lib/math"
 
@@ -20,12 +17,11 @@ const MIN_STEPS = 4
 const R = 25
 
 function sample(
-  type: ArrowType,
   a: Arrow,
   xPadd: number = 0,
   yPadd: number = 0
 ): Point[] {
-  const ps = poly(type, a.start, a.end, xPadd, yPadd)
+  const ps = svg.poly(a.type, a.start, a.end, xPadd, yPadd)
   const [len] = math.len(ps)
 
   const n = Math.max(len > STEP ? (len / STEP) | 0 : MIN_STEPS, MIN_STEPS)
@@ -122,7 +118,7 @@ export const CallGraph: React.FC<{
     for (let i = 0; i < layout.arrows.length; i++) {
       const a = layout.arrows[i]
       // TODO: cache
-      const points = sample(getArrowType(a), a, nodeXGap / 2, -nodeYGap / 2)
+      const points = sample(a, nodeXGap / 2, -nodeYGap / 2)
       for (let i = 0; i < points.length; i++) {
         if (math.dist(points[i], m) < R) {
           hover.arrows.add(getArrowKey(a))
@@ -136,7 +132,7 @@ export const CallGraph: React.FC<{
     const offset = overlaps.get(key) || 0
     overlaps.set(key, offset > 0 ? offset - 1 : 0)
 
-    const points = sample(getArrowType(a), a, nodeXGap / 2, -nodeYGap / 2)
+    const points = sample(a, nodeXGap / 2, -nodeYGap / 2)
 
     if (a.start.y == a.end.y) {
       return (

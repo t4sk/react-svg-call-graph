@@ -4,6 +4,7 @@ import {
   Rect,
   MidPoints,
   Arrow,
+  ArrowType,
   Canvas,
   SvgNode,
   Layout,
@@ -65,6 +66,41 @@ export function getMidPoints(rect: Rect): MidPoints {
   }
 }
 
+export function getArrowType(p0: Point, p1: Point): ArrowType {
+  if (p0.y == p1.y) {
+    return "arrow"
+  }
+  if (p1.x <= p0.x) {
+    return "callback"
+  }
+  return "zigzag"
+}
+
+export function poly(type: ArrowType, p0: Point, p1: Point, xPadd: number = 0, yPadd: number = 0): Point[] {
+  switch (type) {
+    case "zigzag": {
+      const mid = (p0.x + p1.x) >> 1
+      return [
+        p0,
+        { x: mid, y: p0.y },
+        { x: mid, y: p1.y },
+        p1
+      ]
+    }
+    case "callback": {
+      return [
+        p0,
+        { x: p0.x + xPadd, y: p0.y },
+        { x: p0.x + xPadd, y: p1.y + yPadd},
+        { x: p1.x, y: p1.y + yPadd},
+        p1
+      ]
+    }
+    default:
+      return [p0, p1]
+  }
+}
+
 function arrow(map: Map<number, SvgNode>, i: number, start: number, end: number): Arrow {
   const s = map.get(start) as SvgNode
   const e = map.get(end) as SvgNode
@@ -84,6 +120,7 @@ function arrow(map: Map<number, SvgNode>, i: number, start: number, end: number)
   }
 
   return {
+    type: getArrowType(p0, p1),
     i,
     s: s.id,
     e: e.id,
@@ -198,3 +235,4 @@ export function overlaps(arrows: Arrow[]): Map<string, number> {
   }
   return m
 }
+

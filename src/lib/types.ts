@@ -36,6 +36,7 @@ export type Rect = {
 }
 
 export type Arrow = {
+  type: ArrowType
   // Call index
   i: number
   // Starting node id
@@ -45,6 +46,8 @@ export type Arrow = {
   start: Point
   end: Point
 }
+
+export type ArrowType = "arrow" | "zigzag" | "callback"
 
 export type MidPoints = {
   top: Point
