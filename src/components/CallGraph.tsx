@@ -20,16 +20,30 @@ const MIN_STEPS = 4
 // R >= STEP / 2?
 const R = 25
 
-function sample(type: ArrowType, a: Arrow, xPadd: number = 0, yPadd: number = 0): Point[] {
-    const ps = poly(type, a.start, a.end, xPadd, yPadd)
-    const [len,] = math.len(ps)
+function sample(
+  type: ArrowType,
+  a: Arrow,
+  xPadd: number = 0,
+  yPadd: number = 0
+): Point[] {
+  const ps = poly(type, a.start, a.end, xPadd, yPadd)
+  const [len] = math.len(ps)
 
-    const n = Math.max(len > STEP ? (len / STEP) | 0 : MIN_STEPS, MIN_STEPS)
+  const n = Math.max(len > STEP ? (len / STEP) | 0 : MIN_STEPS, MIN_STEPS)
 
-    return math.sample(n, (i) => {
-      const t = i / n
-      return math.perp(ps, t)
-    })
+  return math.sample(n, (i) => {
+    const t = i / n
+    return math.perp(ps, t)
+  })
+}
+
+export function getArrowKey(a: Arrow): string {
+  return `${a.s},${a.e}`
+}
+
+export type Hover = {
+  node: number | null
+  arrows: Set<string> | null
 }
 
 export const CallGraph: React.FC<{
@@ -41,9 +55,9 @@ export const CallGraph: React.FC<{
   mouse: Point | null
   isDragging: boolean
   showDot?: boolean
-  getNodeFillColor?: (hover: number | null, node: SvgNode) => string
-  getNodeStrokeColor?: (hover: number | null, node: SvgNode) => string
-  getLineColor?: (hover: number | null, arrow: Arrow) => string
+  getNodeFillColor?: (hover: Hover, node: SvgNode) => string
+  getNodeStrokeColor?: (hover: Hover, node: SvgNode) => string
+  getArrowColor?: (hover: Hover, arrow: Arrow) => string
   nodeWidth?: number
   nodeHeight?: number
   nodeXGap?: number
@@ -60,7 +74,7 @@ export const CallGraph: React.FC<{
   showDot = false,
   getNodeFillColor = () => "none",
   getNodeStrokeColor = () => "black",
-  getLineColor = () => "black",
+  getArrowColor = () => "black",
   renderNode,
   nodeWidth = 100,
   nodeHeight = 50,
@@ -94,41 +108,46 @@ export const CallGraph: React.FC<{
     : 0
 
   // TODO: use quadtree?
-  let hover = null
+  let hover: Hover = { node: null, arrows: null }
   if (!isDragging && mouse && svgX != 0 && svgY != 0) {
+    const m = { x: svgX, y: svgY }
     const i = (search(layout.xs, (x) => x, svgX) || 0) >> 1
     const ys = layout.ys[i]
     if (ys) {
       const j = (search(ys, (y) => y, svgY) || 0) >> 1
       const node = layout.nodes[i][j]
-      if (node && svg.isInside({ x: svgX, y: svgY }, node.rect)) {
-        hover = node.id
+      if (node && svg.isInside(m, node.rect)) {
+        hover.node = node.id
       }
     }
 
-    for (const a of layout.arrows) {
+    hover.arrows = new Set()
+
+    for (let i = 0; i < layout.arrows.length; i++) {
+      const a = layout.arrows[i]
       // TODO: cache
-      const points = sample(getArrowType(a), a, nodeXGap / 2, - nodeYGap / 2)
-      for (const p of points) {
-        if (math.dist(p, {x: svgX, y: svgY}) < R) {
-          const d = math.dist(p, {x: svgX, y: svgY})
-          console.log("D", d, a.s, a.e)
+      const points = sample(getArrowType(a), a, nodeXGap / 2, -nodeYGap / 2)
+      for (let i = 0; i < points.length; i++) {
+        if (math.dist(points[i], m) < R) {
+          hover.arrows.add(getArrowKey(a))
         }
       }
     }
   }
 
   function renderArrow(i: number, a: Arrow, lineColor: string) {
-    const key = `${a.s},${a.e}`
+    const key = getArrowKey(a)
     const offset = overlaps.get(key) || 0
     overlaps.set(key, offset > 0 ? offset - 1 : 0)
 
-    const points = sample(getArrowType(a), a, nodeXGap / 2, - nodeYGap / 2)
+    const points = sample(getArrowType(a), a, nodeXGap / 2, -nodeYGap / 2)
 
     if (a.start.y == a.end.y) {
       return (
         <>
-          {points.map((p, i) => <SvgDot x={p.x} y={p.y} radius={4} key={i}/>)}
+          {points.map((p, i) => (
+            <SvgDot x={p.x} y={p.y} radius={4} key={i} />
+          ))}
           <SvgArrow
             key={i}
             x0={a.start.x}
@@ -145,7 +164,9 @@ export const CallGraph: React.FC<{
     if (a.end.x <= a.start.x) {
       return (
         <>
-          {points.map((p, i) => <SvgDot x={p.x} y={p.y} radius={4} key={i}/>)}
+          {points.map((p, i) => (
+            <SvgDot x={p.x} y={p.y} radius={4} key={i} />
+          ))}
           <SvgCallBackArrow
             key={i}
             x0={a.start.x}
@@ -162,10 +183,11 @@ export const CallGraph: React.FC<{
       )
     }
 
-
     return (
       <>
-        {points.map((p, i) => <SvgDot x={p.x} y={p.y} radius={4} key={i}/>)}
+        {points.map((p, i) => (
+          <SvgDot x={p.x} y={p.y} radius={4} key={i} />
+        ))}
         <SvgZigZagArrow
           key={i}
           x0={a.start.x}
@@ -188,17 +210,17 @@ export const CallGraph: React.FC<{
       style={{ backgroundColor }}
     >
       {layout.arrows.map((a, i) => {
-        if (a.s == hover || a.e == hover) {
+        if (a.s == hover.node || a.e == hover.node) {
           return null
         }
-        return renderArrow(i, a, getLineColor(hover, a))
+        return renderArrow(i, a, getArrowColor(hover, a))
       })}
 
       {layout.arrows.map((a, i) => {
-        if (a.s != hover && a.e != hover) {
+        if (a.s != hover.node && a.e != hover.node) {
           return null
         }
-        return renderArrow(i, a, getLineColor(hover, a))
+        return renderArrow(i, a, getArrowColor(hover, a))
       })}
 
       {layout.nodes.map((nodes, i) => {
@@ -248,7 +270,9 @@ export const CallGraph: React.FC<{
         <SvgDot x={p.x} y={p.y} key={i} radius={4} />
       ))}
 
-      {mouse && showDot ? <SvgDot x={svgX} y={svgY} radius={R} fill="rgba(255, 0, 0, 0.5)"/> : null}
+      {mouse && showDot ? (
+        <SvgDot x={svgX} y={svgY} radius={R} fill="rgba(255, 0, 0, 0.5)" />
+      ) : null}
     </svg>
   )
 }

@@ -1,4 +1,5 @@
 import { CallGraphUi } from "./components/CallGraphUi"
+import {getArrowKey} from "./components/CallGraph"
 import { build } from "./lib/graph"
 import { calls, objs } from "./dev"
 
@@ -19,26 +20,36 @@ function App() {
       nodeXGap={100}
       nodeYGap={60}
       getNodeFillColor={(hover, node) => {
-        if (hover == null) {
+        if (hover.node == null) {
           return "rgba(120, 0, 255, 1)"
         }
-        if (hover == node.id || graph.inbound.get(hover)?.has(node.id) || graph.outbound.get(hover)?.has(node.id)) {
+        if (
+          hover.node == node.id ||
+          graph.inbound.get(hover.node)?.has(node.id) ||
+          graph.outbound.get(hover.node)?.has(node.id)
+        ) {
           return "rgba(120, 0, 255, 1)"
         }
         return "rgba(120, 0, 255, 0.3)"
       }}
       getNodeStrokeColor={(hover, node) => "black"}
-      getLineColor={(hover, arrow) => {
-        if (hover == null) {
-          return "black"
+      getArrowColor={(hover, arrow) => {
+        if (hover.node != null) {
+          if (hover.node == arrow.s) {
+            return "blue"
+          }
+          if (hover.node == arrow.e) {
+            return "red"
+          }
+          return "rgba(0, 0, 0, 0.2)"
         }
-        if (hover == arrow.s) {
-          return "blue"
+        if (hover.arrows != null && hover.arrows.size > 0) {
+          if (hover.arrows.has(getArrowKey(arrow))) {
+            return "orange"
+          }
+          return "rgba(0, 0, 0, 0.2)"
         }
-        if (hover == arrow.e) {
-          return "red"
-        }
-        return "rgba(0, 0, 0, 0.2)"
+        return "black"
       }}
       renderNode={(node) => {
         const obj = objs.get(node.id)
@@ -53,7 +64,7 @@ function App() {
               textAlign: "center",
             }}
           >
-              {obj?.name || obj?.address || node.id}
+            {obj?.name || obj?.address || node.id}
           </span>
         )
       }}

@@ -1,7 +1,7 @@
-import { useRef, useState, useEffect }  from "react"
+import { useRef, useState, useEffect } from "react"
 import { Call, Point, SvgNode, Arrow } from "../lib/types"
 import styles from "./CallGraphUi.module.css"
-import { CallGraph } from "./CallGraph"
+import { CallGraph, Hover } from "./CallGraph"
 import { GraphController } from "./GraphController"
 const ZOOMS: number[] = [
   0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6,
@@ -27,9 +27,9 @@ export const CallGraphUi: React.FC<{
   backgroundColor: string
   width: number
   height: number
-  getNodeFillColor?: (hover: number | null, node: SvgNode) => string
-  getNodeStrokeColor?: (hover: number | null, node: SvgNode) => string
-  getLineColor?: (hover: number | null, arrow: Arrow) => string
+  getNodeFillColor?: (hover: Hover, node: SvgNode) => string
+  getNodeStrokeColor?: (hover: Hover, node: SvgNode) => string
+  getArrowColor?: (hover: Hover, arrow: Arrow) => string
   renderNode?: (node: SvgNode) => React.ReactNode
   showDot?: boolean
   nodeWidth?: number
@@ -43,7 +43,7 @@ export const CallGraphUi: React.FC<{
   height,
   getNodeFillColor,
   getNodeStrokeColor,
-  getLineColor,
+  getArrowColor,
   renderNode = (node) => node.id,
   showDot = false,
   nodeWidth,
@@ -178,7 +178,7 @@ export const CallGraphUi: React.FC<{
         showDot={showDot}
         getNodeFillColor={getNodeFillColor}
         getNodeStrokeColor={getNodeStrokeColor}
-        getLineColor={getLineColor}
+        getArrowColor={getArrowColor}
         renderNode={renderNode}
         nodeWidth={nodeWidth}
         nodeHeight={nodeHeight}
