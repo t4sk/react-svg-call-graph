@@ -74,6 +74,8 @@ export const CallGraph: React.FC<{
   nodeXGap = 50,
   nodeYGap = 50,
 }) => {
+  const arrowXPadd = nodeXGap >> 1
+  const arrowYPadd = nodeYGap >> 1
   const layout = useMemo(() => {
     return svg.map(calls, {
       width,
@@ -100,9 +102,6 @@ export const CallGraph: React.FC<{
     ? svg.getViewBoxY(height, mouse.y, viewBox.height, viewBox.y)
     : 0
 
-  const xPadd = nodeXGap / 2
-  const yPadd = -nodeYGap / 2
-
   let hover: Hover = { node: null, arrows: null }
   if (!isDragging && mouse && svgX != 0 && svgY != 0) {
     const m = { x: svgX, y: svgY }
@@ -119,13 +118,13 @@ export const CallGraph: React.FC<{
       for (let i = 0; i < layout.arrows.length; i++) {
         const a = layout.arrows[i]
         const box = svg.box(
-          svg.poly(a.type, a.start, a.end, xPadd, yPadd),
+          svg.poly(a.type, a.start, a.end, arrowXPadd, -arrowYPadd),
           BOX_X_PADD,
           BOX_Y_PADD
         )
         if (svg.isInside(m, box)) {
           // TODO: cache
-          const points = sample(a, xPadd, yPadd)
+          const points = sample(a, arrowXPadd, -arrowYPadd)
           for (let i = 0; i < points.length; i++) {
             if (math.dist(points[i], m) < R) {
               hover.arrows.add(getArrowKey(a))
@@ -141,7 +140,7 @@ export const CallGraph: React.FC<{
     const offset = overlaps.get(key) || 0
     overlaps.set(key, offset > 0 ? offset - 1 : 0)
 
-    const points = sample(a, nodeXGap / 2, -nodeYGap / 2)
+    const points = sample(a, arrowXPadd, -arrowYPadd)
 
     if (a.start.y == a.end.y) {
       return (
@@ -174,8 +173,8 @@ export const CallGraph: React.FC<{
             y0={a.start.y}
             x1={a.end.x}
             y1={a.end.y}
-            xPadd={nodeXGap >> 1}
-            yPadd={-(nodeYGap >> 1)}
+            xPadd={arrowXPadd}
+            yPadd={-arrowYPadd}
             stroke={lineColor}
             text={a.i}
             textYGap={offset * TEXT_GAP}
