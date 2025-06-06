@@ -1,5 +1,5 @@
 import { CallGraphUi } from "./components/CallGraphUi"
-import {getArrowKey} from "./components/CallGraph"
+import { getArrowKey } from "./components/CallGraph"
 import { build } from "./lib/graph"
 import { calls, objs } from "./dev"
 

@@ -18,11 +18,7 @@ const R = 25
 const BOX_X_PADD = 10
 const BOX_Y_PADD = 10
 
-function sample(
-  a: Arrow,
-  xPadd: number = 0,
-  yPadd: number = 0
-): Point[] {
+function sample(a: Arrow, xPadd: number = 0, yPadd: number = 0): Point[] {
   const ps = svg.poly(a.type, a.start, a.end, xPadd, yPadd)
   const [len] = math.len(ps)
 
@@ -107,7 +103,6 @@ export const CallGraph: React.FC<{
   const xPadd = nodeXGap / 2
   const yPadd = -nodeYGap / 2
 
-  // TODO: use quadtree?
   let hover: Hover = { node: null, arrows: null }
   if (!isDragging && mouse && svgX != 0 && svgY != 0) {
     const m = { x: svgX, y: svgY }
@@ -123,10 +118,14 @@ export const CallGraph: React.FC<{
 
       for (let i = 0; i < layout.arrows.length; i++) {
         const a = layout.arrows[i]
-        const box = svg.box(svg.poly(a.type, a.start, a.end, xPadd, yPadd), BOX_X_PADD, BOX_Y_PADD)
+        const box = svg.box(
+          svg.poly(a.type, a.start, a.end, xPadd, yPadd),
+          BOX_X_PADD,
+          BOX_Y_PADD
+        )
         if (svg.isInside(m, box)) {
           // TODO: cache
-          const points = sample(a, nodeXGap / 2, -nodeYGap / 2)
+          const points = sample(a, xPadd, yPadd)
           for (let i = 0; i < points.length; i++) {
             if (math.dist(points[i], m) < R) {
               hover.arrows.add(getArrowKey(a))

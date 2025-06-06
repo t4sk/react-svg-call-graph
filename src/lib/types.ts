@@ -10,7 +10,7 @@ export type Neighbors = Map<number, Set<number>>
 
 export type Graph = {
   // Child => parents
-  inbound: Neighbors,
+  inbound: Neighbors
   // Parent => children
   outbound: Neighbors
 }
@@ -61,7 +61,7 @@ export type Canvas = {
   width: number
   height: number
   center: Point
-  node: { width: number; height: number; gapX: number, gapY: number }
+  node: { width: number; height: number; gapX: number; gapY: number }
 }
 
 export type SvgNode = {

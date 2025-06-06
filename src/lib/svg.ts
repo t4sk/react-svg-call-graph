@@ -76,24 +76,25 @@ export function getArrowType(p0: Point, p1: Point): ArrowType {
   return "zigzag"
 }
 
-export function poly(type: ArrowType, p0: Point, p1: Point, xPadd: number = 0, yPadd: number = 0): Point[] {
+export function poly(
+  type: ArrowType,
+  p0: Point,
+  p1: Point,
+  xPadd: number = 0,
+  yPadd: number = 0
+): Point[] {
   switch (type) {
     case "zigzag": {
       const mid = (p0.x + p1.x) >> 1
-      return [
-        p0,
-        { x: mid, y: p0.y },
-        { x: mid, y: p1.y },
-        p1
-      ]
+      return [p0, { x: mid, y: p0.y }, { x: mid, y: p1.y }, p1]
     }
     case "callback": {
       return [
         p0,
         { x: p0.x + xPadd, y: p0.y },
-        { x: p0.x + xPadd, y: p1.y + yPadd},
-        { x: p1.x, y: p1.y + yPadd},
-        p1
+        { x: p0.x + xPadd, y: p1.y + yPadd },
+        { x: p1.x, y: p1.y + yPadd },
+        p1,
       ]
     }
     default:
@@ -101,7 +102,11 @@ export function poly(type: ArrowType, p0: Point, p1: Point, xPadd: number = 0, y
   }
 }
 
-export function box(points: Point[], xPadd: number = 0, yPadd: number = 0): Rect {
+export function box(
+  points: Point[],
+  xPadd: number = 0,
+  yPadd: number = 0
+): Rect {
   let xMin = points[0].x
   let xMax = points[0].x
   let yMin = points[0].y
@@ -127,11 +132,16 @@ export function box(points: Point[], xPadd: number = 0, yPadd: number = 0): Rect
     x: xMin - xPadd,
     y: yMin - yPadd,
     width: xMax - xMin + 2 * xPadd,
-    height: yMax - yMin + 2 * yPadd
+    height: yMax - yMin + 2 * yPadd,
   }
 }
 
-function arrow(map: Map<number, SvgNode>, i: number, start: number, end: number): Arrow {
+function arrow(
+  map: Map<number, SvgNode>,
+  i: number,
+  start: number,
+  end: number
+): Arrow {
   const s = map.get(start) as SvgNode
   const e = map.get(end) as SvgNode
 
@@ -265,4 +275,3 @@ export function overlaps(arrows: Arrow[]): Map<string, number> {
   }
   return m
 }
-
