@@ -60,23 +60,10 @@ function App() {
           stroke: "black",
         }
       }}
-      getArrowColor={(hover, arrow) => {
-        if (hover.node != null) {
-          if (hover.node == arrow.s) {
-            return "blue"
-          }
-          if (hover.node == arrow.e) {
-            return "red"
-          }
-          return "rgba(0, 0, 0, 0.2)"
+      getArrowStyle={(hover, arrow) => {
+        return {
+          stroke: getArrowColor(hover, arrow),
         }
-        if (hover.arrows != null && hover.arrows.size > 0) {
-          if (hover.arrows.has(getArrowKey(arrow))) {
-            return "orange"
-          }
-          return "rgba(0, 0, 0, 0.2)"
-        }
-        return "black"
       }}
       renderNode={(node) => {
         const obj = objs.get(node.id)

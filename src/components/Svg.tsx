@@ -55,7 +55,7 @@ export const SvgArrow: React.FC<{
   x1,
   y1,
   stroke = "black",
-  strokeWidth,
+  strokeWidth = 2,
   text,
   textXGap = 0,
   textYGap = -10,

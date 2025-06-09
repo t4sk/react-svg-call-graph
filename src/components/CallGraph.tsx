@@ -47,7 +47,7 @@ export const CallGraph: React.FC<{
     hover: Hover,
     node: SvgNode,
   ) => { fill?: string; stroke?: string }
-  getArrowColor?: (hover: Hover, arrow: Arrow) => string
+  getArrowStyle?: (hover: Hover, arrow: Arrow) => { stroke?: string }
   nodeWidth?: number
   nodeHeight?: number
   nodeXGap?: number
@@ -63,7 +63,7 @@ export const CallGraph: React.FC<{
   isDragging,
   showDot = false,
   getNodeStyle = () => {},
-  getArrowColor = () => "black",
+  getArrowStyle = () => {},
   renderNode,
   nodeWidth = 100,
   nodeHeight = 50,
@@ -131,7 +131,7 @@ export const CallGraph: React.FC<{
     }
   }
 
-  function renderArrow(i: number, a: Arrow, lineColor: string) {
+  function renderArrow(i: number, a: Arrow, style: { stroke?: string }) {
     const key = getArrowKey(a)
     const offset = overlaps.get(key) || 0
     overlaps.set(key, offset > 0 ? offset - 1 : 0)
@@ -150,7 +150,7 @@ export const CallGraph: React.FC<{
             y0={a.start.y}
             x1={a.end.x}
             y1={a.end.y}
-            stroke={lineColor}
+            stroke={style?.stroke || "black"}
             text={a.i}
             textYGap={offset * TEXT_GAP}
           />
@@ -171,7 +171,7 @@ export const CallGraph: React.FC<{
             y1={a.end.y}
             xPadd={arrowXPadd}
             yPadd={-arrowYPadd}
-            stroke={lineColor}
+            stroke={style?.stroke || "black"}
             text={a.i}
             textYGap={offset * TEXT_GAP}
           />
@@ -190,7 +190,7 @@ export const CallGraph: React.FC<{
           y0={a.start.y}
           x1={a.end.x}
           y1={a.end.y}
-          stroke={lineColor}
+          stroke={style?.stroke || "black"}
           text={a.i}
           textXGap={offset * TEXT_GAP}
         />
@@ -209,14 +209,16 @@ export const CallGraph: React.FC<{
         if (a.s == hover.node || a.e == hover.node) {
           return null
         }
-        return renderArrow(i, a, getArrowColor(hover, a))
+        const style = getArrowStyle(hover, a)
+        return renderArrow(i, a, style)
       })}
 
       {layout.arrows.map((a, i) => {
         if (a.s != hover.node && a.e != hover.node) {
           return null
         }
-        return renderArrow(i, a, getArrowColor(hover, a))
+        const style = getArrowStyle(hover, a)
+        return renderArrow(i, a, style)
       })}
 
       {layout.nodes.map((node, i) => {
