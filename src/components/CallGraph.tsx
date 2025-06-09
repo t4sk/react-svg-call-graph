@@ -48,8 +48,10 @@ export const CallGraph: React.FC<{
   mouse: Point | null
   isDragging: boolean
   showDot?: boolean
-  getNodeFillColor?: (hover: Hover, node: SvgNode) => string
-  getNodeStrokeColor?: (hover: Hover, node: SvgNode) => string
+  getNodeStyle?: (
+    hover: Hover,
+    node: SvgNode,
+  ) => { fill?: string; stroke?: string }
   getArrowColor?: (hover: Hover, arrow: Arrow) => string
   nodeWidth?: number
   nodeHeight?: number
@@ -65,8 +67,7 @@ export const CallGraph: React.FC<{
   mouse,
   isDragging,
   showDot = false,
-  getNodeFillColor = () => "none",
-  getNodeStrokeColor = () => "black",
+  getNodeStyle = () => {},
   getArrowColor = () => "black",
   renderNode,
   nodeWidth = 100,
@@ -120,7 +121,7 @@ export const CallGraph: React.FC<{
         const box = svg.box(
           svg.poly(a.type, a.start, a.end, arrowXPadd, -arrowYPadd),
           BOX_X_PADD,
-          BOX_Y_PADD
+          BOX_Y_PADD,
         )
         if (svg.isInside(m, box)) {
           // TODO: cache
@@ -224,6 +225,7 @@ export const CallGraph: React.FC<{
       })}
 
       {layout.nodes.map((node, i) => {
+        const style = getNodeStyle(hover, node)
         return (
           <SvgRect
             key={i}
@@ -231,8 +233,8 @@ export const CallGraph: React.FC<{
             y={node.rect.y}
             width={node.rect.width}
             height={node.rect.height}
-            fill={getNodeFillColor(hover, node)}
-            stroke={getNodeStrokeColor(hover, node)}
+            fill={style?.fill || "none"}
+            stroke={style?.stroke || "black"}
           />
         )
       })}

@@ -1,4 +1,6 @@
 import { CallGraphUi } from "./components/CallGraphUi"
+import { Hover } from "./components/CallGraph"
+import { SvgNode } from "./lib/types"
 import { getArrowKey } from "./components/CallGraph"
 import { build } from "./lib/graph"
 import { calls, objs } from "./dev"
@@ -7,6 +9,21 @@ const graph = build(calls)
 
 console.log(calls, graph)
 
+function getNodeFillColor(hover: Hover, node: SvgNode): string {
+  if (hover.node == null) {
+    return "rgba(120, 0, 255, 1)"
+  }
+  if (
+    hover.node == node.id ||
+    graph.inbound.get(hover.node)?.has(node.id) ||
+    graph.outbound.get(hover.node)?.has(node.id)
+  ) {
+    return "rgba(120, 0, 255, 1)"
+  }
+  return "rgba(120, 0, 255, 0.3)"
+}
+
+// TODO: render on hover node and hover arrows
 function App() {
   return (
     <CallGraphUi
@@ -19,20 +36,12 @@ function App() {
       nodeHeight={50}
       nodeXGap={100}
       nodeYGap={60}
-      getNodeFillColor={(hover, node) => {
-        if (hover.node == null) {
-          return "rgba(120, 0, 255, 1)"
+      getNodeStyle={(hover, node) => {
+        return {
+          fill: getNodeFillColor(hover, node),
+          stroke: "black",
         }
-        if (
-          hover.node == node.id ||
-          graph.inbound.get(hover.node)?.has(node.id) ||
-          graph.outbound.get(hover.node)?.has(node.id)
-        ) {
-          return "rgba(120, 0, 255, 1)"
-        }
-        return "rgba(120, 0, 255, 0.3)"
       }}
-      getNodeStrokeColor={(hover, node) => "black"}
       getArrowColor={(hover, arrow) => {
         if (hover.node != null) {
           if (hover.node == arrow.s) {

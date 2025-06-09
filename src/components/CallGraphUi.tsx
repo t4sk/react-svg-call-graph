@@ -17,9 +17,6 @@ export type Drag = {
   startViewBoxY: number
 }
 
-// TODO: click on node shows popup of incoming and outgoing calls
-// TODO: hover line?
-// TODO: quadtree
 // TODO: dynamic node width and height
 // TODO: fix smoother drag
 export const CallGraphUi: React.FC<{
@@ -27,8 +24,10 @@ export const CallGraphUi: React.FC<{
   backgroundColor: string
   width: number
   height: number
-  getNodeFillColor?: (hover: Hover, node: SvgNode) => string
-  getNodeStrokeColor?: (hover: Hover, node: SvgNode) => string
+  getNodeStyle?: (
+    hover: Hover,
+    node: SvgNode,
+  ) => { fill?: string; stroke?: string }
   getArrowColor?: (hover: Hover, arrow: Arrow) => string
   renderNode?: (node: SvgNode) => React.ReactNode
   showDot?: boolean
@@ -41,8 +40,7 @@ export const CallGraphUi: React.FC<{
   backgroundColor,
   width,
   height,
-  getNodeFillColor,
-  getNodeStrokeColor,
+  getNodeStyle,
   getArrowColor,
   renderNode = (node) => node.id,
   showDot = false,
@@ -99,7 +97,7 @@ export const CallGraphUi: React.FC<{
 
   function getMouse(
     ref: HTMLDivElement | null,
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ): Point | null {
     if (!ref) {
       return null
@@ -176,8 +174,7 @@ export const CallGraphUi: React.FC<{
         mouse={mouse}
         isDragging={!!drag}
         showDot={showDot}
-        getNodeFillColor={getNodeFillColor}
-        getNodeStrokeColor={getNodeStrokeColor}
+        getNodeStyle={getNodeStyle}
         getArrowColor={getArrowColor}
         renderNode={renderNode}
         nodeWidth={nodeWidth}

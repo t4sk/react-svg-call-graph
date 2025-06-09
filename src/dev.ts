@@ -37,7 +37,7 @@ dfs<TxCall>(
       }
     }
     flat.push([d, c])
-  }
+  },
 )
 
 export const calls: Call[] = [
@@ -57,4 +57,3 @@ for (const [d, c] of flat) {
     depth: d + 1,
   })
 }
-
