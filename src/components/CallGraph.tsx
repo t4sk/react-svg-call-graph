@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { Call, ViewBox, Point, SvgNode, Arrow } from "../lib/types"
+import { Call, ViewBox, Point, SvgNode, Arrow, Hover } from "../lib/types"
 import * as svg from "../lib/svg"
 import {
   SvgRect,
@@ -32,11 +32,6 @@ function sample(a: Arrow, xPadd: number = 0, yPadd: number = 0): Point[] {
 
 export function getArrowKey(a: Arrow): string {
   return `${a.s},${a.e}`
-}
-
-export type Hover = {
-  node: number | null
-  arrows: Set<string> | null
 }
 
 export const CallGraph: React.FC<{

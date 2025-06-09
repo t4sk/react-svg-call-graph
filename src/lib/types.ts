@@ -78,3 +78,9 @@ export type Layout = {
   arrows: Arrow[]
   map: Map<number, SvgNode>
 }
+
+// UI
+export type Hover = {
+  node: number | null
+  arrows: Set<string> | null
+}

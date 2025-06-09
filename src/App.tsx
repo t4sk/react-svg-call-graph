@@ -1,6 +1,5 @@
 import { CallGraphUi } from "./components/CallGraphUi"
-import { Hover } from "./components/CallGraph"
-import { SvgNode } from "./lib/types"
+import { SvgNode, Arrow, Hover } from "./lib/types"
 import { getArrowKey } from "./components/CallGraph"
 import { build } from "./lib/graph"
 import { calls, objs } from "./dev"
@@ -21,6 +20,25 @@ function getNodeFillColor(hover: Hover, node: SvgNode): string {
     return "rgba(120, 0, 255, 1)"
   }
   return "rgba(120, 0, 255, 0.3)"
+}
+
+function getArrowColor(hover: Hover, arrow: Arrow): string {
+  if (hover.node != null) {
+    if (hover.node == arrow.s) {
+      return "blue"
+    }
+    if (hover.node == arrow.e) {
+      return "red"
+    }
+    return "rgba(0, 0, 0, 0.2)"
+  }
+  if (hover.arrows != null && hover.arrows.size > 0) {
+    if (hover.arrows.has(getArrowKey(arrow))) {
+      return "orange"
+    }
+    return "rgba(0, 0, 0, 0.2)"
+  }
+  return "black"
 }
 
 // TODO: render on hover node and hover arrows
