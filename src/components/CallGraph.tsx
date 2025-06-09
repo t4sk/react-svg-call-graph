@@ -41,7 +41,7 @@ export const CallGraph: React.FC<{
   height: number
   viewBox: ViewBox
   mouse: Point | null
-  isDragging: boolean
+  dragging: boolean
   showDot?: boolean
   getNodeStyle?: (
     hover: Hover,
@@ -52,7 +52,12 @@ export const CallGraph: React.FC<{
   nodeHeight?: number
   nodeXGap?: number
   nodeYGap?: number
-  renderNode: (node: SvgNode) => React.ReactNode
+  renderNode?: (node: SvgNode) => React.ReactNode
+  renderHover?: (
+    hover: Hover,
+    mouse: Point | null,
+    svg: Point | null,
+  ) => React.ReactNode
 }> = ({
   calls,
   backgroundColor,
@@ -60,11 +65,12 @@ export const CallGraph: React.FC<{
   height,
   viewBox,
   mouse,
-  isDragging,
+  dragging,
   showDot = false,
   getNodeStyle = () => ({ fill: "none", stroke: "black" }),
   getArrowStyle = () => ({ stroke: "black" }),
-  renderNode,
+  renderNode = () => null,
+  renderHover = () => null,
   nodeWidth = 100,
   nodeHeight = 50,
   nodeXGap = 50,
@@ -97,13 +103,13 @@ export const CallGraph: React.FC<{
   const svgY = mouse
     ? svg.getViewBoxY(height, mouse.y, viewBox.height, viewBox.y)
     : 0
+  const mouseSvgXY = { x: svgX, y: svgY }
 
-  let hover: Hover = { node: null, arrows: null }
-  if (!isDragging && mouse && svgX != 0 && svgY != 0) {
-    const m = { x: svgX, y: svgY }
+  const hover: Hover = { node: null, arrows: null }
+  if (!dragging && mouse && svgX != 0 && svgY != 0) {
     for (let i = 0; i < layout.nodes.length; i++) {
       const node = layout.nodes[i]
-      if (svg.isInside(m, node.rect)) {
+      if (svg.isInside(mouseSvgXY, node.rect)) {
         hover.node = node.id
       }
     }
@@ -118,11 +124,11 @@ export const CallGraph: React.FC<{
           BOX_X_PADD,
           BOX_Y_PADD,
         )
-        if (svg.isInside(m, box)) {
+        if (svg.isInside(mouseSvgXY, box)) {
           // TODO: cache
           const points = sample(a, arrowXPadd, -arrowYPadd)
           for (let i = 0; i < points.length; i++) {
-            if (math.dist(points[i], m) < R) {
+            if (math.dist(points[i], mouseSvgXY) < R) {
               hover.arrows.add(getArrowKey(a))
             }
           }
@@ -260,6 +266,10 @@ export const CallGraph: React.FC<{
           </foreignObject>
         )
       })}
+
+      {renderHover(hover, mouse, mouseSvgXY)}
+
+      {/* Debug */}
 
       {Object.values(layout.mid).map((p, i) => (
         <SvgDot x={p.x} y={p.y} key={i} radius={4} />

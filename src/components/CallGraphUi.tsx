@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react"
-import { Call, Point, SvgNode, Arrow } from "../lib/types"
+import { Call, Point, SvgNode, Arrow, Hover } from "../lib/types"
 import styles from "./CallGraphUi.module.css"
-import { CallGraph, Hover } from "./CallGraph"
+import { CallGraph } from "./CallGraph"
 import { GraphController } from "./GraphController"
 const ZOOMS: number[] = [
   0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6,
@@ -30,6 +30,11 @@ export const CallGraphUi: React.FC<{
   ) => { fill?: string; stroke?: string }
   getArrowStyle?: (hover: Hover, arrow: Arrow) => { stroke?: string }
   renderNode?: (node: SvgNode) => React.ReactNode
+  renderHover?: (
+    hover: Hover,
+    mouse: Point | null,
+    svg: Point | null,
+  ) => React.ReactNode
   showDot?: boolean
   nodeWidth?: number
   nodeHeight?: number
@@ -43,6 +48,7 @@ export const CallGraphUi: React.FC<{
   getNodeStyle,
   getArrowStyle,
   renderNode = (node) => node.id,
+  renderHover = () => null,
   showDot = false,
   nodeWidth,
   nodeHeight,
@@ -172,11 +178,12 @@ export const CallGraphUi: React.FC<{
         height={height}
         viewBox={viewBox}
         mouse={mouse}
-        isDragging={!!drag}
+        dragging={!!drag}
         showDot={showDot}
         getNodeStyle={getNodeStyle}
         getArrowStyle={getArrowStyle}
         renderNode={renderNode}
+        renderHover={renderHover}
         nodeWidth={nodeWidth}
         nodeHeight={nodeHeight}
         nodeXGap={nodeXGap}
