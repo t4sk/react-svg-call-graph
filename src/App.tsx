@@ -69,18 +69,53 @@ function App() {
         const obj = objs.get(node.id)
         // return node.id
         return (
-          <span
+          <div
             style={{
-              width: 140,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              textAlign: "center",
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            {obj?.name || obj?.address || node.id}
-          </span>
+            <span
+              style={{
+                width: 140,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                textAlign: "center",
+              }}
+            >
+              {obj?.name || obj?.address || node.id}
+            </span>
+          </div>
         )
+      }}
+      renderHover={(hover, mouse) => {
+        if (hover.node) {
+        }
+        if (hover.arrows) {
+        }
+        return null
+        /*
+        return (
+          <div
+            style={{
+              position: "absolute",
+              top: mouse?.y || 0,
+              left: mouse?.x || 0,
+              width: 100,
+              height: 100,
+              color: "red",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            }}
+          >
+            hover
+          </div>
+        )
+        */
       }}
     />
   )

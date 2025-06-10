@@ -53,11 +53,7 @@ export const CallGraph: React.FC<{
   nodeXGap?: number
   nodeYGap?: number
   renderNode?: (node: SvgNode) => React.ReactNode
-  renderHover?: (
-    hover: Hover,
-    mouse: Point | null,
-    svg: Point | null,
-  ) => React.ReactNode
+  renderHover?: (hover: Hover, mouse: Point | null) => React.ReactNode
 }> = ({
   calls,
   backgroundColor,
@@ -205,79 +201,77 @@ export const CallGraph: React.FC<{
   }
 
   return (
-    <svg
-      width={width}
-      height={height}
-      viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
-      style={{ backgroundColor }}
+    <div
+      style={{
+        width,
+        height,
+        position: "relative",
+      }}
     >
-      {layout.arrows.map((a, i) => {
-        if (a.s == hover.node || a.e == hover.node) {
-          return null
-        }
-        const style = getArrowStyle(hover, a)
-        return renderArrow(i, a, style)
-      })}
+      <svg
+        width={width}
+        height={height}
+        viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
+        style={{
+          backgroundColor,
+        }}
+      >
+        {layout.arrows.map((a, i) => {
+          if (a.s == hover.node || a.e == hover.node) {
+            return null
+          }
+          const style = getArrowStyle(hover, a)
+          return renderArrow(i, a, style)
+        })}
 
-      {layout.arrows.map((a, i) => {
-        if (a.s != hover.node && a.e != hover.node) {
-          return null
-        }
-        const style = getArrowStyle(hover, a)
-        return renderArrow(i, a, style)
-      })}
+        {layout.arrows.map((a, i) => {
+          if (a.s != hover.node && a.e != hover.node) {
+            return null
+          }
+          const style = getArrowStyle(hover, a)
+          return renderArrow(i, a, style)
+        })}
 
-      {layout.nodes.map((node, i) => {
-        const style = getNodeStyle(hover, node)
-        return (
-          <SvgRect
-            key={i}
-            x={node.rect.x}
-            y={node.rect.y}
-            width={node.rect.width}
-            height={node.rect.height}
-            fill={style?.fill || "none"}
-            stroke={style?.stroke || "black"}
-          />
-        )
-      })}
+        {layout.nodes.map((node, i) => {
+          const style = getNodeStyle(hover, node)
+          return (
+            <SvgRect
+              key={i}
+              x={node.rect.x}
+              y={node.rect.y}
+              width={node.rect.width}
+              height={node.rect.height}
+              fill={style?.fill || "none"}
+              stroke={style?.stroke || "black"}
+            />
+          )
+        })}
 
-      {layout.nodes.map((node, i) => {
-        return (
-          <foreignObject
-            key={i}
-            x={node.rect.x}
-            y={node.rect.y}
-            width={node.rect.width}
-            height={node.rect.height}
-          >
-            <div
-              style={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
+        {layout.nodes.map((node, i) => {
+          return (
+            <foreignObject
+              key={i}
+              x={node.rect.x}
+              y={node.rect.y}
+              width={node.rect.width}
+              height={node.rect.height}
             >
               {renderNode(node)}
-            </div>
-          </foreignObject>
-        )
-      })}
+            </foreignObject>
+          )
+        })}
 
-      {renderHover(hover, mouse, mouseSvgXY)}
+        {/* Debug */}
 
-      {/* Debug */}
+        {Object.values(layout.mid).map((p, i) => (
+          <SvgDot x={p.x} y={p.y} key={i} radius={4} />
+        ))}
 
-      {Object.values(layout.mid).map((p, i) => (
-        <SvgDot x={p.x} y={p.y} key={i} radius={4} />
-      ))}
-
-      {mouse && showDot ? (
-        <SvgDot x={svgX} y={svgY} radius={R} fill="rgba(255, 0, 0, 0.5)" />
-      ) : null}
-    </svg>
+        {mouse && showDot ? (
+          <SvgDot x={svgX} y={svgY} radius={R} fill="rgba(255, 0, 0, 0.5)" />
+        ) : null}
+      </svg>
+      {renderHover(hover, mouse)}
+    </div>
   )
 }

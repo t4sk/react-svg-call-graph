@@ -19,6 +19,7 @@ export type Drag = {
 
 // TODO: dynamic node width and height
 // TODO: fix smoother drag
+// TODO: animate flowing line on hover
 export const CallGraphUi: React.FC<{
   calls: Call[]
   backgroundColor: string
@@ -30,11 +31,7 @@ export const CallGraphUi: React.FC<{
   ) => { fill?: string; stroke?: string }
   getArrowStyle?: (hover: Hover, arrow: Arrow) => { stroke?: string }
   renderNode?: (node: SvgNode) => React.ReactNode
-  renderHover?: (
-    hover: Hover,
-    mouse: Point | null,
-    svg: Point | null,
-  ) => React.ReactNode
+  renderHover?: (hover: Hover, mouse: Point | null) => React.ReactNode
   showDot?: boolean
   nodeWidth?: number
   nodeHeight?: number
