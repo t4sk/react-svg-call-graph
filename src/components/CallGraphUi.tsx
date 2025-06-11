@@ -3,6 +3,7 @@ import { Call, Point, SvgNode, Arrow, Hover } from "../lib/types"
 import styles from "./CallGraphUi.module.css"
 import { CallGraph } from "./CallGraph"
 import { GraphController } from "./GraphController"
+
 const ZOOMS: number[] = [
   0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6,
   1.7, 1.8, 1.9, 2.0,
@@ -19,7 +20,6 @@ export type Drag = {
 
 // TODO: dynamic node width and height
 // TODO: fix smoother drag
-// TODO: animate flowing line on hover
 export const CallGraphUi: React.FC<{
   calls: Call[]
   backgroundColor: string

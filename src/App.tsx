@@ -24,6 +24,7 @@ function getNodeFillColor(hover: Hover, node: SvgNode): string {
 
 function getArrowColor(hover: Hover, arrow: Arrow): string {
   if (hover.node != null) {
+    // NOTE: complex colors such as rgba and url makes arrow head disappear
     if (hover.node == arrow.s) {
       return "blue"
     }

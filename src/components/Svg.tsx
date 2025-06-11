@@ -3,6 +3,50 @@ import React from "react"
 const FONT = "sans-serif"
 const FONT_SIZE = 18
 
+// TODO: remove?
+export const SvgLinearGradients: React.FC<{}> = () => {
+  return (
+    <defs>
+      <linearGradient
+        id="cold-gradient"
+        x1="0%"
+        y1="0%"
+        x2="100%"
+        y2="0%"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop offset="0%" stopColor="blue" />
+        <stop offset="100%" stopColor="cyan" />
+      </linearGradient>
+      <linearGradient
+        id="hot-gradient"
+        x1="0%"
+        y1="0%"
+        x2="100%"
+        y2="0%"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop offset="0%" stopColor="red" />
+        <stop offset="100%" stopColor="orange" />
+      </linearGradient>
+      <linearGradient
+        id="heat-gradient"
+        x1="0%"
+        y1="0%"
+        x2="100%"
+        y2="0%"
+        gradientUnits="userSpaceOnUse"
+      >
+        <stop offset="0%" stop-color="white" />
+        <stop offset="25%" stop-color="red" />
+        <stop offset="50%" stop-color="yellow" />
+        <stop offset="75%" stop-color="cyan" />
+        <stop offset="100%" stop-color="blue" />
+      </linearGradient>
+    </defs>
+  )
+}
+
 export const SvgRect: React.FC<{
   x: number
   y: number
@@ -76,6 +120,7 @@ export const SvgArrow: React.FC<{
         </marker>
       </defs>
       <line
+        className="flow"
         x1={x0}
         y1={y0}
         x2={x1}
@@ -85,6 +130,7 @@ export const SvgArrow: React.FC<{
         strokeWidth={strokeWidth}
         markerEnd={`url(#${id})`}
       />
+
       {text ? (
         <text
           x={((x0 + x1) >> 1) + textXGap}
@@ -143,9 +189,26 @@ export const SvgZigZagArrow: React.FC<{
           <path fill={stroke} color={stroke} d="M 0 0 L 5 2.5 L 0 5 z" />
         </marker>
       </defs>
-      <line x1={x0} y1={y0} x2={mid} y2={y0} stroke={stroke} strokeWidth="2" />
-      <line x1={mid} y1={y0} x2={mid} y2={y1} stroke={stroke} strokeWidth="2" />
       <line
+        className="flow"
+        x1={x0}
+        y1={y0}
+        x2={mid}
+        y2={y0}
+        stroke={stroke}
+        strokeWidth="2"
+      />
+      <line
+        className="flow"
+        x1={mid}
+        y1={y0}
+        x2={mid}
+        y2={y1}
+        stroke={stroke}
+        strokeWidth="2"
+      />
+      <line
+        className="flow"
         x1={mid}
         y1={y1}
         x2={x1}
@@ -215,6 +278,7 @@ export const SvgCallBackArrow: React.FC<{
         </marker>
       </defs>
       <line
+        className="flow"
         x1={x0}
         y1={y0}
         x2={x0 + xPadd}
@@ -223,6 +287,7 @@ export const SvgCallBackArrow: React.FC<{
         strokeWidth={strokeWidth}
       />
       <line
+        className="flow"
         x1={x0 + xPadd}
         y1={y0}
         x2={x0 + xPadd}
@@ -231,6 +296,7 @@ export const SvgCallBackArrow: React.FC<{
         strokeWidth={strokeWidth}
       />
       <line
+        className="flow"
         x1={x0 + xPadd}
         y1={y1 + yPadd}
         x2={x1}
@@ -239,6 +305,7 @@ export const SvgCallBackArrow: React.FC<{
         strokeWidth={strokeWidth}
       />
       <line
+        className="flow"
         x1={x1}
         y1={y1 + yPadd}
         x2={x1}

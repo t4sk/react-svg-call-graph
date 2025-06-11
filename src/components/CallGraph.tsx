@@ -7,6 +7,8 @@ import {
   SvgArrow,
   SvgZigZagArrow,
   SvgCallBackArrow,
+  // TODO: remove?
+  SvgLinearGradients,
 } from "./Svg"
 import * as math from "../lib/math"
 
@@ -143,9 +145,9 @@ export const CallGraph: React.FC<{
     if (a.start.y == a.end.y) {
       return (
         <>
-          {points.map((p, i) => (
+          {/*points.map((p, i) => (
             <SvgDot x={p.x} y={p.y} radius={4} key={i} />
-          ))}
+          ))*/}
           <SvgArrow
             key={i}
             x0={a.start.x}
@@ -162,9 +164,9 @@ export const CallGraph: React.FC<{
     if (a.end.x <= a.start.x) {
       return (
         <>
-          {points.map((p, i) => (
+          {/*points.map((p, i) => (
             <SvgDot x={p.x} y={p.y} radius={4} key={i} />
-          ))}
+          ))*/}
           <SvgCallBackArrow
             key={i}
             x0={a.start.x}
@@ -183,9 +185,9 @@ export const CallGraph: React.FC<{
 
     return (
       <>
-        {points.map((p, i) => (
+        {/*points.map((p, i) => (
           <SvgDot x={p.x} y={p.y} radius={4} key={i} />
-        ))}
+        ))*/}
         <SvgZigZagArrow
           key={i}
           x0={a.start.x}
@@ -216,6 +218,7 @@ export const CallGraph: React.FC<{
           backgroundColor,
         }}
       >
+        {/* <SvgLinearGradients /> */}
         {layout.arrows.map((a, i) => {
           if (a.s == hover.node || a.e == hover.node) {
             return null
