@@ -41,7 +41,6 @@ function getArrowColor(hover: Hover, arrow: Arrow): string {
   return "black"
 }
 
-// TODO: render on hover node and hover arrows
 function App() {
   return (
     <CallGraphUi
@@ -94,28 +93,45 @@ function App() {
         )
       }}
       renderHover={(hover, mouse) => {
-        if (hover.node) {
+        if (!mouse) {
+          return null
         }
-        if (hover.arrows) {
+        if (hover.node) {
+          return (
+            <div
+              style={{
+                position: "absolute",
+                top: mouse.y + 10,
+                left: mouse.x + 10,
+                width: 100,
+                height: 100,
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+              }}
+            >
+              {hover.node}
+            </div>
+          )
+        }
+        if (hover.arrows && hover.arrows.size > 0) {
+          return (
+            <div
+              style={{
+                position: "absolute",
+                top: mouse.y + 10,
+                left: mouse.x + 10,
+                width: 100,
+                height: 100,
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                padding: 10,
+              }}
+            >
+              {[...hover.arrows].map((k) => {
+                return <div>{k}</div>
+              })}
+            </div>
+          )
         }
         return null
-        /*
-        return (
-          <div
-            style={{
-              position: "absolute",
-              top: mouse?.y || 0,
-              left: mouse?.x || 0,
-              width: 100,
-              height: 100,
-              color: "red",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-            }}
-          >
-            hover
-          </div>
-        )
-        */
       }}
     />
   )
