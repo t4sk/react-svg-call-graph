@@ -35,7 +35,7 @@ function getArrowColor(hover: Hover, arrow: Arrow): string {
   }
   if (hover.arrows != null && hover.arrows.size > 0) {
     if (hover.arrows.has(getArrowKey(arrow))) {
-      return "orange"
+      return "purple"
     }
     return "rgba(0, 0, 0, 0.2)"
   }
