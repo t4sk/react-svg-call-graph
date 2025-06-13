@@ -1,7 +1,8 @@
 import { Call } from "./lib/types"
 import { dfs } from "./lib/graph"
-import TX from "../tmp/tx.json"
+import TX from "../tmp/tx-res.json"
 import NAMES from "../tmp/names.json"
+import "../tmp/req.ts"
 
 type TxCall = {
   from: string
@@ -20,9 +21,8 @@ let id = 0
 // Address => id
 const ids: Map<string, number> = new Map()
 const flat: [number, TxCall][] = []
-export const objs: Map<number, Obj> = new Map()
 
-console.log(TX)
+export const objs: Map<number, Obj> = new Map()
 
 dfs<TxCall>(
   TX.result,
@@ -57,3 +57,10 @@ for (const [d, c] of flat) {
     depth: d + 1,
   })
 }
+
+const data = []
+for (const [key, obj] of objs) {
+  data.push(obj.address)
+  // console.log(obj)
+}
+console.log(data)

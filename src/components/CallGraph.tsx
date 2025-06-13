@@ -54,7 +54,7 @@ export const CallGraph: React.FC<{
   nodeHeight?: number
   nodeXGap?: number
   nodeYGap?: number
-  renderNode?: (node: SvgNode) => React.ReactNode
+  renderNode?: (hover: Hover, node: SvgNode) => React.ReactNode
   renderHover?: (hover: Hover, mouse: Point | null) => React.ReactNode
 }> = ({
   calls,
@@ -259,7 +259,7 @@ export const CallGraph: React.FC<{
               width={node.rect.width}
               height={node.rect.height}
             >
-              {renderNode(node)}
+              {renderNode(hover, node)}
             </foreignObject>
           )
         })}

@@ -47,8 +47,8 @@ function App() {
     <CallGraphUi
       calls={calls}
       backgroundColor="pink"
-      width={900}
-      height={600}
+      width={1200}
+      height={400}
       showDot={true}
       nodeWidth={200}
       nodeHeight={50}
@@ -65,7 +65,7 @@ function App() {
           stroke: getArrowColor(hover, arrow),
         }
       }}
-      renderNode={(node) => {
+      renderNode={(hover, node) => {
         const obj = objs.get(node.id)
         // return node.id
         return (
@@ -86,6 +86,7 @@ function App() {
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 textAlign: "center",
+                color: "white",
               }}
             >
               {obj?.name || obj?.address || node.id}

@@ -30,7 +30,7 @@ export const CallGraphUi: React.FC<{
     node: SvgNode,
   ) => { fill?: string; stroke?: string }
   getArrowStyle?: (hover: Hover, arrow: Arrow) => { stroke?: string }
-  renderNode?: (node: SvgNode) => React.ReactNode
+  renderNode?: (hover: Hover, node: SvgNode) => React.ReactNode
   renderHover?: (hover: Hover, mouse: Point | null) => React.ReactNode
   showDot?: boolean
   nodeWidth?: number
@@ -44,7 +44,7 @@ export const CallGraphUi: React.FC<{
   height,
   getNodeStyle,
   getArrowStyle,
-  renderNode = (node) => node.id,
+  renderNode = (hover, node) => node.id,
   renderHover = () => null,
   showDot = false,
   nodeWidth,
@@ -64,7 +64,7 @@ export const CallGraphUi: React.FC<{
   const [zoomIndex, setZoomIndex] = useState<number>(9)
 
   useEffect(() => {
-    zoom(3)
+    zoom(4)
   }, [])
 
   function zoom(next: number) {
