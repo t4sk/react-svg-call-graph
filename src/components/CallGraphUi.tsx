@@ -30,6 +30,7 @@ export const CallGraphUi: React.FC<{
     node: SvgNode,
   ) => { fill?: string; stroke?: string }
   getArrowStyle?: (hover: Hover, arrow: Arrow) => { stroke?: string }
+  renderArrowText?: (arrow: Arrow) => React.ReactNode
   renderNode?: (hover: Hover, node: SvgNode) => React.ReactNode
   renderHover?: (hover: Hover, mouse: Point | null) => React.ReactNode
   showDot?: boolean
@@ -44,8 +45,9 @@ export const CallGraphUi: React.FC<{
   height,
   getNodeStyle,
   getArrowStyle,
-  renderNode = (hover, node) => node.id,
-  renderHover = () => null,
+  renderArrowText,
+  renderNode,
+  renderHover,
   showDot = false,
   nodeWidth,
   nodeHeight,
@@ -179,6 +181,7 @@ export const CallGraphUi: React.FC<{
         showDot={showDot}
         getNodeStyle={getNodeStyle}
         getArrowStyle={getArrowStyle}
+        renderArrowText={renderArrowText}
         renderNode={renderNode}
         renderHover={renderHover}
         nodeWidth={nodeWidth}

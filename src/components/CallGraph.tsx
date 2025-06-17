@@ -55,6 +55,7 @@ export const CallGraph: React.FC<{
   nodeXGap?: number
   nodeYGap?: number
   renderNode?: (hover: Hover, node: SvgNode) => React.ReactNode
+  renderArrowText?: (arrow: Arrow) => React.ReactNode
   renderHover?: (hover: Hover, mouse: Point | null) => React.ReactNode
 }> = ({
   calls,
@@ -67,6 +68,7 @@ export const CallGraph: React.FC<{
   showDot = false,
   getNodeStyle = () => ({ fill: "none", stroke: "black" }),
   getArrowStyle = () => ({ stroke: "black" }),
+  renderArrowText = (arrow) => arrow.i,
   renderNode = () => null,
   renderHover = () => null,
   nodeWidth = 100,
@@ -155,7 +157,7 @@ export const CallGraph: React.FC<{
             x1={a.end.x}
             y1={a.end.y}
             stroke={style?.stroke || "black"}
-            text={a.i}
+            text={renderArrowText(a)}
             textYGap={offset * TEXT_GAP}
           />
         </>
@@ -176,7 +178,7 @@ export const CallGraph: React.FC<{
             xPadd={arrowXPadd}
             yPadd={-arrowYPadd}
             stroke={style?.stroke || "black"}
-            text={a.i}
+            text={renderArrowText(a)}
             textYGap={offset * TEXT_GAP}
           />
         </>
@@ -195,7 +197,7 @@ export const CallGraph: React.FC<{
           x1={a.end.x}
           y1={a.end.y}
           stroke={style?.stroke || "black"}
-          text={a.i}
+          text={renderArrowText(a)}
           textXGap={offset * TEXT_GAP}
         />
       </>

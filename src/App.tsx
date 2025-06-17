@@ -8,6 +8,8 @@ const graph = build(calls)
 
 console.log(calls, graph)
 
+// TODO: fix overlapping text
+
 function getNodeFillColor(hover: Hover, node: SvgNode): string {
   if (hover.node == null) {
     return "rgba(120, 0, 255, 1)"
@@ -64,6 +66,9 @@ function App() {
         return {
           stroke: getArrowColor(hover, arrow),
         }
+      }}
+      renderArrowText={(arrow) => {
+        return `${arrow.i} ${arrows[arrow.i]?.function?.name}`
       }}
       renderNode={(hover, node) => {
         const obj = objs.get(node.id)
