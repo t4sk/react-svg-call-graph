@@ -2,7 +2,7 @@ import { CallGraphUi } from "./components/CallGraphUi"
 import { SvgNode, Arrow, Hover } from "./lib/types"
 import { getArrowKey } from "./components/CallGraph"
 import { build } from "./lib/graph"
-import { calls, objs } from "./dev"
+import { calls, objs, arrows } from "./dev"
 
 const graph = build(calls)
 
@@ -127,8 +127,12 @@ function App() {
                 padding: 10,
               }}
             >
-              {[...hover.arrows].map((k) => {
-                return <div>{k}</div>
+              {[...hover.arrows].map(([k, v]) => {
+                return (
+                  <div>
+                    {k} {arrows[v]?.function?.name || v}
+                  </div>
+                )
               })}
             </div>
           )

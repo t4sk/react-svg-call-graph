@@ -28,7 +28,7 @@ export function build(calls: Call[]): Graph {
 export function bfs<A>(
   start: A,
   get: (v: A) => A[] | null,
-  f?: (d: number, v: A) => void
+  f?: (d: number, v: A) => void,
 ) {
   const q: [number, A][] = [[0, start]]
   const visited: Set<A> = new Set()

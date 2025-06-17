@@ -33,7 +33,7 @@ function sample(a: Arrow, xPadd: number = 0, yPadd: number = 0): Point[] {
 }
 
 export function getArrowKey(a: Arrow): string {
-  return `${a.s},${a.e}`
+  return `${a.i},${a.s},${a.e}`
 }
 
 export const CallGraph: React.FC<{
@@ -113,7 +113,7 @@ export const CallGraph: React.FC<{
     }
 
     if (hover.node == null) {
-      hover.arrows = new Set()
+      hover.arrows = new Map()
 
       for (let i = 0; i < layout.arrows.length; i++) {
         const a = layout.arrows[i]
@@ -127,7 +127,7 @@ export const CallGraph: React.FC<{
           const points = sample(a, arrowXPadd, -arrowYPadd)
           for (let i = 0; i < points.length; i++) {
             if (math.dist(points[i], mouseSvgXY) < R) {
-              hover.arrows.add(getArrowKey(a))
+              hover.arrows.set(getArrowKey(a), a.i)
             }
           }
         }

@@ -82,5 +82,5 @@ export type Layout = {
 // UI
 export type Hover = {
   node: number | null
-  arrows: Set<string> | null
+  arrows: Map<string, number> | null
 }
