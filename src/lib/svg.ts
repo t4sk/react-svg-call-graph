@@ -11,11 +11,15 @@ import {
 } from "./types"
 import * as math from "./math"
 
+export function getArrowKey(a: Arrow): string {
+  return `${a.s},${a.e}`
+}
+
 export function getViewBoxX(
   width: number,
   mouseX: number,
   viewBoxWidth: number,
-  viewBoxX: number
+  viewBoxX: number,
 ): number {
   return math.lin(viewBoxWidth, width, mouseX, viewBoxX)
 }
@@ -24,7 +28,7 @@ export function getViewBoxY(
   height: number,
   mouseY: number,
   viewBoxHeight: number,
-  viewBoxY: number
+  viewBoxY: number,
 ): number {
   return math.lin(viewBoxHeight, height, mouseY, viewBoxY)
 }
@@ -81,7 +85,7 @@ export function poly(
   p0: Point,
   p1: Point,
   xPadd: number = 0,
-  yPadd: number = 0
+  yPadd: number = 0,
 ): Point[] {
   switch (type) {
     case "zigzag": {
@@ -105,7 +109,7 @@ export function poly(
 export function box(
   points: Point[],
   xPadd: number = 0,
-  yPadd: number = 0
+  yPadd: number = 0,
 ): Rect {
   let xMin = points[0].x
   let xMax = points[0].x
@@ -140,7 +144,7 @@ function arrow(
   map: Map<number, SvgNode>,
   i: number,
   start: number,
-  end: number
+  end: number,
 ): Arrow {
   const s = map.get(start) as SvgNode
   const e = map.get(end) as SvgNode
@@ -269,8 +273,7 @@ export function map(calls: Call[], canvas: Canvas): Layout {
 export function overlaps(arrows: Arrow[]): Map<string, number> {
   const m: Map<string, number> = new Map()
   for (let i = 0; i < arrows.length; i++) {
-    const a = arrows[i]
-    const key = `${a.s},${a.e}`
+    const key = getArrowKey(arrows[i])
     m.set(key, (m.get(key) ?? 0) + 1)
   }
   return m

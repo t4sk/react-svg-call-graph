@@ -1,14 +1,12 @@
 import { CallGraphUi } from "./components/CallGraphUi"
 import { SvgNode, Arrow, Hover } from "./lib/types"
-import { getArrowKey } from "./components/CallGraph"
+import { getArrowKey } from "./lib/svg"
 import { build } from "./lib/graph"
 import { calls, objs, arrows } from "./dev"
 
 const graph = build(calls)
 
 console.log(calls, graph)
-
-// TODO: fix overlapping text
 
 function getNodeFillColor(hover: Hover, node: SvgNode): string {
   if (hover.node == null) {
@@ -39,7 +37,7 @@ function getArrowColor(hover: Hover, arrow: Arrow): string {
     if (hover.arrows.has(getArrowKey(arrow))) {
       return "purple"
     }
-    return "rgba(0, 0, 0, 0.2)"
+    return "rgba(0, 0, 0, 0.1)"
   }
   return "black"
 }
@@ -55,7 +53,7 @@ function App() {
       nodeWidth={200}
       nodeHeight={50}
       nodeXGap={100}
-      nodeYGap={60}
+      nodeYGap={80}
       getNodeStyle={(hover, node) => {
         return {
           fill: getNodeFillColor(hover, node),
@@ -68,7 +66,7 @@ function App() {
         }
       }}
       renderArrowText={(arrow) => {
-        return `${arrow.i} ${arrows[arrow.i]?.function?.name}`
+        return `${arrow.i} ${arrows[arrow.i]?.function?.name || "?"}`
       }}
       renderNode={(hover, node) => {
         const obj = objs.get(node.id)

@@ -171,7 +171,7 @@ export const SvgZigZagArrow: React.FC<{
   textXGap = -14,
   textYGap = -14,
 }) => {
-  const mid = (x0 + x1) >> 1
+  const midX = (x0 + x1) >> 1
   const id = `zig-zag-arrow-${stroke}`
 
   return (
@@ -193,23 +193,23 @@ export const SvgZigZagArrow: React.FC<{
         className="flow"
         x1={x0}
         y1={y0}
-        x2={mid}
+        x2={midX}
         y2={y0}
         stroke={stroke}
         strokeWidth="2"
       />
       <line
         className="flow"
-        x1={mid}
+        x1={midX}
         y1={y0}
-        x2={mid}
+        x2={midX}
         y2={y1}
         stroke={stroke}
         strokeWidth="2"
       />
       <line
         className="flow"
-        x1={mid}
+        x1={midX}
         y1={y1}
         x2={x1}
         y2={y1}
@@ -219,13 +219,13 @@ export const SvgZigZagArrow: React.FC<{
       />
       {text ? (
         <text
-          x={mid + textXGap}
+          x={midX + textXGap}
           y={y1 + textYGap}
           fontFamily={FONT}
           fontSize={FONT_SIZE}
           fill={stroke}
           stroke={stroke}
-          textAnchor="middle"
+          textAnchor="end"
           dominantBaseline="middle"
           textRendering="optimizeLegibility"
         >
@@ -322,7 +322,7 @@ export const SvgCallBackArrow: React.FC<{
           fontSize={FONT_SIZE}
           fill={stroke}
           stroke={stroke}
-          textAnchor="middle"
+          textAnchor="start"
           dominantBaseline="middle"
           textRendering="optimizeLegibility"
         >

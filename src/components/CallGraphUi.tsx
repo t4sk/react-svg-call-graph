@@ -30,7 +30,7 @@ export const CallGraphUi: React.FC<{
     node: SvgNode,
   ) => { fill?: string; stroke?: string }
   getArrowStyle?: (hover: Hover, arrow: Arrow) => { stroke?: string }
-  renderArrowText?: (arrow: Arrow) => React.ReactNode
+  renderArrowText?: (arrow: Arrow) => string | number
   renderNode?: (hover: Hover, node: SvgNode) => React.ReactNode
   renderHover?: (hover: Hover, mouse: Point | null) => React.ReactNode
   showDot?: boolean

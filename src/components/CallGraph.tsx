@@ -32,10 +32,6 @@ function sample(a: Arrow, xPadd: number = 0, yPadd: number = 0): Point[] {
   })
 }
 
-export function getArrowKey(a: Arrow): string {
-  return `${a.i},${a.s},${a.e}`
-}
-
 export const CallGraph: React.FC<{
   calls: Call[]
   backgroundColor: string
@@ -55,7 +51,7 @@ export const CallGraph: React.FC<{
   nodeXGap?: number
   nodeYGap?: number
   renderNode?: (hover: Hover, node: SvgNode) => React.ReactNode
-  renderArrowText?: (arrow: Arrow) => React.ReactNode
+  renderArrowText?: (arrow: Arrow) => string | number
   renderHover?: (hover: Hover, mouse: Point | null) => React.ReactNode
 }> = ({
   calls,
@@ -129,7 +125,7 @@ export const CallGraph: React.FC<{
           const points = sample(a, arrowXPadd, -arrowYPadd)
           for (let i = 0; i < points.length; i++) {
             if (math.dist(points[i], mouseSvgXY) < R) {
-              hover.arrows.set(getArrowKey(a), a.i)
+              hover.arrows.set(svg.getArrowKey(a), a.i)
             }
           }
         }
@@ -138,11 +134,11 @@ export const CallGraph: React.FC<{
   }
 
   function renderArrow(i: number, a: Arrow, style: { stroke?: string }) {
-    const key = getArrowKey(a)
+    const key = svg.getArrowKey(a)
     const offset = overlaps.get(key) || 0
     overlaps.set(key, offset > 0 ? offset - 1 : 0)
 
-    const points = sample(a, arrowXPadd, -arrowYPadd)
+    // const points = sample(a, arrowXPadd, -arrowYPadd)
 
     if (a.start.y == a.end.y) {
       return (
@@ -198,7 +194,7 @@ export const CallGraph: React.FC<{
           y1={a.end.y}
           stroke={style?.stroke || "black"}
           text={renderArrowText(a)}
-          textXGap={offset * TEXT_GAP}
+          textYGap={offset * TEXT_GAP}
         />
       </>
     )
