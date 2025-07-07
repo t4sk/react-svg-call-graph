@@ -133,7 +133,7 @@ export const CallGraph: React.FC<{
     }
   }
 
-  function renderArrow(i: number, a: Arrow, style: { stroke?: string }) {
+  const renderArrow = (i: number, a: Arrow, style: { stroke?: string }) => {
     const key = svg.getArrowKey(a)
     const offset = overlaps.get(key) || 0
     overlaps.set(key, offset > 0 ? offset - 1 : 0)

@@ -69,7 +69,7 @@ export const CallGraphUi: React.FC<{
     zoom(4)
   }, [])
 
-  function zoom(next: number) {
+  const zoom = (next: number) => {
     // Zoom in -> view box decrease width and height
     // Zoom out -> view box increase width and height
     const up = next >= zoomIndex
@@ -92,18 +92,18 @@ export const CallGraphUi: React.FC<{
     })
   }
 
-  function onClickPlus() {
+  const onClickPlus = () => {
     zoom(zoomIndex + 1)
   }
 
-  function onClickMinus() {
+  const onClickMinus = () => {
     zoom(zoomIndex - 1)
   }
 
-  function getMouse(
+  const getMouse = (
     ref: HTMLDivElement | null,
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-  ): Point | null {
+  ): Point | null => {
     if (!ref) {
       return null
     }
@@ -115,7 +115,7 @@ export const CallGraphUi: React.FC<{
     }
   }
 
-  function onMouseDown(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+  const onMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault()
     const mouse = getMouse(ref.current, e)
     if (mouse) {
@@ -128,12 +128,12 @@ export const CallGraphUi: React.FC<{
     }
   }
 
-  function onMouseUp(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+  const onMouseUp = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault()
     setDrag(null)
   }
 
-  function onMouseMove(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+  const onMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault()
     const mouse = getMouse(ref.current, e)
     if (mouse) {
@@ -150,7 +150,7 @@ export const CallGraphUi: React.FC<{
     }
   }
 
-  function onMouseOut(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+  const onMouseOut = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault()
     setDrag(null)
   }
