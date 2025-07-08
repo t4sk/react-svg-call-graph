@@ -6,7 +6,7 @@ import { calls, objs, arrows } from "./dev"
 
 const graph = build(calls)
 
-console.log(calls, graph)
+// console.log(calls, graph)
 
 function getNodeFillColor(hover: Hover, node: SvgNode): string {
   if (hover.node == null) {

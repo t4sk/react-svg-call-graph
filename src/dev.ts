@@ -15,7 +15,7 @@ const abis = ABIS.reduce((z, abi) => {
   return z
 }, {})
 
-console.log("ABI", abis)
+// console.log("ABI", abis)
 
 type TxCall = {
   from: string
@@ -59,7 +59,7 @@ dfs<TxCall>(
   TX.result,
   (c) => c?.calls || [],
   (d, c) => {
-    console.log("CALL", c)
+    // console.log("CALL", c)
     // @ts-ignore
     const abi = abis[c.to]
     let func = null
@@ -71,14 +71,14 @@ dfs<TxCall>(
         // @ts-ignore
         func.name = tx.name
       }
-      console.log("func", tx?.name)
-      console.log("TX", tx)
-      console.log("INPUTS", tx?.fragment?.inputs, tx?.args)
+      // console.log("func", tx?.name)
+      // console.log("TX", tx)
+      // console.log("INPUTS", tx?.fragment?.inputs, tx?.args)
       // @ts-ignore
       if (tx?.fragment && c.output) {
         // @ts-ignore
         const out = iface.decodeFunctionResult(tx.fragment, c.output)
-        console.log("OUT", out)
+        // console.log("OUT", out)
       }
     }
 
@@ -128,4 +128,4 @@ for (const [key, obj] of objs) {
   data.push(obj.address)
   // console.log(obj)
 }
-console.log(data)
+// console.log(data)
