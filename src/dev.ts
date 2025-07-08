@@ -1,7 +1,7 @@
 import { ethers } from "ethers"
-import TX from "../notes/tx-res.json"
-import NAMES from "../notes/names.json"
-import ABIS from "../notes/abis.json"
+import TX from "../notes/data/tx-res.json"
+import NAMES from "../notes/data/names.json"
+import ABIS from "../notes/data/abis.json"
 import "../notes/req.ts"
 
 import { Call } from "./lib/types"
