@@ -1,8 +1,8 @@
 import { ethers } from "ethers"
-import TX from "../tmp/tx-res.json"
-import NAMES from "../tmp/names.json"
-import ABIS from "../tmp/abis.json"
-import "../tmp/req.ts"
+import TX from "../notes/tx-res.json"
+import NAMES from "../notes/names.json"
+import ABIS from "../notes/abis.json"
+import "../notes/req.ts"
 
 import { Call } from "./lib/types"
 import { dfs } from "./lib/graph"
