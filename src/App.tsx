@@ -1,7 +1,7 @@
-import { CallGraphUi } from "./components/CallGraphUi"
-import { SvgNode, Arrow, Hover } from "./lib/types"
-import { getArrowKey } from "./lib/svg"
-import { build } from "./lib/graph"
+import { CallGraphUi } from "./components/graph/CallGraphUi"
+import { SvgNode, Arrow, Hover } from "./components/graph/lib/types"
+import { getArrowKey } from "./components/graph/lib/svg"
+import { build } from "./components/graph/lib/graph"
 import { calls, objs, arrows } from "./dev"
 
 const graph = build(calls)

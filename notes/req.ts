@@ -4,7 +4,7 @@ import ABIS from "./data/abis.json"
 import env from "./env"
 import {get, post} from "./lib"
 import {TxTrace, Call, ContractInfo} from "./types"
-import { dfs } from "../src/lib/graph"
+import { dfs } from "../src/components/graph/lib/graph"
 
 // 1. Get tx trace -> getTxTrace
 // 2. Collect contract addresses -> dfs tx trace

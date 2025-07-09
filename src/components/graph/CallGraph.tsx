@@ -1,16 +1,14 @@
 import { useMemo } from "react"
-import { Call, ViewBox, Point, SvgNode, Arrow, Hover } from "../lib/types"
-import * as svg from "../lib/svg"
+import { Call, ViewBox, Point, SvgNode, Arrow, Hover } from "./lib/types"
+import * as svg from "./lib/svg"
 import {
   SvgRect,
   SvgDot,
   SvgArrow,
   SvgZigZagArrow,
   SvgCallBackArrow,
-  // TODO: remove?
-  SvgLinearGradients,
 } from "./Svg"
-import * as math from "../lib/math"
+import * as math from "./lib/math"
 
 const TEXT_GAP = -30
 const STEP = 50

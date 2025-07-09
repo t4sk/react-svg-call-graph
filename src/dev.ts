@@ -4,8 +4,8 @@ import NAMES from "../notes/data/names.json"
 import ABIS from "../notes/data/abis.json"
 import "../notes/req.ts"
 
-import { Call } from "./lib/types"
-import { dfs } from "./lib/graph"
+import { Call } from "./components/graph/lib/types.ts"
+import { dfs } from "./components/graph/lib/graph.ts"
 
 const abis = ABIS.reduce((z, abi) => {
   if (abi.abi) {

@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react"
-import { Call, Point, SvgNode, Arrow, Hover } from "../lib/types"
+import { Call, Point, SvgNode, Arrow, Hover } from "./lib/types"
 import styles from "./CallGraphUi.module.css"
 import { CallGraph } from "./CallGraph"
 import { GraphController } from "./GraphController"
