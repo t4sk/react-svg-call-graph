@@ -14,16 +14,20 @@ import { dfs } from "../src/lib/graph"
 //    - Decode function input / output using ABI
 
 // TODO: db
+// # contracts
 // chain => address => contract
-//                     - chain
-//                     - address
+//                     - chain (index)
+//                     - address (index)
 //                     - name
 //                     - abi
 //                     - label
-// function selector
-// - selector
+// # function selectors
+// - selector (index)
 // - inputs
 // - outputs
+// # trace
+// - tx hash
+// - calls
 
 async function getTxTrace(txHash: string): Promise<TxTrace> {
   return post<any, TxTrace>(env.RPC_URL, {
