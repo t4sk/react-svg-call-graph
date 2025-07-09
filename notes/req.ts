@@ -3,7 +3,7 @@ import TX_TRACE_RES from "./data/tx-res.json"
 import ABIS from "./data/abis.json"
 import env from "./env"
 import {get, post} from "./lib"
-import {TxTrace, Call} from "./types"
+import {TxTrace, Call, ContractInfo} from "./types"
 import { dfs } from "../src/lib/graph"
 
 // 1. Get tx trace -> getTxTrace
@@ -11,28 +11,19 @@ import { dfs } from "../src/lib/graph"
 // 3. Get contract name, abi, etc... -> batch getContract
 // 4. Parse ABI
 // 5. Merge into trace
+//    - Decode function input / output using ABI
 
-// TODO: db data
+// TODO: db
 // chain => address => contract
-//                     - name
+//                     - chain
 //                     - address
+//                     - name
 //                     - abi
+//                     - label
 // function selector
 // - selector
 // - inputs
 // - outputs
-
-/*
-console.log(ethers)
-
-for (const abi of ABIS) {
-  if (abi.abi) {
-    const contract = new ethers.Interface(abi.abi)
-  }
-}
-
-console.log("RES", res)
-*/
 
 async function getTxTrace(txHash: string): Promise<TxTrace> {
   return post<any, TxTrace>(env.RPC_URL, {
@@ -45,14 +36,13 @@ async function getTxTrace(txHash: string): Promise<TxTrace> {
 
 async function getContract(
   addr: string
-): Promise<{ abi: string | null; name: string | null }> {
-  const res = await get(
+): Promise<{ abi: any | null; name: string | null }> {
+  const res = await get<{result: ContractInfo[]}>(
     `https://api.etherscan.io/api?module=contract&action=getsourcecode&address=${addr}&apikey=${env.ETHERSCAN_API_KEY}`
   )
-  console.log(res)
 
   // @ts-ignore
-  const abi = res?.result?.[0]?.ABI || null
+  const abi = res?.result?.[0]?.ABI || ""
   // @ts-ignore
   const name = res?.result?.[0]?.ContractName || null
 
@@ -91,33 +81,15 @@ async function main() {
         addrs.add(c.to)
     }
 
-    // TODO: promise.all
+    const contracts: {addr: string, name: string | null, abi: any}[] = []
     for (const addr of addrs) {
-        const res = await getContract(addr)
-        console.log(addr, res)
+        const { name, abi } = await getContract(addr)
+        console.log("get", addr)
+        contracts.push({ addr, name, abi })
     }
 
-
+    console.log(contracts)
 }
 
-main()
+// main()
 
-/*
-async function batch() {
-  const res = []
-  for (const addr of addrs) {
-    const { name, abi } = await getContract(addr)
-    // @ts-ignore
-    res.push({ addr, name, abi })
-  }
-  console.log(res)
-}
-
-const map = contracts.reduce((z, e) => {
-  // @ts-ignore
-  z[e.addr] = e.name
-  return z
-}, {})
-
-console.log("MAP", map)
-*/

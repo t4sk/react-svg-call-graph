@@ -13,3 +13,9 @@ export type Call = {
 export type TxTrace = {
     result: Call
 }
+
+export type ContractInfo = {
+    ABI: string
+    ContractName: string
+}
+
