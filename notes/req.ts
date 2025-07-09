@@ -67,12 +67,13 @@ async function main() {
 
     // const trace = await getTxTrace(txHash)
     // console.log(trace)
+    const trace = TX_TRACE_RES
 
     const calls: [number, Call][] = []
 
     dfs<Call>(
       // @ts-ignore
-      TX_TRACE_RES.result,
+      trace.result,
       (c) => c?.calls || [],
       (d, c) => {
         calls.push([d, c])
