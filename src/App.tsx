@@ -2,11 +2,13 @@ import { CallGraphUi } from "./components/graph/CallGraphUi"
 import { SvgNode, Arrow, Hover } from "./components/graph/lib/types"
 import { getArrowKey } from "./components/graph/lib/svg"
 import { build } from "./components/graph/lib/graph"
+import Tracer from "./components/tracer"
 import { calls, objs, arrows } from "./dev"
 
 const graph = build(calls)
 
 // console.log(calls, graph)
+// TODO: import foundry trace
 
 function getNodeFillColor(hover: Hover, node: SvgNode): string {
   if (hover.node == null) {
@@ -44,105 +46,108 @@ function getArrowColor(hover: Hover, arrow: Arrow): string {
 
 function App() {
   return (
-    <CallGraphUi
-      calls={calls}
-      backgroundColor="pink"
-      width={1200}
-      height={400}
-      showDot={true}
-      nodeWidth={200}
-      nodeHeight={50}
-      nodeXGap={100}
-      nodeYGap={80}
-      getNodeStyle={(hover, node) => {
-        return {
-          fill: getNodeFillColor(hover, node),
-          stroke: "black",
-        }
-      }}
-      getArrowStyle={(hover, arrow) => {
-        return {
-          stroke: getArrowColor(hover, arrow),
-        }
-      }}
-      renderArrowText={(arrow) => {
-        return `${arrow.i} ${arrows[arrow.i]?.function?.name || "?"}`
-      }}
-      renderNode={(hover, node) => {
-        const obj = objs.get(node.id)
-        // return node.id
-        return (
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <span
-              style={{
-                width: 140,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                textAlign: "center",
-                color: "white",
-              }}
-            >
-              {obj?.name || obj?.address || node.id}
-            </span>
-          </div>
-        )
-      }}
-      renderHover={(hover, mouse) => {
-        if (!mouse) {
-          return null
-        }
-        if (hover.node) {
-          return (
-            <div
-              style={{
-                position: "absolute",
-                top: mouse.y + 10,
-                left: mouse.x + 10,
-                width: 100,
-                height: 100,
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
-              }}
-            >
-              {hover.node}
-            </div>
-          )
-        }
-        if (hover.arrows && hover.arrows.size > 0) {
-          return (
-            <div
-              style={{
-                position: "absolute",
-                top: mouse.y + 10,
-                left: mouse.x + 10,
-                width: 100,
-                height: 100,
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                padding: 10,
-              }}
-            >
-              {[...hover.arrows].map(([k, v]) => {
-                return (
-                  <div>
-                    {k} {arrows[v]?.function?.name || v}
-                  </div>
-                )
-              })}
-            </div>
-          )
-        }
-        return null
-      }}
-    />
+      <>
+        <Tracer />
+        <CallGraphUi
+          calls={calls}
+          backgroundColor="pink"
+          width={1200}
+          height={400}
+          showDot={true}
+          nodeWidth={200}
+          nodeHeight={50}
+          nodeXGap={100}
+          nodeYGap={80}
+          getNodeStyle={(hover, node) => {
+            return {
+              fill: getNodeFillColor(hover, node),
+              stroke: "black",
+            }
+          }}
+          getArrowStyle={(hover, arrow) => {
+            return {
+              stroke: getArrowColor(hover, arrow),
+            }
+          }}
+          renderArrowText={(arrow) => {
+            return `${arrow.i} ${arrows[arrow.i]?.function?.name || "?"}`
+          }}
+          renderNode={(hover, node) => {
+            const obj = objs.get(node.id)
+            // return node.id
+            return (
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <span
+                  style={{
+                    width: 140,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    textAlign: "center",
+                    color: "white",
+                  }}
+                >
+                  {obj?.name || obj?.address || node.id}
+                </span>
+              </div>
+            )
+          }}
+          renderHover={(hover, mouse) => {
+            if (!mouse) {
+              return null
+            }
+            if (hover.node) {
+              return (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: mouse.y + 10,
+                    left: mouse.x + 10,
+                    width: 100,
+                    height: 100,
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  }}
+                >
+                  {hover.node}
+                </div>
+              )
+            }
+            if (hover.arrows && hover.arrows.size > 0) {
+              return (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: mouse.y + 10,
+                    left: mouse.x + 10,
+                    width: 100,
+                    height: 100,
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    padding: 10,
+                  }}
+                >
+                  {[...hover.arrows].map(([k, v]) => {
+                    return (
+                      <div>
+                        {k} {arrows[v]?.function?.name || v}
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            }
+            return null
+          }}
+        />
+      </>
   )
 }
 
