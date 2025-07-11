@@ -1,27 +1,15 @@
 import React from "react"
+import {Func} from "./types"
 
-type Input = {
-    type: string
-    value: string
-}
-
-type Output = {
-    type: string
-    value: string
-}
-
-type Func = {
-    // TODO: contract name and address
-    // TODO: meta data (value, call, staticcall, event, etc...)
-    depth: number
-    name: string
-    inputs: Input[]
-    outputs: Output[]
-}
-
-const Tracer: React.FC<{}> = () => {
+const Tracer: React.FC<{ trace: Func[] }> = ({trace}) => {
   return (
-      <div style={{color: "white"}}>tracer</div>
+    <div style={{color: "white"}}>
+    {trace.map((f, i) => {
+      return (
+        <div key={i}>{i} {f.depth} {f.obj}.{f.name}</div>
+      )
+    })}
+    </div>
   )
 }
 

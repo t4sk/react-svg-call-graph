@@ -3,7 +3,7 @@ import { SvgNode, Arrow, Hover } from "./components/graph/lib/types"
 import { getArrowKey } from "./components/graph/lib/svg"
 import { build } from "./components/graph/lib/graph"
 import Tracer from "./components/tracer"
-import { calls, objs, arrows } from "./dev"
+import { calls, traces, objs, arrows } from "./dev"
 
 const graph = build(calls)
 
@@ -47,7 +47,7 @@ function getArrowColor(hover: Hover, arrow: Arrow): string {
 function App() {
   return (
       <>
-        <Tracer />
+        <Tracer trace={traces}/>
         <CallGraphUi
           calls={calls}
           backgroundColor="pink"

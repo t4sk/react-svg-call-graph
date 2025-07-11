@@ -1,6 +1,7 @@
 import { ethers } from "ethers"
-import { Call } from "./components/graph/lib/types.ts"
-import { dfs } from "./components/graph/lib/graph.ts"
+import { Call } from "./components/graph/lib/types"
+import { Func } from "./components/tracer/types"
+import { dfs } from "./components/graph/lib/graph"
 
 import TX from "../notes/data/tx-res.json"
 import NAMES from "../notes/data/names.json"
@@ -113,6 +114,8 @@ export const calls: Call[] = [
   },
 ]
 
+export const traces: Func[] = []
+
 for (const [d, c] of flat) {
   calls.push({
     // @ts-ignore
@@ -120,6 +123,16 @@ for (const [d, c] of flat) {
     // @ts-ignore
     dst: ids.get(c.to),
     depth: d + 1,
+  })
+
+  traces.push({
+    depth: d as number,
+    // @ts-ignore
+    obj: NAMES[c.to] || c.to,
+    name: "f()",
+    inputs: [],
+    outputs: [],
+    ok: true
   })
 }
 
