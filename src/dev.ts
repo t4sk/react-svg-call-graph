@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { Call } from "./components/graph/lib/types"
-import { Func } from "./components/tracer/types"
+import { Func, Input, Output } from "./components/tracer/types"
 import { dfs } from "./components/graph/lib/graph"
 
 import TX from "../notes/data/tx-res.json"
@@ -15,6 +15,17 @@ const abis = ABIS.reduce((z, abi) => {
   }
   return z
 }, {})
+
+function zip<A, B, C>(a: A[], b: B[], f: (a: A, b: B) => C): C[] {
+  const n = Math.min(a.length, b.length)
+  const c: C[] = []
+
+  for (let i = 0; i < n; i++) {
+    c.push(f(a[i], b[i]))
+  }
+
+  return c
+}
 
 // console.log("ABI", abis)
 
@@ -56,32 +67,58 @@ const flat: [number, TxCall][] = []
 export const objs: Map<number, Obj> = new Map()
 export const arrows: Arrow[] = []
 
+function parseTx(abi: any[] | null ,input: string, output?: string): { name: string, inputs: Input[], outputs: Output[] } | null {
+  if (!abi) {
+    return null
+  }
+
+  const iface = new ethers.Interface(abi)
+  const tx = iface.parseTransaction({ data: input })
+  if (!tx) {
+    return null
+  }
+
+  const func = {
+    name: tx.name,
+    inputs: [],
+    outputs: []
+  }
+  // console.log("TX", tx)
+  // @ts-ignore
+  if (tx?.fragment) {
+    const vals = iface.decodeFunctionData(tx.fragment, input)
+    // @ts-ignore
+    func.inputs = zip(vals, [...tx.fragment.inputs], (v, t) => {
+      return {
+        type: t.type,
+        name: t.name,
+        value: v
+      }
+    })
+
+  }
+  if (tx?.fragment && output) {
+    // @ts-ignore
+    const vals = iface.decodeFunctionResult(tx.fragment, output)
+    // @ts-ignore
+    func.outputs = zip(vals, [...tx.fragment.outputs], (v, t) => {
+      return {
+        type: t.type,
+        name: t.name,
+        value: v
+      }
+    })
+  }
+  return func
+}
+
 dfs<TxCall>(
   TX.result,
   (c) => c?.calls || [],
   (d, c) => {
     // console.log("CALL", c)
     // @ts-ignore
-    const abi = abis[c.to]
-    let func = null
-    if (abi) {
-      const iface = new ethers.Interface(abi)
-      const tx = iface.parseTransaction({ data: c.input })
-      if (tx) {
-        func = {}
-        // @ts-ignore
-        func.name = tx.name
-      }
-      // console.log("func", tx?.name)
-      // console.log("TX", tx)
-      // console.log("INPUTS", tx?.fragment?.inputs, tx?.args)
-      // @ts-ignore
-      if (tx?.fragment && c.output) {
-        // @ts-ignore
-        const out = iface.decodeFunctionResult(tx.fragment, c.output)
-        // console.log("OUT", out)
-      }
-    }
+    const func = parseTx(abis[c.to], c.input, c.output)
 
     arrows.push({
       src: c.from,
@@ -125,16 +162,22 @@ for (const [d, c] of flat) {
     depth: d + 1,
   })
 
+  // @ts-ignore
+  const func = parseTx(abis[c.to], c.input, c.output)
+
   traces.push({
     depth: d as number,
     // @ts-ignore
     obj: NAMES[c.to] || c.to,
-    name: "f()",
-    inputs: [],
-    outputs: [],
+    name: func?.name || "",
+    inputs: func?.inputs || [],
+    outputs: func?.outputs || [],
+    // TODO
     ok: true
   })
 }
+
+console.log(traces)
 
 const data = []
 for (const [key, obj] of objs) {

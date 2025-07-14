@@ -1,0 +1,87 @@
+.component {
+  background-color: #0f0f10;
+  color: white;
+  overflow: auto;
+  white-space: nowrap;
+}
+.func {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100%;
+}
+.index {
+  /* Prevent element from shrinking when x overflows */
+  min-width: 28px;
+  width: 28px;
+  padding-right: 8px;
+  text-align: right;
+  color: #9b9aa2;
+}
+.vline {
+  margin-left: 6px;
+  padding-left: 10px;
+  border-left: 1px solid white;
+}
+.funcCallWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: white;
+}
+.obj {
+  color: #71aefe;
+}
+.funcName {
+  color: #6e56cf;
+}
+.value {
+  color: #edc389;
+}
+.funcOutputs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.inputs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.inputWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.inputName {
+}
+.inputValue {
+  color: #edc389;
+}
+.outputs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.outputWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.outputName {
+}
+.outputValue {
+  color: #edc389;
+}
+.arrow {
+  color: #f88c6c;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.eq {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+.comma {
+  margin-right: 10px;
+}
