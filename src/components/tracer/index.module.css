@@ -4,6 +4,9 @@
   overflow: auto;
   white-space: nowrap;
 }
+.hide {
+  display: none;
+}
 .line {
   display: flex;
   flex-direction: row;
@@ -25,9 +28,9 @@
   color: #9b9aa2;
 }
 .padd {
-  margin-left: 6px;
-  padding-left: 10px;
-  border-left: 1px solid grey;
+  /* Half of (fold width + padding) */
+  padding-left: 9px;
+  border-right: 1px solid grey;
   height: 100%;
 }
 .func {
@@ -35,6 +38,14 @@
   flex-direction: row;
   align-items: center;
   color: white;
+}
+.fold {
+  width: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
 }
 .obj {
   color: #71aefe;
