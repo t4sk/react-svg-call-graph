@@ -4,11 +4,17 @@
   overflow: auto;
   white-space: nowrap;
 }
-.func {
+.line {
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: 100%;
+  white-space: nowrap;
+  /* Need to specify height for .padd to display a vertical line */
+  height: 20px;
+  transition: background-color 0.2s ease;
+}
+.line:hover {
+  background-color: #2f2f2f;
 }
 .index {
   /* Prevent element from shrinking when x overflows */
@@ -18,12 +24,13 @@
   text-align: right;
   color: #9b9aa2;
 }
-.vline {
+.padd {
   margin-left: 6px;
   padding-left: 10px;
-  border-left: 1px solid white;
+  border-left: 1px solid grey;
+  height: 100%;
 }
-.funcCallWrapper {
+.func {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -38,50 +45,13 @@
 .value {
   color: #edc389;
 }
-.funcOutputs {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-.inputs {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-.inputWrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-.inputName {
-}
-.inputValue {
-  color: #edc389;
-}
 .outputs {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
-.outputWrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-.outputName {
-}
-.outputValue {
-  color: #edc389;
-}
 .arrow {
   color: #f88c6c;
   margin-left: 10px;
-  margin-right: 10px;
-}
-.eq {
-  margin-left: 4px;
-  margin-right: 4px;
-}
-.comma {
   margin-right: 10px;
 }
