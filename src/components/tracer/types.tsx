@@ -28,3 +28,8 @@ export type Func = {
     selector: string
   }
 }
+
+export type Trace = {
+  func: Func,
+  children: Trace[]
+}
