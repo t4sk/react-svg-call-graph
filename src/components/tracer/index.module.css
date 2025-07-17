@@ -1,7 +1,10 @@
 .component {
   background-color: #0f0f10;
-  color: white;
   overflow: auto;
+  white-space: nowrap;
+}
+.fn {
+  color: white;
   white-space: nowrap;
 }
 .hide {
@@ -46,6 +49,12 @@
   align-items: center;
   justify-content: center;
   padding: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  color: #9b9aa2;
+}
+.fold:hover {
+  color: white
 }
 .obj {
   color: #71aefe;

@@ -1,6 +1,6 @@
-import React, { useState }  from "react"
+import React, { useState, useEffect }  from "react"
 import styles from "./index.module.css"
-import {Func} from "./types"
+import {Trace, Func} from "./types"
 import Inputs from "./Inputs"
 import Outputs from "./Outputs"
 
@@ -18,46 +18,45 @@ const Fold: React.FC<{ show: boolean, hasChildren: boolean, onClick: () => void}
   )
 }
 
-const Tracer: React.FC<{ trace: Func[] }> = ({trace}) => {
-  const [hidden, set] = useState<{[key: number]: boolean}>({})
+const Fn: React.FC<{ trace: Trace }> = ({trace }) => {
+  // TODO: ETH value
+  const [show, set] = useState(true)
 
-  const onClickFold = (i: number) => {
-    set(state => ({
-      ...state,
-      [i]: !state[i]
-    }))
+  const onClickFold = () => {
+    set(!show)
   }
 
-  // TODO: ETH value
-  const len = trace.length
+  return (
+    <div className={styles.fn}>
+      <div className={styles.line}>
+        <div className={styles.index}>{trace.id}</div>
+        <Padd depth={trace.func.depth} />
+        <div className={styles.func}>
+          <Fold show={show} hasChildren={trace.children.length > 0} onClick={onClickFold} />
+          <div className={styles.obj}>{trace.func.obj}</div>
+          <div className={styles.funcName}>.{trace.func.name}</div>
+          <div>(</div>
+          <Inputs inputs={trace.func.inputs} />
+          <div>)</div>
+          {trace.func.outputs.length > 0 ? (
+            <div className={styles.outputs}>
+              <div className={styles.arrow}>{"=>"}</div>
+              <div>(</div>
+              <Outputs outputs={trace.func.outputs} />
+              <div>)</div>
+            </div>
+          ): null}
+        </div>
+      </div>
+      {show ? trace.children.map(t => <Fn key={t.id} trace={t} />) : null}
+    </div>
+  )
+}
+
+const Tracer: React.FC<{ trace: Trace }> = ({trace}) => {
   return (
     <div className={styles.component}>
-    {trace.map((f, i) => {
-      const show = !hidden[i]
-      const hasChildren = trace[i + 1]?.depth > f.depth
-      return (
-        <div key={i} className={show ? styles.line : styles.hide}>
-          <div className={styles.index}>{i}</div>
-          <Padd depth={f.depth} />
-          <div className={styles.func}>
-            <Fold show={!hidden[i]} hasChildren={hasChildren} onClick={() => onClickFold(i)}/>
-            <div className={styles.obj}>{f.obj}</div>
-            <div className={styles.funcName}>.{f.name}</div>
-            <div>(</div>
-            <Inputs inputs={f.inputs} />
-            <div>)</div>
-            {f.outputs.length > 0 ? (
-              <div className={styles.outputs}>
-                <div className={styles.arrow}>{"=>"}</div>
-                <div>(</div>
-                <Outputs outputs={f.outputs} />
-                <div>)</div>
-              </div>
-            ): null}
-          </div>
-        </div>
-      )
-    })}
+      <Fn trace={trace} />
     </div>
   )
 }

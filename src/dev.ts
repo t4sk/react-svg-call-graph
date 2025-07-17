@@ -1,7 +1,7 @@
 import { ethers } from "ethers"
 import { Call } from "./components/graph/lib/types"
-import { Func, Input, Output } from "./components/tracer/types"
-import { dfs } from "./components/graph/lib/graph"
+import { Trace, Func, Input, Output } from "./components/tracer/types"
+import { dfs} from "./components/graph/lib/graph"
 
 import TX from "../notes/data/tx-res.json"
 import NAMES from "../notes/data/names.json"
@@ -112,6 +112,9 @@ function parseTx(abi: any[] | null ,input: string, output?: string): { name: str
   return func
 }
 
+let traceId = 0
+const stack: Trace[] = []
+
 dfs<TxCall>(
   TX.result,
   (c) => c?.calls || [],
@@ -140,8 +143,40 @@ dfs<TxCall>(
       }
     }
     flat.push([d, c])
+
+    // Stack
+    const trace: Trace = {
+      id: traceId,
+      func: {
+        depth: d,
+        // @ts-ignore
+        obj: NAMES[c.to] || c.to,
+        name: func?.name || "",
+        inputs: func?.inputs || [],
+        outputs: func?.outputs || [],
+        // TODO:
+        ok: true,
+        // TODO: vm
+      },
+      children: [],
+    }
+    // 0 based id
+    traceId++
+
+    while (stack.length >= d + 1) {
+      // @ts-ignore
+      stack.pop()
+    }
+    // @ts-ignore
+    const parent = stack[stack.length - 1]
+    if (parent) {
+      parent.children.push(trace)
+    }
+    stack.push(trace)
   },
 )
+
+export const trace = stack[0]
 
 export const calls: Call[] = [
   {
@@ -151,8 +186,6 @@ export const calls: Call[] = [
   },
 ]
 
-export const traces: Func[] = []
-
 for (const [d, c] of flat) {
   calls.push({
     // @ts-ignore
@@ -161,23 +194,7 @@ for (const [d, c] of flat) {
     dst: ids.get(c.to),
     depth: d + 1,
   })
-
-  // @ts-ignore
-  const func = parseTx(abis[c.to], c.input, c.output)
-
-  traces.push({
-    depth: d as number,
-    // @ts-ignore
-    obj: NAMES[c.to] || c.to,
-    name: func?.name || "",
-    inputs: func?.inputs || [],
-    outputs: func?.outputs || [],
-    // TODO
-    ok: true
-  })
 }
-
-console.log(traces)
 
 const data = []
 for (const [key, obj] of objs) {

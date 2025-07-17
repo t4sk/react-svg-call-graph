@@ -30,6 +30,7 @@ export type Func = {
 }
 
 export type Trace = {
+  id: number
   func: Func,
   children: Trace[]
 }
