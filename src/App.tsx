@@ -1,3 +1,4 @@
+import {Provider as TracerProvider} from "./components/tracer/TracerContext"
 import { CallGraphUi } from "./components/graph/CallGraphUi"
 import { SvgNode, Arrow, Hover } from "./components/graph/lib/types"
 import { getArrowKey } from "./components/graph/lib/svg"
@@ -9,6 +10,8 @@ const graph = build(calls)
 
 // console.log(calls, graph)
 // TODO: import foundry trace
+// TODO: highlight trace -> highlight graph
+// TODO: pin (click trace -> highlight graph)
 
 function getNodeFillColor(hover: Hover, node: SvgNode): string {
   if (hover.node == null) {
@@ -46,7 +49,7 @@ function getArrowColor(hover: Hover, arrow: Arrow): string {
 
 function App() {
   return (
-      <>
+      <TracerProvider>
         <Tracer trace={trace}/>
         <CallGraphUi
           calls={calls}
@@ -147,7 +150,7 @@ function App() {
             return null
           }}
         />
-      </>
+      </TracerProvider>
   )
 }
 

@@ -1,53 +1,9 @@
-import React, { useState, createContext, useContext, useMemo }  from "react"
+import React from "react"
 import styles from "./index.module.css"
-import {Trace, Func} from "./types"
+import {Trace} from "./types"
+import {useTracerContext} from "./TracerContext"
 import Inputs from "./Inputs"
 import Outputs from "./Outputs"
-
-// Context
-type State = {
-  hidden: { [key: number]: boolean }
-}
-
-const STATE: State = { hidden: {} }
-
-const TracerContext = createContext({
-  state: STATE,
-  toggle: (_: number) => {}
-})
-
-function useTracerContext() {
-  return useContext(TracerContext)
-}
-
-const Provider: React.FC<{ children: React.ReactNode }> = ({
-  children
-}) =>  {
-  const [state, setState] = useState<State>(STATE)
-
-  const toggle = (id: number) => {
-    setState(state => ({
-      ...state,
-      hidden: {
-        ...state.hidden,
-        [id]: !state.hidden[id]
-      }
-    }))
-  }
-
-  const value = useMemo(
-    () => ({
-      state,
-      toggle
-    }), [state]
-  )
-
-  return (
-    <TracerContext.Provider value={value}>
-      {children}
-    </TracerContext.Provider>
-  )
-}
 
 // Components
 const Padd: React.FC<{ depth: number }> = ({ depth }) => {
@@ -103,11 +59,9 @@ const Fn: React.FC<{ trace: Trace }> = ({trace }) => {
 
 const Tracer: React.FC<{ trace: Trace }> = ({trace}) => {
   return (
-    <Provider>
-      <div className={styles.component}>
-        <Fn trace={trace} />
-      </div>
-    </Provider>
+    <div className={styles.component}>
+      <Fn trace={trace} />
+    </div>
   )
 }
 
