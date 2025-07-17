@@ -1,9 +1,55 @@
-import React, { useState, useEffect }  from "react"
+import React, { useState, createContext, useContext, useMemo }  from "react"
 import styles from "./index.module.css"
 import {Trace, Func} from "./types"
 import Inputs from "./Inputs"
 import Outputs from "./Outputs"
 
+// Context
+type State = {
+  hidden: { [key: number]: boolean }
+}
+
+const STATE: State = { hidden: {} }
+
+const TracerContext = createContext({
+  state: STATE,
+  toggle: (_: number) => {}
+})
+
+function useTracerContext() {
+  return useContext(TracerContext)
+}
+
+const Provider: React.FC<{ children: React.ReactNode }> = ({
+  children
+}) =>  {
+  const [state, setState] = useState<State>(STATE)
+
+  const toggle = (id: number) => {
+    setState(state => ({
+      ...state,
+      hidden: {
+        ...state.hidden,
+        [id]: !state.hidden[id]
+      }
+    }))
+  }
+
+  const value = useMemo(
+    () => ({
+      state,
+      toggle
+    }), [state]
+  )
+
+  return (
+    <TracerContext.Provider value={value}>
+      {children}
+    </TracerContext.Provider>
+  )
+}
+
+// Components
 const Padd: React.FC<{ depth: number }> = ({ depth }) => {
   const lines = []
   for (let i = 0; i < depth; i++) {
@@ -20,11 +66,13 @@ const Fold: React.FC<{ show: boolean, hasChildren: boolean, onClick: () => void}
 
 const Fn: React.FC<{ trace: Trace }> = ({trace }) => {
   // TODO: ETH value
-  const [show, set] = useState(true)
+  const { state, toggle } = useTracerContext()
 
   const onClickFold = () => {
-    set(!show)
+    toggle(trace.id)
   }
+
+  const show = !state.hidden[trace.id]
 
   return (
     <div className={styles.fn}>
@@ -55,9 +103,11 @@ const Fn: React.FC<{ trace: Trace }> = ({trace }) => {
 
 const Tracer: React.FC<{ trace: Trace }> = ({trace}) => {
   return (
-    <div className={styles.component}>
-      <Fn trace={trace} />
-    </div>
+    <Provider>
+      <div className={styles.component}>
+        <Fn trace={trace} />
+      </div>
+    </Provider>
   )
 }
 
