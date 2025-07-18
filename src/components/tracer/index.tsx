@@ -22,7 +22,11 @@ const Fold: React.FC<{ show: boolean, hasChildren: boolean, onClick: () => void}
 
 const Fn: React.FC<{ trace: Trace }> = ({trace }) => {
   // TODO: ETH value
-  const { state, fold, setHover } = useTracerContext()
+  const { state, fold, setHover, pin } = useTracerContext()
+
+  const onClick = () => {
+    pin(trace.id)
+  }
 
   const onClickFold = () => {
     fold(trace.id)
@@ -39,9 +43,9 @@ const Fn: React.FC<{ trace: Trace }> = ({trace }) => {
   const show = !state.hidden[trace.id]
 
   return (
-    <div className={styles.fn} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      <div className={styles.line}>
-        <div className={styles.index}>{trace.id}</div>
+    <div className={styles.fn}>
+      <div className={styles.line} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+        <div className={styles.index} onClick={onClick}>{state.pins[trace.id] ? <span className={styles.pin}>x</span> : trace.id}</div>
         <Padd depth={trace.func.depth} />
         <div className={styles.func}>
           <Fold show={show} hasChildren={trace.children.length > 0} onClick={onClickFold} />

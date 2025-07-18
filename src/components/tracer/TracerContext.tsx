@@ -2,16 +2,17 @@ import React, { useState, createContext, useContext, useMemo }  from "react"
 
 export type State = {
   hover: number | null
-  pin: number | null
+  pins: { [key: number]: boolean }
   hidden: { [key: number]: boolean }
 }
 
-const STATE: State = { hidden: {}, hover: null, pin: null }
+const STATE: State = { hidden: {}, hover: null, pins: {} }
 
 const TracerContext = createContext({
   state: STATE,
   fold: (_: number) => {},
-  setHover: (_: number | null) => {}
+  setHover: (_: number | null) => {},
+  pin: (_: number) => {}
 })
 
 export function useTracerContext() {
@@ -40,11 +41,22 @@ export const Provider: React.FC<{ children: React.ReactNode }> = ({
     }))
   }
 
+  const pin = (id: number) => {
+    setState(state => ({
+      ...state,
+      pins: {
+        ...state.pins,
+        [id]: !state.pins[id]
+      }
+    }))
+  }
+
   const value = useMemo(
     () => ({
       state,
       fold,
       setHover,
+      pin,
     }), [state]
   )
 

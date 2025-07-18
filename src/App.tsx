@@ -28,6 +28,9 @@ function getNodeFillColor(hover: Hover, node: SvgNode, tracer: TracerState): str
 }
 
 function getArrowColor(hover: Hover, arrow: Arrow, tracer: TracerState): string {
+  if (tracer.pins[arrow.i]) {
+    return "orange"
+  }
   if (tracer.hover != null) {
     if (tracer.hover == arrow.i) {
         return "green"
