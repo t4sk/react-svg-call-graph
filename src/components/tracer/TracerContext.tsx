@@ -10,7 +10,8 @@ const STATE: State = { hidden: {}, hover: null, pin: null }
 
 const TracerContext = createContext({
   state: STATE,
-  toggle: (_: number) => {}
+  fold: (_: number) => {},
+  setHover: (_: number | null) => {}
 })
 
 export function useTracerContext() {
@@ -22,7 +23,7 @@ export const Provider: React.FC<{ children: React.ReactNode }> = ({
 }) =>  {
   const [state, setState] = useState<State>(STATE)
 
-  const toggle = (id: number) => {
+  const fold = (id: number) => {
     setState(state => ({
       ...state,
       hidden: {
@@ -32,10 +33,18 @@ export const Provider: React.FC<{ children: React.ReactNode }> = ({
     }))
   }
 
+  const setHover = (id: number | null) => {
+    setState(state => ({
+      ...state,
+      hover: id
+    }))
+  }
+
   const value = useMemo(
     () => ({
       state,
-      toggle
+      fold,
+      setHover,
     }), [state]
   )
 

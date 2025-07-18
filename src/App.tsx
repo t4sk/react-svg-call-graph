@@ -1,4 +1,4 @@
-import {Provider as TracerProvider} from "./components/tracer/TracerContext"
+import {Provider as TracerProvider, useTracerContext, State as TracerState} from "./components/tracer/TracerContext"
 import { CallGraphUi } from "./components/graph/CallGraphUi"
 import { SvgNode, Arrow, Hover } from "./components/graph/lib/types"
 import { getArrowKey } from "./components/graph/lib/svg"
@@ -13,7 +13,7 @@ const graph = build(calls)
 // TODO: highlight trace -> highlight graph
 // TODO: pin (click trace -> highlight graph)
 
-function getNodeFillColor(hover: Hover, node: SvgNode): string {
+function getNodeFillColor(hover: Hover, node: SvgNode, tracer: TracerState): string {
   if (hover.node == null) {
     return "rgba(120, 0, 255, 1)"
   }
@@ -27,7 +27,13 @@ function getNodeFillColor(hover: Hover, node: SvgNode): string {
   return "rgba(120, 0, 255, 0.3)"
 }
 
-function getArrowColor(hover: Hover, arrow: Arrow): string {
+function getArrowColor(hover: Hover, arrow: Arrow, tracer: TracerState): string {
+  if (tracer.hover != null) {
+    if (tracer.hover == arrow.i) {
+        return "green"
+    }
+    return "rgba(0, 0, 0, 0.1)"
+  }
   if (hover.node != null) {
     // NOTE: complex colors such as rgba and url makes arrow head disappear
     if (hover.node == arrow.s) {
@@ -48,14 +54,19 @@ function getArrowColor(hover: Hover, arrow: Arrow): string {
 }
 
 function App() {
+  // TODO: dynamic graph size
+  const tracer = useTracerContext()
   return (
-      <TracerProvider>
-        <Tracer trace={trace}/>
+      <>
+        <div style={{height: 300, overflow: "auto"}}>
+          <Tracer trace={trace}/>
+        </div>
         <CallGraphUi
           calls={calls}
+          tracer={tracer.state}
           backgroundColor="pink"
-          width={1200}
-          height={400}
+          width={1600}
+          height={500}
           showDot={true}
           nodeWidth={200}
           nodeHeight={50}
@@ -63,13 +74,13 @@ function App() {
           nodeYGap={80}
           getNodeStyle={(hover, node) => {
             return {
-              fill: getNodeFillColor(hover, node),
+              fill: getNodeFillColor(hover, node, tracer.state),
               stroke: "black",
             }
           }}
           getArrowStyle={(hover, arrow) => {
             return {
-              stroke: getArrowColor(hover, arrow),
+              stroke: getArrowColor(hover, arrow, tracer.state),
             }
           }}
           renderArrowText={(arrow) => {
@@ -150,8 +161,14 @@ function App() {
             return null
           }}
         />
-      </TracerProvider>
+      </>
   )
 }
 
-export default App
+export default () => {
+  return (
+    <TracerProvider>
+      <App />
+    </TracerProvider>
+  )
+}

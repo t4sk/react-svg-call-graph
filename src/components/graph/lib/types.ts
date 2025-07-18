@@ -84,3 +84,7 @@ export type Hover = {
   node: number | null
   arrows: Map<string, number> | null
 }
+
+export type Tracer = {
+  hover: number | null
+}

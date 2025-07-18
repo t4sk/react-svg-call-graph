@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react"
-import { Call, Point, SvgNode, Arrow, Hover } from "./lib/types"
+import { Call, Point, SvgNode, Arrow, Hover, Tracer } from "./lib/types"
 import styles from "./CallGraphUi.module.css"
 import { CallGraph } from "./CallGraph"
 import { GraphController } from "./GraphController"
@@ -22,6 +22,7 @@ export type Drag = {
 // TODO: fix smoother drag
 export const CallGraphUi: React.FC<{
   calls: Call[]
+  tracer?: Tracer
   backgroundColor: string
   width: number
   height: number
@@ -40,6 +41,7 @@ export const CallGraphUi: React.FC<{
   nodeYGap?: number
 }> = ({
   calls,
+  tracer,
   backgroundColor,
   width,
   height,
@@ -172,6 +174,7 @@ export const CallGraphUi: React.FC<{
     >
       <CallGraph
         calls={calls}
+        tracer={tracer}
         backgroundColor={backgroundColor}
         width={width}
         height={height}
