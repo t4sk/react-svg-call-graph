@@ -10,8 +10,6 @@ const graph = build(calls)
 
 // console.log(calls, graph)
 // TODO: import foundry trace
-// TODO: highlight trace -> highlight graph
-// TODO: pin (click trace -> highlight graph)
 
 function getNodeFillColor(hover: Hover, node: SvgNode, tracer: TracerState): string {
   if (hover.node == null) {
@@ -57,7 +55,9 @@ function getArrowColor(hover: Hover, arrow: Arrow, tracer: TracerState): string 
 }
 
 function App() {
+  // TODO: dark theme
   // TODO: dynamic graph size
+  // TODO: pretty hover
   const tracer = useTracerContext()
   return (
       <>

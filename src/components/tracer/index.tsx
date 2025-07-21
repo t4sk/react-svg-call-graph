@@ -5,7 +5,6 @@ import {useTracerContext} from "./TracerContext"
 import Inputs from "./Inputs"
 import Outputs from "./Outputs"
 
-// Components
 const Padd: React.FC<{ depth: number }> = ({ depth }) => {
   const lines = []
   for (let i = 0; i < depth; i++) {
@@ -41,6 +40,8 @@ const Fn: React.FC<{ trace: Trace }> = ({trace }) => {
   }
 
   const show = !state.hidden[trace.id]
+
+  console.log(trace)
 
   return (
     <div className={styles.fn}>

@@ -6,9 +6,6 @@ import {get, post} from "./lib"
 import {TxTrace, Call, ContractInfo} from "./types"
 import { dfs } from "../src/components/graph/lib/graph"
 
-// TODO: stack trace
-// https://github.com/openchainxyz/openchain-monorepo/tree/main
-
 // 1. Get tx trace -> getTxTrace
 // 2. Collect contract addresses -> dfs tx trace
 // 3. Get contract name, abi, etc... -> batch getContract

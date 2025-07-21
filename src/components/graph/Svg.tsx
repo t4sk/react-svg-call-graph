@@ -3,50 +3,6 @@ import React from "react"
 const FONT = "sans-serif"
 const FONT_SIZE = 18
 
-// TODO: remove?
-export const SvgLinearGradients: React.FC<{}> = () => {
-  return (
-    <defs>
-      <linearGradient
-        id="cold-gradient"
-        x1="0%"
-        y1="0%"
-        x2="100%"
-        y2="0%"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset="0%" stopColor="blue" />
-        <stop offset="100%" stopColor="cyan" />
-      </linearGradient>
-      <linearGradient
-        id="hot-gradient"
-        x1="0%"
-        y1="0%"
-        x2="100%"
-        y2="0%"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset="0%" stopColor="red" />
-        <stop offset="100%" stopColor="orange" />
-      </linearGradient>
-      <linearGradient
-        id="heat-gradient"
-        x1="0%"
-        y1="0%"
-        x2="100%"
-        y2="0%"
-        gradientUnits="userSpaceOnUse"
-      >
-        <stop offset="0%" stop-color="white" />
-        <stop offset="25%" stop-color="red" />
-        <stop offset="50%" stop-color="yellow" />
-        <stop offset="75%" stop-color="cyan" />
-        <stop offset="100%" stop-color="blue" />
-      </linearGradient>
-    </defs>
-  )
-}
-
 export const SvgRect: React.FC<{
   x: number
   y: number
