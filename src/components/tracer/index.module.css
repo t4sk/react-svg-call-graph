@@ -1,6 +1,6 @@
 .component {
-  background-color: #0f0f10;
-  overflow: auto;
+  background-color: var(--bg-color);
+  /* overflow: auto; */
   white-space: nowrap;
 }
 .fn {

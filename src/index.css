@@ -1,20 +1,41 @@
-  :root {
-    background-color: black
-  }
+ :root {
+   --bg-color: #121212;
+   --text-color: #E0E0E0;
+   --secondary-text-color: #A0A0A0;
+   --arrow-color: #A4A4A4;
+   --arrow-dim-color: rgba(255, 255, 255, 0.2);
+   --arrow-in-color: rgb(145, 32, 24);
+   --arrow-out-color: rgb(124, 212, 253);
+   --arrow-hover-color: rgb(128, 88, 255);
+   --arrow-pin-color: rgb(254, 200, 75);
+   --arrow-trace-color: #32cd32;
+   --node-color: rgb(6, 44, 65);
+   --node-text-color: rgb(124, 212, 253);
+   --node-border-color: transparent;
+   --node-hover-color: rgb(10, 60, 90);
+   --node-hover-text-color: rgb(160, 230, 255);
+   --node-hover-border-color: transparent;
+   --node-dim-color: rgb(6, 44, 65, 0.3);
 
+   background-color: var(--bg-color);
+   height: 100vh;
+   width: 100vw;
+   padding: 0;
+   margin: 0;
+ }
 
-  @keyframes flow {
-    0% {
-      stroke-dashoffset: 400;
-    }
+ /* SVG line flow animation */
+ @keyframes flow {
+   0% {
+     stroke-dashoffset: 400;
+   }
 
-    100% {
-      stroke-dashoffset: 0;
-    }
-  }
-
-  .flow {
-    /*stroke: url(#cold-gradient)*/
-    stroke-dasharray: 20 10;
-    animation: flow 14s linear infinite;
-  }
+   100% {
+     stroke-dashoffset: 0;
+   }
+ }
+ .flow {
+   /*stroke: url(#cold-gradient)*/
+   stroke-dasharray: 20 10;
+   animation: flow 14s linear infinite;
+ }

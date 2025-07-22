@@ -41,8 +41,6 @@ const Fn: React.FC<{ trace: Trace }> = ({trace }) => {
 
   const show = !state.hidden[trace.id]
 
-  console.log(trace)
-
   return (
     <div className={styles.fn}>
       <div className={styles.line} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>

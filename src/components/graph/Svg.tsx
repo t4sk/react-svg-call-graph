@@ -49,6 +49,7 @@ export const SvgArrow: React.FC<{
   text?: string | number
   textXGap?: number
   textYGap?: number
+  type?: string
 }> = ({
   x0,
   y0,
@@ -59,8 +60,9 @@ export const SvgArrow: React.FC<{
   text,
   textXGap = 0,
   textYGap = -10,
+  type = ""
 }) => {
-  const id = `arrow-${stroke}`
+  const id = `arrow-${type}`
   return (
     <>
       <defs>
@@ -116,6 +118,7 @@ export const SvgZigZagArrow: React.FC<{
   text?: string | number
   textXGap?: number
   textYGap?: number
+  type?: string
 }> = ({
   x0,
   y0,
@@ -126,9 +129,10 @@ export const SvgZigZagArrow: React.FC<{
   text,
   textXGap = -14,
   textYGap = -14,
+  type = ""
 }) => {
   const midX = (x0 + x1) >> 1
-  const id = `zig-zag-arrow-${stroke}`
+  const id = `zig-zag-arrow-${type}`
 
   return (
     <>
@@ -204,6 +208,7 @@ export const SvgCallBackArrow: React.FC<{
   text?: string | number
   textXGap?: number
   textYGap?: number
+  type?: string
 }> = ({
   x0,
   y0,
@@ -216,9 +221,10 @@ export const SvgCallBackArrow: React.FC<{
   text,
   textXGap = 0,
   textYGap = -14,
+  type = ""
 }) => {
   // x0 >= x1 and y1 >= y0
-  const id = `call-back-arrow-${stroke}`
+  const id = `call-back-arrow-${type}`
   return (
     <>
       <defs>

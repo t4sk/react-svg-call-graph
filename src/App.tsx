@@ -1,3 +1,4 @@
+import {Provider as WindowSizeProvider, useWindowSizeContext } from "./contexts/WindowSize"
 import {Provider as TracerProvider, useTracerContext, State as TracerState} from "./components/tracer/TracerContext"
 import { CallGraphUi } from "./components/graph/CallGraphUi"
 import { SvgNode, Arrow, Hover } from "./components/graph/lib/types"
@@ -6,6 +7,8 @@ import { build } from "./components/graph/lib/graph"
 import Tracer from "./components/tracer"
 import { calls, trace, objs, arrows } from "./dev"
 
+// Padding for scroll
+const SCROLL = 20
 const graph = build(calls)
 
 // console.log(calls, graph)
@@ -13,63 +16,74 @@ const graph = build(calls)
 
 function getNodeFillColor(hover: Hover, node: SvgNode, tracer: TracerState): string {
   if (hover.node == null) {
-    return "rgba(120, 0, 255, 1)"
+    return "var(--node-color)"
   }
   if (
     hover.node == node.id ||
     graph.inbound.get(hover.node)?.has(node.id) ||
     graph.outbound.get(hover.node)?.has(node.id)
   ) {
-    return "rgba(120, 0, 255, 1)"
+    return "var(--node-hover-color)"
   }
-  return "rgba(120, 0, 255, 0.3)"
+  return "var(--node-dim-color)"
 }
 
 function getArrowColor(hover: Hover, arrow: Arrow, tracer: TracerState): string {
   if (tracer.pins[arrow.i]) {
-    return "orange"
+    return "var(--arrow-pin-color)"
   }
   if (tracer.hover != null) {
     if (tracer.hover == arrow.i) {
-        return "green"
+        return "var(--arrow-trace-color)"
     }
-    return "rgba(0, 0, 0, 0.1)"
+    return "var(--arrow-dim-color)"
   }
   if (hover.node != null) {
     // NOTE: complex colors such as rgba and url makes arrow head disappear
+    // TODO: arrow type to render arrow color
     if (hover.node == arrow.s) {
-      return "blue"
+      return "var(--arrow-out-color)"
     }
     if (hover.node == arrow.e) {
-      return "red"
+      return "var(--arrow-in-color)"
     }
-    return "rgba(0, 0, 0, 0.2)"
+    return "var(--arrow-dim-color)"
   }
   if (hover.arrows != null && hover.arrows.size > 0) {
     if (hover.arrows.has(getArrowKey(arrow))) {
-      return "purple"
+      return "var(--arrow-hover-color)"
     }
-    return "rgba(0, 0, 0, 0.1)"
+    return "var(--arrow-dim-color)"
   }
-  return "black"
+  return "var(--arrow-color)"
 }
 
 function App() {
-  // TODO: dark theme
+  // TODO: light theme
   // TODO: dynamic graph size
   // TODO: pretty hover
+
+  const windowSize = useWindowSizeContext()
   const tracer = useTracerContext()
+
+  if (!windowSize) {
+    return null
+  }
+
+  const height = windowSize.height - SCROLL
+  const width = windowSize.width - SCROLL
+
   return (
-      <>
-        <div style={{height: 300, overflow: "auto"}}>
+      <div style={{ display: "flex", flexDirection: "column", width, height}}>
+        <div style={{ overflow: "auto", height: (height * 0.4) | 0, width,}}>
           <Tracer trace={trace}/>
         </div>
         <CallGraphUi
           calls={calls}
           tracer={tracer.state}
-          backgroundColor="pink"
-          width={1600}
-          height={500}
+          backgroundColor="var(--bg-color)"
+          width={width}
+          height={(height * 0.6) | 0}
           showDot={true}
           nodeWidth={200}
           nodeHeight={50}
@@ -78,7 +92,7 @@ function App() {
           getNodeStyle={(hover, node) => {
             return {
               fill: getNodeFillColor(hover, node, tracer.state),
-              stroke: "black",
+              stroke: "var(--node-border-color)"
             }
           }}
           getArrowStyle={(hover, arrow) => {
@@ -110,7 +124,7 @@ function App() {
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     textAlign: "center",
-                    color: "white",
+                    color: "var(--node-text-color)",
                   }}
                 >
                   {obj?.name || obj?.address || node.id}
@@ -164,14 +178,16 @@ function App() {
             return null
           }}
         />
-      </>
+      </div>
   )
 }
 
 export default () => {
   return (
-    <TracerProvider>
-      <App />
-    </TracerProvider>
+    <WindowSizeProvider>
+      <TracerProvider>
+        <App />
+      </TracerProvider>
+    </WindowSizeProvider>
   )
 }
