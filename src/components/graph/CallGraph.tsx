@@ -18,6 +18,9 @@ const R = 25
 const BOX_X_PADD = 10
 const BOX_Y_PADD = 10
 
+const DEFAULT_FILL = "none"
+const DEFAULT_STROKE = "black"
+
 function sample(a: Arrow, xPadd: number = 0, yPadd: number = 0): Point[] {
   const ps = svg.poly(a.type, a.start, a.end, xPadd, yPadd)
   const [len] = math.len(ps)
@@ -44,7 +47,7 @@ export const CallGraph: React.FC<{
     hover: Hover,
     node: SvgNode,
   ) => { fill?: string; stroke?: string }
-  getArrowStyle?: (hover: Hover, arrow: Arrow) => { stroke?: string }
+  getArrowStyle?: (hover: Hover, arrow: Arrow) => { type: string, style: { stroke?: string } }
   nodeWidth?: number
   nodeHeight?: number
   nodeXGap?: number
@@ -62,8 +65,8 @@ export const CallGraph: React.FC<{
   mouse,
   dragging,
   showDot = false,
-  getNodeStyle = () => ({ fill: "none", stroke: "black" }),
-  getArrowStyle = () => ({ stroke: "black" }),
+  getNodeStyle = () => ({ fill: DEFAULT_FILL, stroke: DEFAULT_STROKE }),
+  getArrowStyle = () => ({ type: "", style: { stroke: DEFAULT_STROKE } }),
   renderArrowText = (arrow) => arrow.i,
   renderNode = () => null,
   renderHover = () => null,
@@ -133,7 +136,7 @@ export const CallGraph: React.FC<{
     }
   }
 
-  const renderArrow = (i: number, a: Arrow, style: { stroke?: string }) => {
+  const renderArrow = (i: number, a: Arrow, type: string, style: { stroke?: string }) => {
     const key = svg.getArrowKey(a)
     const offset = overlaps.get(key) || 0
     overlaps.set(key, offset > 0 ? offset - 1 : 0)
@@ -144,15 +147,16 @@ export const CallGraph: React.FC<{
       return (
         <>
           {/*points.map((p, i) => (
-            <SvgDot x={p.x} y={p.y} radius={4} key={i} />
-          ))*/}
+             <SvgDot x={p.x} y={p.y} radius={4} key={i} />
+             ))*/}
           <SvgArrow
             key={i}
             x0={a.start.x}
             y0={a.start.y}
             x1={a.end.x}
             y1={a.end.y}
-            stroke={style?.stroke || "black"}
+            type={type}
+            stroke={style?.stroke || DEFAULT_STROKE}
             text={renderArrowText(a)}
             textYGap={offset * TEXT_GAP}
           />
@@ -163,8 +167,8 @@ export const CallGraph: React.FC<{
       return (
         <>
           {/*points.map((p, i) => (
-            <SvgDot x={p.x} y={p.y} radius={4} key={i} />
-          ))*/}
+             <SvgDot x={p.x} y={p.y} radius={4} key={i} />
+             ))*/}
           <SvgCallBackArrow
             key={i}
             x0={a.start.x}
@@ -173,7 +177,8 @@ export const CallGraph: React.FC<{
             y1={a.end.y}
             xPadd={arrowXPadd}
             yPadd={-arrowYPadd}
-            stroke={style?.stroke || "black"}
+            type={type}
+            stroke={style?.stroke || DEFAULT_STROKE}
             text={renderArrowText(a)}
             textYGap={offset * TEXT_GAP}
           />
@@ -184,15 +189,16 @@ export const CallGraph: React.FC<{
     return (
       <>
         {/*points.map((p, i) => (
-          <SvgDot x={p.x} y={p.y} radius={4} key={i} />
-        ))*/}
+           <SvgDot x={p.x} y={p.y} radius={4} key={i} />
+           ))*/}
         <SvgZigZagArrow
           key={i}
           x0={a.start.x}
           y0={a.start.y}
           x1={a.end.x}
           y1={a.end.y}
-          stroke={style?.stroke || "black"}
+          type={type}
+          stroke={style?.stroke || DEFAULT_STROKE}
           text={renderArrowText(a)}
           textYGap={offset * TEXT_GAP}
         />
@@ -201,20 +207,12 @@ export const CallGraph: React.FC<{
   }
 
   return (
-    <div
-      style={{
-        width,
-        height,
-        position: "relative",
-      }}
-    >
+    <div style={{ width, height, position: "relative", }}>
       <svg
         width={width}
         height={height}
         viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
-        style={{
-          backgroundColor,
-        }}
+        style={{ backgroundColor, }}
       >
         {layout.arrows.map((a, i) => {
           // Render arrows that are not hovered
@@ -222,7 +220,7 @@ export const CallGraph: React.FC<{
             return null
           }
           const style = getArrowStyle(hover, a)
-          return renderArrow(i, a, style)
+          return renderArrow(i, a, style.type, style.style)
         })}
 
         {layout.arrows.map((a, i) => {
@@ -231,7 +229,7 @@ export const CallGraph: React.FC<{
             return null
           }
           const style = getArrowStyle(hover, a)
-          return renderArrow(i, a, style)
+          return renderArrow(i, a, style.type, style.style)
         })}
 
         {layout.nodes.map((node, i) => {
@@ -243,8 +241,8 @@ export const CallGraph: React.FC<{
               y={node.rect.y}
               width={node.rect.width}
               height={node.rect.height}
-              fill={style?.fill || "none"}
-              stroke={style?.stroke || "black"}
+              fill={style?.fill || DEFAULT_FILL}
+              stroke={style?.stroke || DEFAULT_STROKE}
             />
           )
         })}
@@ -265,9 +263,9 @@ export const CallGraph: React.FC<{
 
         {/* Debug */}
 
-        {Object.values(layout.mid).map((p, i) => (
+        {/*Object.values(layout.mid).map((p, i) => (
           <SvgDot x={p.x} y={p.y} key={i} radius={4} />
-        ))}
+        ))*/}
 
         {mouse && showDot ? (
           <SvgDot x={svgX} y={svgY} radius={R} fill="rgba(255, 0, 0, 0.5)" />

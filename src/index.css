@@ -1,14 +1,16 @@
  :root {
    --bg-color: #121212;
+   --bg-dim-color: #232329;
+   --bg-dim-hover-color: #2e2d39;
    --text-color: #E0E0E0;
    --secondary-text-color: #A0A0A0;
    --arrow-color: #A4A4A4;
    --arrow-dim-color: rgba(255, 255, 255, 0.2);
    --arrow-in-color: rgb(145, 32, 24);
-   --arrow-out-color: rgb(124, 212, 253);
+   --arrow-out-color: rgb(70, 173, 221);
    --arrow-hover-color: rgb(128, 88, 255);
    --arrow-pin-color: rgb(254, 200, 75);
-   --arrow-trace-color: #32cd32;
+   --arrow-tracer-color: #32cd32;
    --node-color: rgb(6, 44, 65);
    --node-text-color: rgb(124, 212, 253);
    --node-border-color: transparent;
