@@ -11,24 +11,20 @@ export const GraphController: React.FC<{
   zoomPercentage,
   onClickPlus,
   onClickMinus,
-  color = "white",
-  backgroundColor = "black",
 }) => {
   return (
     <div className={styles.component}>
       <button
         className={styles.buttonLeft}
-        style={{ color, backgroundColor }}
         onClick={onClickMinus}
       >
         -
       </button>
-      <div className={styles.level} style={{ color, backgroundColor }}>
+      <div className={styles.level}>
         {Math.round(zoomPercentage)}%
       </div>
       <button
         className={styles.buttonRight}
-        style={{ color, backgroundColor }}
         onClick={onClickPlus}
       >
         +
