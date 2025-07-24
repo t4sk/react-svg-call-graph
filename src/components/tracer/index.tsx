@@ -39,12 +39,12 @@ const Fn: React.FC<{ trace: Trace }> = ({trace }) => {
     setHover(null)
   }
 
-  const show = !state.hidden[trace.id]
+  const show = !state.hidden.has(trace.id)
 
   return (
     <div className={styles.fn}>
       <div className={styles.line} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-        <div className={styles.index} onClick={onClick}>{state.pins[trace.id] ? <span className={styles.pin}>x</span> : trace.id}</div>
+        <div className={styles.index} onClick={onClick}>{state.pins.has(trace.id) ? <span className={styles.pin}>x</span> : trace.id}</div>
         <Padd depth={trace.func.depth} />
         <div className={styles.func}>
           <Fold show={show} hasChildren={trace.children.length > 0} onClick={onClickFold} />

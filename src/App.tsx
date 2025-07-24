@@ -13,10 +13,11 @@ const graph = build(calls)
 
 // TODO: import foundry trace
 // TODO: token transfers
+
 type ArrowType = "in" | "out" | "hover" | "dim" | "pin" | "tracer" | ""
 
 function getArrowType(hover: Hover, arrow: Arrow, tracer: TracerState): ArrowType {
-  if (tracer.pins[arrow.i]) {
+  if (tracer.pins.has(arrow.i)) {
     return "pin"
   }
   if (tracer.hover != null) {
