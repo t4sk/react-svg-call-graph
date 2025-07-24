@@ -49,7 +49,8 @@ const Fn: React.FC<{ trace: Trace }> = ({trace }) => {
         <div className={styles.func}>
           <Fold show={show} hasChildren={trace.children.length > 0} onClick={onClickFold} />
           <div className={styles.obj}>{trace.func.obj}</div>
-          <div className={styles.funcName}>.{trace.func.name}</div>
+          <div className={styles.dot}>.</div>
+          <div className={styles.funcName}>{trace.func.name}</div>
           <div>(</div>
           <Inputs inputs={trace.func.inputs} />
           <div>)</div>

@@ -19,6 +19,21 @@
    --node-hover-border-color: transparent;
    --node-dim-color: rgb(6, 44, 65, 0.3);
 
+   --tracer-fn-color: white;
+   --tracer-index-color: #9b9aa2;
+   --tracer-index-hover-color: white;
+   --tracer-input-value-color: #edc389;
+   --tracer-output-value-color: #edc389;
+   --tracer-eq-color: grey;
+   --tracer-pin-color: orange;
+   --tracer-func-color: white;
+   --tracer-fold-color: #9b9aa2;
+   --tracer-fold-hover-color: white;
+   --tracer-obj-color: #71aefe;
+   --tracer-func-name-color: #6e56cf;
+   --tracer-arrow-color: #f88c6c;
+   --tracer-dot-color: white;
+
    background-color: var(--bg-color);
    height: 100vh;
    width: 100vw;

@@ -4,7 +4,7 @@
   white-space: nowrap;
 }
 .fn {
-  color: white;
+  color: var(--tracer-fn-color);
   white-space: nowrap;
 }
 .hide {
@@ -29,14 +29,14 @@
   width: 28px;
   padding-right: 8px;
   text-align: right;
-  color: #9b9aa2;
-}
-.index:hover {
-  color: white;
+  color: var(--tracer-index-color);
   transition: background-color 0.2s ease;
 }
+.index:hover {
+  color: var(--tracer-index-hover-color);
+}
 .pin {
-  color: orange;
+  color: var(--tracer-pin-color);
 }
 .padd {
   /* Half of (fold width + padding) */
@@ -48,7 +48,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  color: white;
+  color: var(--tracer-func-color);
 }
 .fold {
   width: 10px;
@@ -59,19 +59,19 @@
   padding: 4px;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  color: #9b9aa2;
+  color: var(--tracer-fold-color);
 }
 .fold:hover {
-  color: white
+  color: var(--tracer-fold-hover-color);
 }
 .obj {
-  color: #71aefe;
+  color: var(--tracer-obj-color);
+}
+.dot {
+  color: var(--tracer-dot-color);
 }
 .funcName {
-  color: #6e56cf;
-}
-.value {
-  color: #edc389;
+  color: var(--tracer-func-name-color);
 }
 .outputs {
   display: flex;
@@ -79,7 +79,7 @@
   align-items: center;
 }
 .arrow {
-  color: #f88c6c;
+  color: var(--tracer-arrow-color);
   margin-left: 10px;
   margin-right: 10px;
 }

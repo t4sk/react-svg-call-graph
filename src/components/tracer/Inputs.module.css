@@ -12,12 +12,12 @@
 .name {
 }
 .value {
-  color: #edc389;
+  color: var(--tracer-input-value-color);
 }
 .eq {
   margin-left: 4px;
   margin-right: 4px;
-  color: grey;
+  color: var(--tracer-eq-color);
 }
 .comma {
   margin-right: 10px;
