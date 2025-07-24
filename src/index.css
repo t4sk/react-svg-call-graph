@@ -39,6 +39,9 @@
    width: 100vw;
    padding: 0;
    margin: 0;
+
+   /* Disable hover on graph to flicker scrollbars */
+   overflow: hidden;
  }
 
 /* Scroll for WebKit browsers (Chrome, Edge, Safari) */
