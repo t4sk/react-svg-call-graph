@@ -5,6 +5,7 @@ import { SvgNode, Arrow, Hover } from "./components/graph/lib/types"
 import { getArrowKey } from "./components/graph/lib/svg"
 import { build } from "./components/graph/lib/graph"
 import Tracer from "./components/tracer"
+import styles from "./App.module.css"
 import { calls, trace, objs, arrows } from "./dev"
 
 // Padding for scroll
@@ -93,8 +94,8 @@ function App() {
   const width = windowSize.width - SCROLL
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", width, height}}>
-      <div style={{ overflow: "auto", height: (height * 0.4) | 0, width,}}>
+    <div className={styles.component} style={{ width, height}}>
+      <div className={styles.tracer} style={{ height: (height * 0.4) | 0, width,}}>
         <Tracer trace={trace}/>
       </div>
       <CallGraphUi
@@ -128,29 +129,9 @@ function App() {
         }}
         renderNode={(hover, node) => {
           const obj = objs.get(node.id)
-          // return node.id
           return (
-            <div
-              style={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <span
-                style={{
-                  width: 140,
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  textAlign: "center",
-                  color: "var(--node-text-color)",
-                  fontSize: 20
-                }}
-              >
+            <div className={styles.node}>
+              <span className={styles.nodeText}>
                 {obj?.name || obj?.address || node.id}
               </span>
             </div>
@@ -161,32 +142,29 @@ function App() {
             return null
           }
           if (hover.node) {
+            const obj = objs.get(hover.node)
             return (
               <div
+                className={styles.hoverNode}
                 style={{
                   position: "absolute",
                   top: mouse.y + 10,
                   left: mouse.x + 10,
-                  width: 100,
-                  height: 100,
-                  backgroundColor: "rgba(0, 0, 0, 0.5)",
                 }}
               >
-                {hover.node}
+                {obj?.name ? <div>{obj?.name}</div> : null}
+                {obj?.address ? <div>{obj?.address}</div> : null}
               </div>
             )
           }
           if (hover.arrows && hover.arrows.size > 0) {
             return (
               <div
+                className={styles.hoverArrows}
                 style={{
                   position: "absolute",
                   top: mouse.y + 10,
                   left: mouse.x + 10,
-                  width: 100,
-                  height: 100,
-                  backgroundColor: "rgba(0, 0, 0, 0.5)",
-                  padding: 10,
                 }}
               >
                 {[...hover.arrows].map(([k, v]) => {
