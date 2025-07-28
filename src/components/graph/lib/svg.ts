@@ -10,10 +10,17 @@ import {
   Layout,
 } from "./types"
 import * as math from "./math"
-import { assert } from "./utils"
 
 export function getArrowKey(a: Arrow): string {
   return `${a.s},${a.e}`
+}
+
+export function splitArrowKey(key: string): {src: number, dst: number} {
+  const [src, dst] = key.split(",")
+  return {
+    src: parseInt(src),
+    dst: parseInt(dst),
+  }
 }
 
 export function getViewBoxX(

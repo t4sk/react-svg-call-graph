@@ -43,3 +43,21 @@
   color: var(--text-hover-color);
   font-size: 12px;
 }
+.call {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  white-space: nowrap;
+}
+.index {
+  margin-right: 8px;
+}
+.obj {
+  color: var(--tracer-obj-color);
+}
+.arrow {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+.func {
+}

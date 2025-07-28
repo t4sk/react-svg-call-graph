@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import React, { useMemo } from "react"
 import { Call, ViewBox, Point, SvgNode, Arrow, Hover, Tracer } from "./lib/types"
 import * as svg from "./lib/svg"
 import {
@@ -136,7 +136,7 @@ export const CallGraph: React.FC<{
     }
   }
 
-  const renderArrow = (i: number, a: Arrow, type: string, style: { stroke?: string }) => {
+  const renderArrow = (a: Arrow, type: string, style: { stroke?: string }) => {
     const key = svg.getArrowKey(a)
     const offset = overlaps.get(key) || 0
     overlaps.set(key, offset > 0 ? offset - 1 : 0)
@@ -150,7 +150,6 @@ export const CallGraph: React.FC<{
              <SvgDot x={p.x} y={p.y} radius={4} key={i} />
              ))*/}
           <SvgArrow
-            key={i}
             x0={a.start.x}
             y0={a.start.y}
             x1={a.end.x}
@@ -170,7 +169,6 @@ export const CallGraph: React.FC<{
              <SvgDot x={p.x} y={p.y} radius={4} key={i} />
              ))*/}
           <SvgCallBackArrow
-            key={i}
             x0={a.start.x}
             y0={a.start.y}
             x1={a.end.x}
@@ -192,7 +190,6 @@ export const CallGraph: React.FC<{
            <SvgDot x={p.x} y={p.y} radius={4} key={i} />
            ))*/}
         <SvgZigZagArrow
-          key={i}
           x0={a.start.x}
           y0={a.start.y}
           x1={a.end.x}
@@ -207,7 +204,7 @@ export const CallGraph: React.FC<{
   }
 
   return (
-    <div style={{ width, height, position: "relative", }}>
+    <div style={{ width, height, position: "relative" }}>
       <svg
         width={width}
         height={height}
@@ -220,7 +217,11 @@ export const CallGraph: React.FC<{
             return null
           }
           const style = getArrowStyle(hover, a)
-          return renderArrow(i, a, style.type, style.style)
+          return (
+            <React.Fragment key={`arrow-${i}`}>
+              {renderArrow(a, style.type, style.style)}
+            </React.Fragment>
+          )
         })}
 
         {layout.arrows.map((a, i) => {
@@ -229,14 +230,18 @@ export const CallGraph: React.FC<{
             return null
           }
           const style = getArrowStyle(hover, a)
-          return renderArrow(i, a, style.type, style.style)
+          return (
+            <React.Fragment key={`arrow-hover-${i}`}>
+              {renderArrow(a, style.type, style.style)}
+            </React.Fragment>
+          )
         })}
 
         {layout.nodes.map((node, i) => {
           const style = getNodeStyle(hover, node)
           return (
             <SvgRect
-              key={i}
+              key={`node-${i}`}
               x={node.rect.x}
               y={node.rect.y}
               width={node.rect.width}
@@ -250,7 +255,7 @@ export const CallGraph: React.FC<{
         {layout.nodes.map((node, i) => {
           return (
             <foreignObject
-              key={i}
+              key={`obj-${i}`}
               x={node.rect.x}
               y={node.rect.y}
               width={node.rect.width}

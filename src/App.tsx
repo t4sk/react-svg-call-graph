@@ -2,7 +2,7 @@ import {Provider as WindowSizeProvider, useWindowSizeContext } from "./contexts/
 import {Provider as TracerProvider, useTracerContext, State as TracerState} from "./components/tracer/TracerContext"
 import { CallGraphUi } from "./components/graph/CallGraphUi"
 import { SvgNode, Arrow, Hover } from "./components/graph/lib/types"
-import { getArrowKey } from "./components/graph/lib/svg"
+import { getArrowKey, splitArrowKey } from "./components/graph/lib/svg"
 import { build } from "./components/graph/lib/graph"
 import Tracer from "./components/tracer"
 import styles from "./App.module.css"
@@ -157,7 +157,9 @@ function App() {
             )
           }
           if (hover.arrows && hover.arrows.size > 0) {
-            // TODO: pretty hover
+            const arrs = [...hover.arrows.entries()]
+            arrs.sort((a, b) => a[1] - b[1])
+
             return (
               <div
                 className={styles.hoverArrows}
@@ -167,10 +169,18 @@ function App() {
                   left: mouse.x + 10,
                 }}
               >
-                {[...hover.arrows].map(([k, v]) => {
+                {arrs.map(([k, v]) => {
+                  const { src, dst } = splitArrowKey(k)
+                  const s = objs.get(src)
+                  const d = objs.get(dst)
                   return (
-                    <div>
-                      {k} {arrows[v]?.function?.name || v}
+                    <div className={styles.call} key={k}>
+                      <div className={styles.index}>{v}</div>
+                      <div className={styles.obj}>{s?.name || s?.address || "?"}</div>
+                      <div className={styles.arrow}>{"->"}</div>
+                      <div className={styles.obj}>{d?.name || d?.address || "?"}</div>
+                      <div>.</div>
+                      <div className={styles.func}>{arrows[v]?.function?.name || "?"}</div>
                     </div>
                   )
                 })}

@@ -188,6 +188,3 @@ for (const [d, c] of flat) {
   })
 }
 
-console.log("calls", calls)
-console.log("flat", flat)
-console.log("objs", objs)
