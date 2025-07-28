@@ -81,7 +81,6 @@ function getArrowColor(t: ArrowType): string {
 function App() {
   // TODO: light theme
   // TODO: dynamic graph size
-  // TODO: pretty hover
 
   const windowSize = useWindowSizeContext()
   const tracer = useTracerContext()
@@ -158,6 +157,7 @@ function App() {
             )
           }
           if (hover.arrows && hover.arrows.size > 0) {
+            // TODO: pretty hover
             return (
               <div
                 className={styles.hoverArrows}

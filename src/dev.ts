@@ -27,8 +27,6 @@ function zip<A, B, C>(a: A[], b: B[], f: (a: A, b: B) => C): C[] {
   return c
 }
 
-// console.log("ABI", abis)
-
 type TxCall = {
   from: string
   to: string
@@ -59,11 +57,11 @@ export type Arrow = {
 
 // DFS to flatten tx calls
 // call counter
-let id = 0
-// Address => id
-const ids: Map<string, number> = new Map()
+let objId = 0
 const flat: [number, TxCall][] = []
 
+// Address => objId
+export const ids: Map<string, number> = new Map()
 export const objs: Map<number, Obj> = new Map()
 export const arrows: Arrow[] = []
 
@@ -136,10 +134,10 @@ dfs<TxCall>(
 
     for (const addr of [c.from, c.to]) {
       if (!ids.has(addr)) {
-        id += 1
-        ids.set(addr, id)
+        ids.set(addr, objId)
         // @ts-ignore
-        objs.set(id, { address: addr, name: NAMES[addr] || null })
+        objs.set(objId, { address: addr, name: NAMES[addr] || null })
+        objId += 1
       }
     }
     flat.push([d, c])
@@ -178,13 +176,7 @@ dfs<TxCall>(
 
 export const trace = stack[0]
 
-export const calls: Call[] = [
-  {
-    src: null,
-    dst: 1,
-    depth: 0,
-  },
-]
+export const calls: Call[] = []
 
 for (const [d, c] of flat) {
   calls.push({
@@ -192,13 +184,10 @@ for (const [d, c] of flat) {
     src: ids.get(c.from),
     // @ts-ignore
     dst: ids.get(c.to),
-    depth: d + 1,
+    depth: d,
   })
 }
 
-const data = []
-for (const [key, obj] of objs) {
-  data.push(obj.address)
-  // console.log(obj)
-}
-// console.log(data)
+console.log("calls", calls)
+console.log("flat", flat)
+console.log("objs", objs)

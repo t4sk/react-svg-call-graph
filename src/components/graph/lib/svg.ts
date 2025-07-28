@@ -10,6 +10,7 @@ import {
   Layout,
 } from "./types"
 import * as math from "./math"
+import { assert } from "./utils"
 
 export function getArrowKey(a: Arrow): string {
   return `${a.s},${a.e}`
@@ -185,8 +186,14 @@ export function map(calls: Call[], canvas: Canvas): Layout {
   offsets.set(0, 0)
   let dup = 0
 
-  for (let i = 0; i < calls.length; i++) {
-    const c = calls[i]
+  // Add first caller as dst for calculation in the for loop
+  const _calls = [{src: null, dst: 0, depth: 0}, ...calls.map(c => ({
+    ...c,
+    depth: c.depth + 1
+  }))]
+
+  for (let i = 0; i < _calls.length; i++) {
+    const c = _calls[i]
 
     if (map.has(c.dst)) {
       dup += 1
@@ -198,8 +205,8 @@ export function map(calls: Call[], canvas: Canvas): Layout {
     offsets.set(c.depth + 1, offset - 1)
     // Previous depths are shifted up
     offsets.set(c.depth - 1, offset)
-    for (let i = 0; i <= c.depth - 1; i++) {
-      offsets.set(i, offset)
+    for (let k = 0; k <= c.depth - 1; k++) {
+      offsets.set(k, offset)
     }
 
     const { height, width, gapX, gapY } = canvas.node
@@ -209,18 +216,17 @@ export function map(calls: Call[], canvas: Canvas): Layout {
       width: width,
       height: height,
     }
-    const mid = getMidPoints(rect)
     const node = {
       id: c.dst,
       rect,
-      mid,
+      mid: getMidPoints(rect)
     }
 
     nodes.push(node)
     map.set(c.dst, node)
 
-    xMax = Math.max(xMax, mid.right.x)
-    yMax = Math.max(yMax, mid.bottom.y)
+    xMax = Math.max(xMax, node.mid.right.x)
+    yMax = Math.max(yMax, node.mid.bottom.y)
   }
 
   // Set final positions of the nodes
@@ -247,7 +253,7 @@ export function map(calls: Call[], canvas: Canvas): Layout {
   const arrows: Arrow[] = []
   for (let i = 0; i < calls.length; i++) {
     const c = calls[i]
-    if (c.src) {
+    if (c.src != null) {
       arrows.push(arrow(map, i, c.src, c.dst))
     }
   }
