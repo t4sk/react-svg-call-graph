@@ -33,6 +33,10 @@ type TxCall = {
   input: string
   output?: string
   calls?: TxCall[]
+  value: string
+  gas: string
+  gasUsed: string
+  type: string
 }
 
 export type Obj = {
@@ -65,7 +69,7 @@ export const ids: Map<string, number> = new Map()
 export const objs: Map<number, Obj> = new Map()
 export const arrows: Arrow[] = []
 
-function parseTx(abi: any[] | null ,input: string, output?: string): { name: string, inputs: Input[], outputs: Output[] } | null {
+function parseTx(abi: any[] | null ,input: string, output?: string): { name: string, inputs: Input[], outputs: Output[], selector: string } | null {
   if (!abi) {
     return null
   }
@@ -78,6 +82,7 @@ function parseTx(abi: any[] | null ,input: string, output?: string): { name: str
 
   const func = {
     name: tx.name,
+    selector: tx.selector,
     inputs: [],
     outputs: []
   }
@@ -114,6 +119,7 @@ let traceId = 0
 const stack: Trace[] = []
 
 dfs<TxCall>(
+  // @ts-ignore
   TX.result,
   (c) => c?.calls || [],
   (d, c) => {
@@ -154,7 +160,17 @@ dfs<TxCall>(
         outputs: func?.outputs || [],
         // TODO:
         ok: true,
-        // TODO: vm
+        vm: {
+          // @ts-ignore
+          contract: NAMES[c.to],
+          address: c.to,
+          value: BigInt(c.value || 0),
+          type: c.type.toLowerCase(),
+          rawInput: c.input,
+          rawOutput: c.output,
+          selector: func?.selector,
+          gas: BigInt(c.gasUsed)
+        }
       },
       children: [],
     }

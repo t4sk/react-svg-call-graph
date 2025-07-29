@@ -14,6 +14,7 @@ const graph = build(calls)
 
 // TODO: import foundry trace
 // TODO: token transfers
+// TODO: ETH transfer
 
 type ArrowType = "in" | "out" | "hover" | "dim" | "pin" | "tracer" | ""
 

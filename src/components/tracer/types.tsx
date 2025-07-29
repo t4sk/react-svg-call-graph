@@ -21,11 +21,13 @@ export type Func = {
     // EVM specific
     contract?: string
     address: string
-    value?: string
+    value?: bigint
     // call, staticcall, delegatecall, event, etc...
     type: string
-    raw: string
-    selector: string
+    rawInput?: string
+    rawOutput?: string
+    selector?: string
+    gas?: bigint
   }
 }
 

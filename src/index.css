@@ -34,6 +34,7 @@
    --tracer-func-name-color: #6e56cf;
    --tracer-arrow-color: #f88c6c;
    --tracer-dot-color: white;
+   --tracer-vm-value-color: #e863e3;
 
    background-color: var(--bg-color);
    height: 100vh;

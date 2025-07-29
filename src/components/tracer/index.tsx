@@ -20,7 +20,6 @@ const Fold: React.FC<{ show: boolean, hasChildren: boolean, onClick: () => void}
 }
 
 const Fn: React.FC<{ trace: Trace }> = ({trace }) => {
-  // TODO: ETH value
   const { state, fold, setHover, pin } = useTracerContext()
 
   const onClick = () => {
@@ -51,6 +50,14 @@ const Fn: React.FC<{ trace: Trace }> = ({trace }) => {
           <div className={styles.obj}>{trace.func.obj}</div>
           <div className={styles.dot}>.</div>
           <div className={styles.funcName}>{trace.func.name}</div>
+          {trace.func.vm?.value ? (
+            <div className={styles.vm}>
+              <div>{"{"}</div>
+              <div className={styles.vmLabel}>value: </div>
+              <div className={styles.value}>{(trace.func.vm?.value || 0).toString()}</div>
+              <div>{"}"}</div>
+            </div>
+          ) : null}
           <div>(</div>
           <Inputs inputs={trace.func.inputs} />
           <div>)</div>
