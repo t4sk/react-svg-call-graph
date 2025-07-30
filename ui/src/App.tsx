@@ -13,8 +13,8 @@ const SCROLL = 20
 const graph = build(calls)
 
 // TODO: import foundry trace
-// TODO: token transfers
-// TODO: ETH transfer
+// TODO: graph - token transfers
+// TODO: graph - ETH transfer
 
 type ArrowType = "in" | "out" | "hover" | "dim" | "pin" | "tracer" | ""
 

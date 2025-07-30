@@ -124,7 +124,7 @@ export const CallGraph: React.FC<{
           BOX_Y_PADD,
         )
         if (svg.isInside(mouseSvgXY, box)) {
-          // TODO: cache
+          // TODO: cache?
           const points = sample(a, arrowXPadd, -arrowYPadd)
           for (let i = 0; i < points.length; i++) {
             if (math.dist(points[i], mouseSvgXY) < R) {
