@@ -13,22 +13,6 @@ import { dfs } from "../src/components/graph/lib/graph"
 // 5. Merge into trace
 //    - Decode function input / output using ABI
 
-// TODO: db
-// # contracts
-// chain => address => contract
-//                     - chain (index)
-//                     - address (index)
-//                     - name
-//                     - abi
-//                     - label
-// # function selectors
-// - selector (index)
-// - inputs
-// - outputs
-// # trace
-// - tx hash
-// - calls
-
 async function getTxTrace(txHash: string): Promise<TxTrace> {
   return post<any, TxTrace>(env.RPC_URL, {
     jsonrpc: "2.0",
