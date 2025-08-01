@@ -34,7 +34,7 @@ https://github.com/koskeller/axum-postgres-template
 docker run --name rust-postgres-db \
     -e POSTGRES_PASSWORD=password \
     -e POSTGRES_USER=postgres \
-    -e POSTGRES_DB=rust-axum-rest-api \
+    -e POSTGRES_DB=dev \
     -p 5432:5432 \
     -d postgres
 
@@ -43,9 +43,12 @@ docker run --name rust-postgres-db \
 cargo install sqlx-cli --no-default-features --features native-tls,postgres
 
 DATABASE_URL=postgres://<username>:<password>@<host>:<port>/<database>
-echo "DATABASE_URL=postgres://postgres:password@localhost:5432/rust-axum-rest-api" >> .env
+echo "DATABASE_URL=postgres://postgres:password@localhost:5432/dev" >> .env
 
 sqlx database create
+sqlx migrate add create_table_contracts
+
+sqlx migrate run
 
 cargo add tokio -F full
 ```
