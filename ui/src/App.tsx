@@ -15,6 +15,7 @@ const graph = build(calls)
 // TODO: import foundry trace
 // TODO: graph - token transfers
 // TODO: graph - ETH transfer
+// TODO: graph - animation to expand -> contract + functions inside a box
 
 type ArrowType = "in" | "out" | "hover" | "dim" | "pin" | "tracer" | ""
 
