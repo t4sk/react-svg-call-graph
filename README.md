@@ -43,13 +43,11 @@ docker run --name rust-postgres-db \
 
 cargo install sqlx-cli --no-default-features --features native-tls,postgres
 
-DB_URL=postgres://<username>:<password>@<host>:<port>/<database>
-echo "DB_URL=postgres://postgres:password@localhost:5432/dev" >> .env
+DATABASE_URL=postgres://<username>:<password>@<host>:<port>/<database>
 
-sqlx database create --database-url $DB_URL
+sqlx database create
 sqlx migrate add create_table_contracts
 
 sqlx migrate run
 
-cargo add tokio -F full
 ```
