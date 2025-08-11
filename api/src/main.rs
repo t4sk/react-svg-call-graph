@@ -1,5 +1,8 @@
 use axum::{
-    Extension, Json, Router, extract::Path, http::StatusCode, routing::get,
+    Extension, Json, Router,
+    extract::Path,
+    http::StatusCode,
+    routing::{get, post},
 };
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
@@ -24,7 +27,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = Router::new()
         .route("/", get(root))
+        .route("/txs/:tx_hash", post(post_tx_trace))
         .route("/fn-selectors/:selector", get(get_fn_selectors))
+        .route("/contracts/:chain/:address", get(get_contract))
         .layer(Extension(pool));
 
     let listener = tokio::net::TcpListener::bind(format!("{host}:{port}"))
@@ -78,7 +83,21 @@ struct Post {
 
 async fn post_tx_trace(
     Extension(pool): Extension<Pool<Postgres>>,
+    Path(tx_hash): Path<String>,
 ) -> Result<(), StatusCode> {
+    // TODO: validate tx hash
+
+    // Get tx trace
+    // DFS - flatten [depth, call]
+    // Get contract addresses
+    // Query db for contracts
+    // For each contract address
+    // - Get contract name and ABI
+    //   - get contract from memory
+    //   - if contract not in memory
+    //     - query Etherscan
+    //       - if ok, write to db
+
     Ok(())
 }
 
@@ -105,4 +124,31 @@ async fn get_fn_selectors(
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     Ok(Json(selectors))
+}
+
+#[derive(Serialize, Deserialize)]
+struct Contract {
+    chain: String,
+    address: String,
+    name: Option<String>,
+    abi: Option<Value>,
+    label: Option<String>,
+}
+
+async fn get_contract(
+    Extension(pool): Extension<Pool<Postgres>>,
+    Path((chain, addr)): Path<(String, String)>,
+) -> Result<Json<Contract>, StatusCode> {
+    // TODO: validate chain and addr
+    // TODO: return Option<Contract>?
+    let contract = sqlx::query_as!(
+        Contract,
+        "SELECT chain, address, name, abi, label FROM contracts WHERE chain = $1 AND address = $2",
+        chain, addr
+    )
+    .fetch_one(&pool)
+    .await
+    .map_err(|_| StatusCode::NOT_FOUND)?;
+
+    Ok(Json(contract))
 }
