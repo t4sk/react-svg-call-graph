@@ -5,12 +5,16 @@ use axum::{
     routing::{get, post},
 };
 use dotenv::dotenv;
+use futures::stream::{FuturesUnordered, StreamExt};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
+use std::collections::HashSet;
 use std::env;
 use tracing::{Level, info};
 use tracing_subscriber;
+
+mod etherscan;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -26,10 +30,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt().with_max_level(Level::INFO).init();
 
     let app = Router::new()
-        .route("/", get(root))
-        .route("/txs/:tx_hash", post(post_tx_trace))
-        .route("/fn-selectors/:selector", get(get_fn_selectors))
+        .route("/contracts", post(post_contracts))
         .route("/contracts/:chain/:address", get(get_contract))
+        .route("/fn-selectors/:selector", get(get_fn_selectors))
         .layer(Extension(pool));
 
     let listener = tokio::net::TcpListener::bind(format!("{host}:{port}"))
@@ -41,28 +44,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-async fn root() -> &'static str {
-    "Hello, world!"
+#[derive(Serialize, Deserialize)]
+struct Contract {
+    chain: String,
+    address: String,
+    name: Option<String>,
+    abi: Option<Value>,
+    label: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
-struct PostTxTraceRequest {
+struct PostContractsRequest {
     chain: String,
-    tx_hash: String,
-}
-
-#[derive(Serialize, Deserialize)]
-struct PostTxTraceRespons {
-    // TODO:
-    chain: String,
-    tx_hash: String,
-}
-
-#[derive(Serialize, Deserialize)]
-struct Post {
-    // TODO:
-    chain: String,
-    tx_hash: String,
+    chain_id: u32,
+    addrs: Vec<String>,
 }
 
 // TODO: db
@@ -81,12 +76,10 @@ struct Post {
 // - tx hash
 // - calls
 
-async fn post_tx_trace(
+async fn post_contracts(
     Extension(pool): Extension<Pool<Postgres>>,
-    Path(tx_hash): Path<String>,
-) -> Result<(), StatusCode> {
-    // TODO: validate tx hash
-
+    Json(req): Json<PostContractsRequest>,
+) -> Result<Json<Vec<Contract>>, StatusCode> {
     // Get tx trace
     // DFS - flatten [depth, call]
     // Get contract addresses
@@ -98,7 +91,31 @@ async fn post_tx_trace(
     //     - query Etherscan
     //       - if ok, write to db
 
-    Ok(())
+    let contracts = sqlx::query_as!(
+        Contract,
+        "SELECT chain, address, name, abi, label FROM contracts WHERE chain = $1 AND address = ANY($2)",
+        req.chain, &req.addrs
+    )
+    .fetch_all(&pool)
+    .await
+    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let set: HashSet<String> =
+        contracts.iter().map(|c| c.address.to_string()).collect();
+
+    let mut futs: FuturesUnordered<_> = req
+        .addrs
+        .iter()
+        .filter(|p| !set.contains(*p))
+        .map(|p| etherscan::get_contract(req.chain_id, p))
+        .collect();
+
+    while let Some(res) = futs.next().await {
+        println!("RES {:#?}", res);
+        // TODO: write + append to contracts
+    }
+
+    Ok(Json(contracts))
 }
 
 #[derive(Serialize, Deserialize)]
@@ -124,15 +141,6 @@ async fn get_fn_selectors(
     .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     Ok(Json(selectors))
-}
-
-#[derive(Serialize, Deserialize)]
-struct Contract {
-    chain: String,
-    address: String,
-    name: Option<String>,
-    abi: Option<Value>,
-    label: Option<String>,
 }
 
 async fn get_contract(
