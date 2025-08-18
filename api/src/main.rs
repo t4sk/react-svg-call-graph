@@ -29,10 +29,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     tracing_subscriber::fmt().with_max_level(Level::INFO).init();
 
+    // TODO: request logs
     let app = Router::new()
         .route("/contracts", post(post_contracts))
-        .route("/contracts/:chain/:address", get(get_contract))
-        .route("/fn-selectors/:selector", get(get_fn_selectors))
+        .route("/contracts/{chain}/{address}", get(get_contract))
+        .route("/fn-selectors/{selector}", get(get_fn_selectors))
         .layer(Extension(pool));
 
     let listener = tokio::net::TcpListener::bind(format!("{host}:{port}"))
