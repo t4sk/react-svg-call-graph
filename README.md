@@ -46,8 +46,9 @@ cargo install sqlx-cli --no-default-features --features native-tls,postgres
 DATABASE_URL=postgres://<username>:<password>@<host>:<port>/<database>
 
 sqlx database create
-sqlx migrate add create_table_contracts
-
 sqlx migrate run
+
+# Create new migration file
+sqlx migrate add create_table_contracts
 
 ```
