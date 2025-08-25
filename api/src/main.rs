@@ -4,13 +4,13 @@ use axum::{
     http::StatusCode,
     routing::{get, post},
 };
+use axum_macros::debug_handler;
 use dotenv::dotenv;
 use futures::stream::{FuturesUnordered, StreamExt};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
 use std::collections::HashSet;
-use std::env;
 use tracing::{Level, info};
 use tracing_subscriber;
 
@@ -77,22 +77,16 @@ struct PostContractsRequest {
 // - tx hash
 // - calls
 
+// #[debug_handler]
 async fn post_contracts(
     Extension(pool): Extension<Pool<Postgres>>,
     Json(req): Json<PostContractsRequest>,
 ) -> Result<Json<Vec<Contract>>, StatusCode> {
-    // Get tx trace
-    // DFS - flatten [depth, call]
-    // Get contract addresses
-    // Query db for contracts
-    // For each contract address
-    // - Get contract name and ABI
-    //   - get contract from memory
-    //   - if contract not in memory
-    //     - query Etherscan
-    //       - if ok, write to db
+    // TODO: validate chain and address
+    // TODO: get chain id from chain
 
-    let contracts = sqlx::query_as!(
+    // Fetch contracts stored in db
+    let mut contracts = sqlx::query_as!(
         Contract,
         "SELECT chain, address, name, abi, label FROM contracts WHERE chain = $1 AND address = ANY($2)",
         req.chain, &req.addrs
@@ -104,6 +98,7 @@ async fn post_contracts(
     let set: HashSet<String> =
         contracts.iter().map(|c| c.address.to_string()).collect();
 
+    // Fetch contracts not stored in db from external source
     let mut futs: FuturesUnordered<_> = req
         .addrs
         .iter()
@@ -111,9 +106,41 @@ async fn post_contracts(
         .map(|p| etherscan::get_contract(req.chain_id, p))
         .collect();
 
-    while let Some(res) = futs.next().await {
-        println!("RES {:#?}", res);
-        // TODO: write + append to contracts
+    let mut vals: Vec<Contract> = vec![];
+
+    while let Some(Ok(res)) = futs.next().await {
+        vals.push(Contract {
+            chain: req.chain.to_string(),
+            address: res.addr,
+            name: res.name,
+            abi: res.abi,
+            label: None,
+        });
+    }
+
+    // Store contracts from external source into db
+    //TODO: batch
+    for v in vals {
+        let res = sqlx::query_as!(
+            Contract,
+            r#"
+                INSERT INTO contracts (chain, address, name, abi)
+                VALUES ($1, $2, $3, $4)
+                ON CONFLICT (chain, address) DO UPDATE
+                SET name = EXCLUDED.name, abi = EXCLUDED.abi
+                RETURNING chain, address, name, abi, label
+            "#,
+            v.chain,
+            v.address,
+            v.name,
+            v.abi
+        )
+        .fetch_one(&pool)
+        .await;
+
+        if let Ok(contract) = res {
+            contracts.push(contract);
+        }
     }
 
     Ok(Json(contracts))

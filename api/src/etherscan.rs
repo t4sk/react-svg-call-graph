@@ -18,6 +18,7 @@ struct Response {
 
 #[derive(Debug)]
 pub struct Contract {
+    pub addr: String,
     pub name: Option<String>,
     pub abi: Option<Value>,
 }
@@ -43,5 +44,9 @@ pub async fn get_contract(
     let abi_raw = first.map(|c| c.abi.clone()).unwrap_or_default();
     let abi = serde_json::from_str(&abi_raw).ok();
 
-    Ok(Contract { name, abi })
+    Ok(Contract {
+        addr: addr.to_string(),
+        name,
+        abi,
+    })
 }

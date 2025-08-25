@@ -4,8 +4,8 @@ CREATE TABLE contracts (
     address TEXT NOT NULL,
     name TEXT,
     abi JSONB,
-    label TEXT
+    label TEXT,
+    CONSTRAINT contracts_chain_address_key UNIQUE (chain, address)
 );
 
-CREATE INDEX idx_contracts_chain_address ON contracts (chain, address);
 
