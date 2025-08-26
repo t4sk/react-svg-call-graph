@@ -1,8 +1,17 @@
-import {Provider as WindowSizeProvider, useWindowSizeContext } from "./contexts/WindowSize"
-import {Provider as TracerProvider, useTracerContext, State as TracerState} from "./components/tracer/TracerContext"
+import {
+  Provider as WindowSizeProvider,
+  useWindowSizeContext,
+} from "./contexts/WindowSize"
+import {
+  Provider as TracerProvider,
+  useTracerContext,
+  State as TracerState,
+} from "./components/tracer/TracerContext"
 import { CallGraphUi } from "./components/graph/CallGraphUi"
 import { SvgNode, Arrow, Hover } from "./components/graph/lib/types"
+import { dfs } from "./components/graph/lib/graph"
 import { getArrowKey, splitArrowKey } from "./components/graph/lib/svg"
+import * as api from "./api"
 import { build } from "./components/graph/lib/graph"
 import Tracer from "./components/tracer"
 import styles from "./App.module.css"
@@ -19,13 +28,17 @@ const graph = build(calls)
 
 type ArrowType = "in" | "out" | "hover" | "dim" | "pin" | "tracer" | ""
 
-function getArrowType(hover: Hover, arrow: Arrow, tracer: TracerState): ArrowType {
+function getArrowType(
+  hover: Hover,
+  arrow: Arrow,
+  tracer: TracerState,
+): ArrowType {
   if (tracer.pins.has(arrow.i)) {
     return "pin"
   }
   if (tracer.hover != null) {
     if (tracer.hover == arrow.i) {
-        return "tracer"
+      return "tracer"
     }
     return "dim"
   }
@@ -47,7 +60,11 @@ function getArrowType(hover: Hover, arrow: Arrow, tracer: TracerState): ArrowTyp
   return ""
 }
 
-function getNodeFillColor(hover: Hover, node: SvgNode, tracer: TracerState): string {
+function getNodeFillColor(
+  hover: Hover,
+  node: SvgNode,
+  tracer: TracerState,
+): string {
   if (hover.node == null) {
     return "var(--node-color)"
   }
@@ -80,9 +97,43 @@ function getArrowColor(t: ArrowType): string {
   }
 }
 
+async function getTxTrace(txHash: string) {
+  const trace = await api.getTxTrace(txHash)
+
+  const calls: [number, api.Call][] = []
+
+  dfs<api.Call>(
+    // @ts-ignore
+    trace.result,
+    (c) => c?.calls || [],
+    (d, c) => {
+      calls.push([d, c])
+    },
+  )
+
+  const addrs = new Set<string>()
+  for (const [_, c] of calls) {
+    addrs.add(c.from)
+    addrs.add(c.to)
+  }
+
+  const contracts: api.Contract[] = await api.getContracts({
+    chain: "eth-mainnet",
+    chain_id: 1,
+    addrs: [...addrs.values()],
+  })
+
+  console.log(contracts)
+}
+
 function App() {
   // TODO: light theme
   // TODO: dynamic graph size
+
+  // TODO: async function
+  // Get trace
+  // DFS
+  // Get contracts
 
   const windowSize = useWindowSizeContext()
   const tracer = useTracerContext()
@@ -95,9 +146,12 @@ function App() {
   const width = windowSize.width - SCROLL
 
   return (
-    <div className={styles.component} style={{ width, height}}>
-      <div className={styles.tracer} style={{ height: (height * 0.4) | 0, width,}}>
-        <Tracer trace={trace}/>
+    <div className={styles.component} style={{ width, height }}>
+      <div
+        className={styles.tracer}
+        style={{ height: (height * 0.4) | 0, width }}
+      >
+        <Tracer trace={trace} />
       </div>
       <CallGraphUi
         calls={calls}
@@ -113,7 +167,7 @@ function App() {
         getNodeStyle={(hover, node) => {
           return {
             fill: getNodeFillColor(hover, node, tracer.state),
-            stroke: "var(--node-border-color)"
+            stroke: "var(--node-border-color)",
           }
         }}
         getArrowStyle={(hover, arrow) => {
@@ -122,7 +176,7 @@ function App() {
             type: t,
             style: {
               stroke: getArrowColor(t),
-            }
+            },
           }
         }}
         renderArrowText={(arrow) => {
@@ -178,11 +232,17 @@ function App() {
                   return (
                     <div className={styles.call} key={k}>
                       <div className={styles.index}>{v}</div>
-                      <div className={styles.obj}>{s?.name || s?.address || "?"}</div>
+                      <div className={styles.obj}>
+                        {s?.name || s?.address || "?"}
+                      </div>
                       <div className={styles.arrow}>{"->"}</div>
-                      <div className={styles.obj}>{d?.name || d?.address || "?"}</div>
+                      <div className={styles.obj}>
+                        {d?.name || d?.address || "?"}
+                      </div>
                       <div>.</div>
-                      <div className={styles.func}>{arrows[v]?.function?.name || "?"}</div>
+                      <div className={styles.func}>
+                        {arrows[v]?.function?.name || "?"}
+                      </div>
                     </div>
                   )
                 })}
