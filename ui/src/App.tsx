@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import {
   Provider as WindowSizeProvider,
   useWindowSizeContext,
@@ -10,9 +11,12 @@ import {
 import { CallGraphUi } from "./components/graph/CallGraphUi"
 import { Graph, SvgNode, Arrow, Hover } from "./components/graph/lib/types"
 import { getArrowKey, splitArrowKey } from "./components/graph/lib/svg"
-import { build } from "./components/graph/lib/graph"
+import { build, dfs } from "./components/graph/lib/graph"
 import Tracer from "./components/tracer"
+import useAsync from "./hooks/useAsync"
 import styles from "./App.module.css"
+import * as api from "./api"
+import { TxCall, Contract } from "./api/types"
 import * as tx from "./tx"
 
 import TX from "../notes/data/tx-res.json"
@@ -97,20 +101,67 @@ function getArrowColor(t: ArrowType): string {
   }
 }
 
-function App() {
-  // TODO: light theme
-  // TODO: dynamic graph size
+async function getTrace(txHash: string) {
+  const t = await api.getTxTrace(txHash)
 
-  // @ts-ignore
-  const { calls, ids, objs, arrows, trace } = tx.build(TX.result, [])
+  const cs: [number, TxCall][] = []
+  dfs<TxCall>(
+    t.result,
+    (c) => c?.calls || [],
+    (d, c) => {
+      cs.push([d, c])
+    },
+  )
+
+  const addrs = new Set<string>()
+  for (const [_, c] of cs) {
+    addrs.add(c.from)
+    addrs.add(c.to)
+  }
+
+  const contracts: Contract[] = await api.getContracts({
+    chain: "eth-mainnet",
+    chain_id: 1,
+    addrs: [...addrs.values()],
+  })
+
+  const { calls, ids, objs, arrows, trace } = tx.build(t.result, contracts)
   const graph = build(calls)
 
+  console.log("CONS", contracts)
+
+  return {
+    calls,
+    ids,
+    objs,
+    arrows,
+    trace,
+    graph,
+  }
+}
+
+// TODO: light theme
+// TODO: dynamic graph size
+function App() {
   const windowSize = useWindowSizeContext()
   const tracer = useTracerContext()
 
-  if (!windowSize) {
+  const _getTrace = useAsync(getTrace)
+
+  useEffect(() => {
+    const f = async () => {
+      const txHash =
+        "0x5e4deab9462bec720f883522d306ec306959cb3ae1ec2eaf0d55477eed01b5a4"
+      const res = await _getTrace.exec(txHash)
+    }
+    f()
+  }, [])
+
+  if (!windowSize || !_getTrace.data) {
     return null
   }
+
+  const { ids, trace, graph, calls, objs, arrows } = _getTrace.data
 
   const height = windowSize.height - SCROLL
   const width = windowSize.width - SCROLL

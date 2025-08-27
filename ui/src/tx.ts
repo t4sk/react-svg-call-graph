@@ -1,5 +1,4 @@
 import { ethers } from "ethers"
-import * as api from "./api"
 import { TxCall, Contract } from "./api/types"
 import { Call } from "./components/graph/lib/types"
 import { Trace, Input, Output } from "./components/tracer/types"
@@ -78,39 +77,6 @@ function parse(
     })
   }
   return func
-}
-
-async function getTxTrace(
-  txHash: string,
-): Promise<{ trace: TxCall; contracts: Contract[] }> {
-  const trace = await api.getTxTrace(txHash)
-
-  const calls: [number, TxCall][] = []
-
-  dfs<TxCall>(
-    trace.result,
-    (c) => c?.calls || [],
-    (d, c) => {
-      calls.push([d, c])
-    },
-  )
-
-  const addrs = new Set<string>()
-  for (const [_, c] of calls) {
-    addrs.add(c.from)
-    addrs.add(c.to)
-  }
-
-  const contracts: Contract[] = await api.getContracts({
-    chain: "eth-mainnet",
-    chain_id: 1,
-    addrs: [...addrs.values()],
-  })
-
-  return {
-    trace: trace.result,
-    contracts,
-  }
 }
 
 export function build(

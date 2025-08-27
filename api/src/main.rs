@@ -1,16 +1,19 @@
 use axum::{
     Extension, Json, Router,
     extract::Path,
+    http::Method,
     http::StatusCode,
     routing::{get, post},
 };
 use axum_macros::debug_handler;
 use dotenv::dotenv;
 use futures::stream::{FuturesUnordered, StreamExt};
+use http::HeaderValue;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
 use std::collections::HashSet;
+use tower_http::cors::{Any, CorsLayer};
 use tracing::{Level, info};
 use tracing_subscriber;
 
@@ -29,11 +32,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     tracing_subscriber::fmt().with_max_level(Level::INFO).init();
 
+    let cors = CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods([Method::GET, Method::POST])
+        .allow_headers([http::header::CONTENT_TYPE]);
+
     // TODO: request logs
     let app = Router::new()
         .route("/contracts", post(post_contracts))
         .route("/contracts/{chain}/{address}", get(get_contract))
         .route("/fn-selectors/{selector}", get(get_fn_selectors))
+        .layer(cors)
         .layer(Extension(pool));
 
     let listener = tokio::net::TcpListener::bind(format!("{host}:{port}"))
