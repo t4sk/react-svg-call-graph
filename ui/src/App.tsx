@@ -8,18 +8,17 @@ import {
   State as TracerState,
 } from "./components/tracer/TracerContext"
 import { CallGraphUi } from "./components/graph/CallGraphUi"
-import { SvgNode, Arrow, Hover } from "./components/graph/lib/types"
-import { dfs } from "./components/graph/lib/graph"
+import { Graph, SvgNode, Arrow, Hover } from "./components/graph/lib/types"
 import { getArrowKey, splitArrowKey } from "./components/graph/lib/svg"
-import * as api from "./api"
 import { build } from "./components/graph/lib/graph"
 import Tracer from "./components/tracer"
 import styles from "./App.module.css"
-import { calls, trace, objs, arrows } from "./dev"
+import * as tx from "./tx"
+
+import TX from "../notes/data/tx-res.json"
 
 // Padding for scroll
 const SCROLL = 20
-const graph = build(calls)
 
 // TODO: import foundry trace
 // TODO: graph - token transfers
@@ -63,6 +62,7 @@ function getArrowType(
 function getNodeFillColor(
   hover: Hover,
   node: SvgNode,
+  graph: Graph,
   tracer: TracerState,
 ): string {
   if (hover.node == null) {
@@ -97,43 +97,13 @@ function getArrowColor(t: ArrowType): string {
   }
 }
 
-async function getTxTrace(txHash: string) {
-  const trace = await api.getTxTrace(txHash)
-
-  const calls: [number, api.Call][] = []
-
-  dfs<api.Call>(
-    // @ts-ignore
-    trace.result,
-    (c) => c?.calls || [],
-    (d, c) => {
-      calls.push([d, c])
-    },
-  )
-
-  const addrs = new Set<string>()
-  for (const [_, c] of calls) {
-    addrs.add(c.from)
-    addrs.add(c.to)
-  }
-
-  const contracts: api.Contract[] = await api.getContracts({
-    chain: "eth-mainnet",
-    chain_id: 1,
-    addrs: [...addrs.values()],
-  })
-
-  console.log(contracts)
-}
-
 function App() {
   // TODO: light theme
   // TODO: dynamic graph size
 
-  // TODO: async function
-  // Get trace
-  // DFS
-  // Get contracts
+  // @ts-ignore
+  const { calls, ids, objs, arrows, trace } = tx.build(TX.result, [])
+  const graph = build(calls)
 
   const windowSize = useWindowSizeContext()
   const tracer = useTracerContext()
@@ -166,7 +136,7 @@ function App() {
         nodeYGap={80}
         getNodeStyle={(hover, node) => {
           return {
-            fill: getNodeFillColor(hover, node, tracer.state),
+            fill: getNodeFillColor(hover, node, graph, tracer.state),
             stroke: "var(--node-border-color)",
           }
         }}
