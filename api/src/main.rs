@@ -54,7 +54,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct Contract {
     chain: String,
     address: String,
@@ -63,7 +63,7 @@ struct Contract {
     label: Option<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct PostContractsRequest {
     chain: String,
     chain_id: u32,
@@ -117,17 +117,20 @@ async fn post_contracts(
 
     let mut vals: Vec<Contract> = vec![];
 
-    while let Some(Ok(res)) = futs.next().await {
-        vals.push(Contract {
-            chain: req.chain.to_string(),
-            address: res.addr,
-            name: res.name,
-            abi: res.abi,
-            label: None,
-        });
+    while let Some(v) = futs.next().await {
+        if let Ok(res) = v {
+            vals.push(Contract {
+                chain: req.chain.to_string(),
+                address: res.addr,
+                name: res.name,
+                abi: res.abi,
+                label: None,
+            });
+        }
     }
 
     // Store contracts from external source into db
+    // TODO store contract without results so that it can be queried
     //TODO: batch
     for v in vals {
         let res = sqlx::query_as!(
@@ -146,6 +149,8 @@ async fn post_contracts(
         )
         .fetch_one(&pool)
         .await;
+
+        println!("RES {:#?}", res);
 
         if let Ok(contract) = res {
             contracts.push(contract);

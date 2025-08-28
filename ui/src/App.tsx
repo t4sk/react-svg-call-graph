@@ -119,6 +119,8 @@ async function getTrace(txHash: string) {
     addrs.add(c.to)
   }
 
+  console.log("ADDRS", [...addrs.values()])
+
   const contracts: Contract[] = await api.getContracts({
     chain: "eth-mainnet",
     chain_id: 1,
