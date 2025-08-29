@@ -28,7 +28,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let db_url = std::env::var("DATABASE_URL")?;
 
     let pool = PgPoolOptions::new().connect(&db_url).await?;
-    println!("Connected to database");
+    info!("Connected to database");
 
     tracing_subscriber::fmt().with_max_level(Level::INFO).init();
 
@@ -130,7 +130,6 @@ async fn post_contracts(
     }
 
     // Store contracts from external source into db
-    // TODO store contract without results so that it can be queried
     //TODO: batch
     for v in vals {
         let res = sqlx::query_as!(
@@ -149,8 +148,6 @@ async fn post_contracts(
         )
         .fetch_one(&pool)
         .await;
-
-        println!("RES {:#?}", res);
 
         if let Ok(contract) = res {
             contracts.push(contract);
