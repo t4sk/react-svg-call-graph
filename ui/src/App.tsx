@@ -166,12 +166,14 @@ function App() {
 
   return (
     <div className={styles.component} style={{ width, height }}>
+      {/*
       <div
         className={styles.tracer}
         style={{ height: (height * 0.4) | 0, width }}
       >
         <Tracer trace={trace} />
       </div>
+      */}
       <CallGraphUi
         calls={calls}
         tracer={tracer.state}

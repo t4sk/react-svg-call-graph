@@ -100,6 +100,8 @@ export function build(
   let objId = 0
   const flat: [number, TxCall][] = []
 
+  // TODO: group (contract + function calls)
+
   // Address => objId
   const ids: Map<string, number> = new Map()
   const objs: Map<number, Obj> = new Map()
