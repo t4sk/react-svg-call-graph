@@ -33,6 +33,6 @@ export type Func = {
 
 export type Trace = {
   id: number
-  func: Func
+  fn: Func
   children: Trace[]
 }

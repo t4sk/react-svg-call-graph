@@ -6,23 +6,29 @@ import { dfs } from "./components/graph/lib/graph"
 import { zip } from "./utils"
 
 export type Obj = {
-  address: string
-  name: string | null
+  id: number
+  val: {
+    name: string | null
+    address: string
+  }
+  objs: Map<number, Obj>
 }
 
 export type Arrow = {
-  src: string
-  dst: string
-  raw: {
-    input: string | null
-    output: string | null
+  src: number
+  dst: number
+  val: {
+    raw: {
+      input: string | null
+      output: string | null
+    }
+    fn: {
+      name: string
+      // TODO: more info
+      // inputs: any[] | null
+      // outputs: any[] | null
+    } | null
   }
-  function: {
-    name: string
-    // inputs: any[] | null
-    // outputs: any[] | null
-  } | null
-  // chain specific (gas, delegate call, etc...)
 }
 
 function parse(
@@ -45,7 +51,7 @@ function parse(
     return null
   }
 
-  const func = {
+  const fn = {
     name: tx.name,
     selector: tx.selector,
     inputs: [],
@@ -56,7 +62,7 @@ function parse(
   if (tx?.fragment) {
     const vals = iface.decodeFunctionData(tx.fragment, input)
     // @ts-ignore
-    func.inputs = zip(vals, [...tx.fragment.inputs], (v, t) => {
+    fn.inputs = zip(vals, [...tx.fragment.inputs], (v, t) => {
       return {
         type: t.type,
         name: t.name,
@@ -68,7 +74,7 @@ function parse(
     // @ts-ignore
     const vals = iface.decodeFunctionResult(tx.fragment, output)
     // @ts-ignore
-    func.outputs = zip(vals, [...tx.fragment.outputs], (v, t) => {
+    fn.outputs = zip(vals, [...tx.fragment.outputs], (v, t) => {
       return {
         type: t.type,
         name: t.name,
@@ -76,7 +82,7 @@ function parse(
       }
     })
   }
-  return func
+  return fn
 }
 
 export function build(
@@ -96,13 +102,12 @@ export function build(
   }, {})
 
   // DFS to flatten tx calls
-  // call counter
   let objId = 0
   const flat: [number, TxCall][] = []
 
   // TODO: group (contract + function calls)
 
-  // Address => objId
+  // Address + selector (if fn) => objId
   const ids: Map<string, number> = new Map()
   const objs: Map<number, Obj> = new Map()
   const arrows: Arrow[] = []
@@ -116,7 +121,7 @@ export function build(
     (d, c) => {
       // console.log("CALL", c)
       // @ts-ignore
-      const func = parse(cons[c.to]?.abi, c.input, c.output)
+      const fn = parse(cons[c.to]?.abi, c.input, c.output)
 
       arrows.push({
         src: c.from,
@@ -126,7 +131,7 @@ export function build(
           output: c.output || null,
         },
         // @ts-ignore
-        function: func,
+        function: fn,
       })
 
       for (const addr of [c.from, c.to]) {
@@ -142,13 +147,13 @@ export function build(
       // Stack
       const trace: Trace = {
         id: traceId,
-        func: {
+        fn: {
           depth: d,
           // @ts-ignore
           obj: cons[c.to]?.name || c.to,
-          name: func?.name || "",
-          inputs: func?.inputs || [],
-          outputs: func?.outputs || [],
+          name: fn?.name || "",
+          inputs: fn?.inputs || [],
+          outputs: fn?.outputs || [],
           // TODO:
           ok: true,
           vm: {
@@ -159,7 +164,7 @@ export function build(
             type: c.type.toLowerCase(),
             rawInput: c.input,
             rawOutput: c.output,
-            selector: func?.selector,
+            selector: fn?.selector,
             gas: BigInt(c.gasUsed),
           },
         },
