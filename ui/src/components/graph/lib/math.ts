@@ -55,7 +55,7 @@ export function perp(points: Point[], t: number): Point {
   }
 }
 
-// Samples from i = 0 to n
+// Samples from 0 to n
 export function sample<A>(n: number, f: (i: number) => A): A[] {
   const data = []
   for (let i = 0; i <= n; i++) {

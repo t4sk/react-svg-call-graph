@@ -1,28 +1,30 @@
 import { Call, Neighbors, Graph } from "./types"
 
 export function build(calls: Call[]): Graph {
-  const inbound: Neighbors = new Map()
-  const outbound: Neighbors = new Map()
+  // dst => sources
+  const incoming: Neighbors = new Map()
+  // src => destinations
+  const outgoing: Neighbors = new Map()
 
   for (let i = 0; i < calls.length; i++) {
     const c = calls[i]
 
-    if (!inbound.has(c.dst)) {
-      inbound.set(c.dst, new Set())
+    if (!incoming.has(c.dst)) {
+      incoming.set(c.dst, new Set())
     }
 
     if (c.src) {
-      inbound.get(c.dst)?.add(c.src)
+      incoming.get(c.dst)?.add(c.src)
 
-      if (!outbound.has(c.src)) {
-        outbound.set(c.src, new Set())
+      if (!outgoing.has(c.src)) {
+        outgoing.set(c.src, new Set())
       }
 
-      outbound.get(c.src)?.add(c.dst)
+      outgoing.get(c.src)?.add(c.dst)
     }
   }
 
-  return { inbound, outbound }
+  return { incoming, outgoing }
 }
 
 export function bfs<A>(

@@ -10,9 +10,9 @@ export type Neighbors = Map<number, Set<number>>
 
 export type Graph = {
   // Child => parents
-  inbound: Neighbors
+  incoming: Neighbors
   // Parent => children
-  outbound: Neighbors
+  outgoing: Neighbors
 }
 
 // SVG
