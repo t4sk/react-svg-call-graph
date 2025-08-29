@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext, useMemo }  from "react"
+import React, { useState, createContext, useContext, useMemo } from "react"
 
 export type State = {
   hover: number | null
@@ -12,7 +12,7 @@ const TracerContext = createContext({
   state: STATE,
   fold: (_: number) => {},
   setHover: (_: number | null) => {},
-  pin: (_: number) => {}
+  pin: (_: number) => {},
 })
 
 export function useTracerContext() {
@@ -20,8 +20,8 @@ export function useTracerContext() {
 }
 
 export const Provider: React.FC<{ children: React.ReactNode }> = ({
-  children
-}) =>  {
+  children,
+}) => {
   const [state, setState] = useState<State>(STATE)
 
   const fold = (id: number) => {
@@ -32,16 +32,16 @@ export const Provider: React.FC<{ children: React.ReactNode }> = ({
       hidden.add(id)
     }
 
-    setState(state => ({
+    setState((state) => ({
       ...state,
       hidden,
     }))
   }
 
   const setHover = (id: number | null) => {
-    setState(state => ({
+    setState((state) => ({
       ...state,
-      hover: id
+      hover: id,
     }))
   }
 
@@ -53,7 +53,7 @@ export const Provider: React.FC<{ children: React.ReactNode }> = ({
       pins.add(id)
     }
 
-    setState(state => ({
+    setState((state) => ({
       ...state,
       pins,
     }))
@@ -65,12 +65,11 @@ export const Provider: React.FC<{ children: React.ReactNode }> = ({
       fold,
       setHover,
       pin,
-    }), [state]
+    }),
+    [state],
   )
 
   return (
-    <TracerContext.Provider value={value}>
-      {children}
-    </TracerContext.Provider>
+    <TracerContext.Provider value={value}>{children}</TracerContext.Provider>
   )
 }

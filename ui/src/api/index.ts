@@ -7,16 +7,16 @@ import ABIS from "../../notes/data/abis.json"
 import NAMES from "../../notes/data/names.json"
 
 export async function getTxTrace(txHash: string): Promise<TxTrace> {
-  /*
   return post<any, TxTrace>(import.meta.env.VITE_RPC_URL, {
     jsonrpc: "2.0",
     method: "debug_traceTransaction",
     params: [txHash, { tracer: "callTracer" }],
     id: 1,
   })
-  */
+  /*
   // @ts-ignore
   return { result: TX.result }
+  */
 }
 
 export async function getEtherscanContract(
@@ -47,12 +47,11 @@ export async function getContracts(params: {
   chain_id: number
   addrs: string[]
 }): Promise<Contract[]> {
-  /*
   return post<any, Contract[]>(
     `${import.meta.env.VITE_API_URL}/contracts`,
     params,
   )
-  */
+  /*
   const contracts = ABIS.map((abi) => ({
     chain: "eth-mainnet",
     abi: abi.abi,
@@ -62,4 +61,5 @@ export async function getContracts(params: {
   }))
   // @ts-ignore
   return contracts
+  */
 }

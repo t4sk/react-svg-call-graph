@@ -60,7 +60,7 @@ export const SvgArrow: React.FC<{
   text,
   textXGap = 0,
   textYGap = -10,
-  type = ""
+  type = "",
 }) => {
   const id = `arrow-${type}`
   return (
@@ -129,7 +129,7 @@ export const SvgZigZagArrow: React.FC<{
   text,
   textXGap = -14,
   textYGap = -14,
-  type = ""
+  type = "",
 }) => {
   const midX = (x0 + x1) >> 1
   const id = `zig-zag-arrow-${type}`
@@ -221,7 +221,7 @@ export const SvgCallBackArrow: React.FC<{
   text,
   textXGap = 0,
   textYGap = -14,
-  type = ""
+  type = "",
 }) => {
   // x0 >= x1 and y1 >= y0
   const id = `call-back-arrow-${type}`

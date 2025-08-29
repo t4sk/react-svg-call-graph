@@ -1,6 +1,14 @@
 import React, { useMemo } from "react"
-import { Call, ViewBox, Point, SvgNode, Arrow, Hover, Tracer } from "./lib/types"
-import * as svg from "./lib/svg"
+import {
+  Call,
+  ViewBox,
+  Point,
+  SvgNode,
+  Arrow,
+  Hover,
+  Tracer,
+} from "./lib/types"
+import * as svg from "./lib/screen"
 import {
   SvgRect,
   SvgDot,
@@ -47,7 +55,10 @@ export const CallGraph: React.FC<{
     hover: Hover,
     node: SvgNode,
   ) => { fill?: string; stroke?: string }
-  getArrowStyle?: (hover: Hover, arrow: Arrow) => { type: string, style: { stroke?: string } }
+  getArrowStyle?: (
+    hover: Hover,
+    arrow: Arrow,
+  ) => { type: string; style: { stroke?: string } }
   nodeWidth?: number
   nodeHeight?: number
   nodeXGap?: number
@@ -209,11 +220,16 @@ export const CallGraph: React.FC<{
         width={width}
         height={height}
         viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
-        style={{ backgroundColor, }}
+        style={{ backgroundColor }}
       >
         {layout.arrows.map((a, i) => {
           // Render arrows that are not hovered
-          if (a.s == hover.node || a.e == hover.node || a.s == tracer?.hover || a.e == tracer?.hover) {
+          if (
+            a.s == hover.node ||
+            a.e == hover.node ||
+            a.s == tracer?.hover ||
+            a.e == tracer?.hover
+          ) {
             return null
           }
           const style = getArrowStyle(hover, a)
@@ -226,7 +242,12 @@ export const CallGraph: React.FC<{
 
         {layout.arrows.map((a, i) => {
           // Render arrows that are hovered second
-          if (a.s != hover.node && a.e != hover.node && a.s != tracer?.hover && a.e != tracer?.hover) {
+          if (
+            a.s != hover.node &&
+            a.e != hover.node &&
+            a.s != tracer?.hover &&
+            a.e != tracer?.hover
+          ) {
             return null
           }
           const style = getArrowStyle(hover, a)

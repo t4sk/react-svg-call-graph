@@ -8,7 +8,7 @@ export function assert(b: boolean, msg: string) {
 export function search<A>(
   arr: A[],
   get: (a: A) => number,
-  x: number
+  x: number,
 ): number | null {
   if (arr.length == 0) {
     return null

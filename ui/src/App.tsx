@@ -10,7 +10,7 @@ import {
 } from "./components/tracer/TracerContext"
 import { CallGraphUi } from "./components/graph/CallGraphUi"
 import { Graph, SvgNode, Arrow, Hover } from "./components/graph/lib/types"
-import { getArrowKey, splitArrowKey } from "./components/graph/lib/svg"
+import { getArrowKey, splitArrowKey } from "./components/graph/lib/screen"
 import { build, dfs } from "./components/graph/lib/graph"
 import Tracer from "./components/tracer"
 import useAsync from "./hooks/useAsync"
@@ -146,8 +146,10 @@ function App() {
 
   useEffect(() => {
     const f = async () => {
+      // const txHash =
+      // "0x5e4deab9462bec720f883522d306ec306959cb3ae1ec2eaf0d55477eed01b5a4"
       const txHash =
-        "0x5e4deab9462bec720f883522d306ec306959cb3ae1ec2eaf0d55477eed01b5a4"
+        "0xa542508dfd209f23cb306861ea25b5c131e82dcdf75c86d874644b4c436d9f6f"
       await _getTrace.exec(txHash)
     }
     f()
@@ -164,14 +166,12 @@ function App() {
 
   return (
     <div className={styles.component} style={{ width, height }}>
-      {/*
       <div
         className={styles.tracer}
         style={{ height: (height * 0.4) | 0, width }}
       >
         <Tracer trace={trace} />
       </div>
-      */}
       <CallGraphUi
         calls={calls}
         tracer={tracer.state}
