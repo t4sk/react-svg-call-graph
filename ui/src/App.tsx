@@ -19,8 +19,6 @@ import * as api from "./api"
 import { TxCall, Contract } from "./api/types"
 import * as tx from "./tx"
 
-import TX from "../notes/data/tx-res.json"
-
 // Padding for scroll
 const SCROLL = 20
 
@@ -119,8 +117,6 @@ async function getTrace(txHash: string) {
     addrs.add(c.to)
   }
 
-  console.log("ADDRS", [...addrs.values()])
-
   const contracts: Contract[] = await api.getContracts({
     chain: "eth-mainnet",
     chain_id: 1,
@@ -129,8 +125,6 @@ async function getTrace(txHash: string) {
 
   const { calls, ids, objs, arrows, trace } = tx.build(t.result, contracts)
   const graph = build(calls)
-
-  console.log("CONS", contracts)
 
   return {
     calls,
@@ -154,7 +148,7 @@ function App() {
     const f = async () => {
       const txHash =
         "0x5e4deab9462bec720f883522d306ec306959cb3ae1ec2eaf0d55477eed01b5a4"
-      const res = await _getTrace.exec(txHash)
+      await _getTrace.exec(txHash)
     }
     f()
   }, [])
