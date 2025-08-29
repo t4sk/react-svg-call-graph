@@ -117,6 +117,7 @@ async fn post_contracts(
 
     let mut vals: Vec<Contract> = vec![];
 
+    // FIX: need to request several times for all the contracts to show up
     while let Some(v) = futs.next().await {
         if let Ok(res) = v {
             vals.push(Contract {
