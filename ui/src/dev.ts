@@ -1,9 +1,9 @@
 import { ethers } from "ethers"
 import { Call } from "./components/graph/lib/types"
 import { Trace, Func, Input, Output } from "./components/tracer/types"
-import { dfs} from "./components/graph/lib/graph"
+import { dfs } from "./components/graph/lib/graph"
 
-import TX from "../notes/data/tx-res.json"
+import TX from "../notes/data/tx-2.json"
 import NAMES from "../notes/data/names.json"
 import ABIS from "../notes/data/abis.json"
 import "../notes/req.ts"
@@ -69,7 +69,16 @@ export const ids: Map<string, number> = new Map()
 export const objs: Map<number, Obj> = new Map()
 export const arrows: Arrow[] = []
 
-function parseTx(abi: any[] | null ,input: string, output?: string): { name: string, inputs: Input[], outputs: Output[], selector: string } | null {
+function parseTx(
+  abi: any[] | null,
+  input: string,
+  output?: string,
+): {
+  name: string
+  inputs: Input[]
+  outputs: Output[]
+  selector: string
+} | null {
   if (!abi) {
     return null
   }
@@ -84,7 +93,7 @@ function parseTx(abi: any[] | null ,input: string, output?: string): { name: str
     name: tx.name,
     selector: tx.selector,
     inputs: [],
-    outputs: []
+    outputs: [],
   }
   // console.log("TX", tx)
   // @ts-ignore
@@ -95,10 +104,9 @@ function parseTx(abi: any[] | null ,input: string, output?: string): { name: str
       return {
         type: t.type,
         name: t.name,
-        value: v
+        value: v,
       }
     })
-
   }
   if (tx?.fragment && output) {
     // @ts-ignore
@@ -108,7 +116,7 @@ function parseTx(abi: any[] | null ,input: string, output?: string): { name: str
       return {
         type: t.type,
         name: t.name,
-        value: v
+        value: v,
       }
     })
   }
@@ -169,8 +177,8 @@ dfs<TxCall>(
           rawInput: c.input,
           rawOutput: c.output,
           selector: func?.selector,
-          gas: BigInt(c.gasUsed)
-        }
+          gas: BigInt(c.gasUsed),
+        },
       },
       children: [],
     }
@@ -203,4 +211,3 @@ for (const [d, c] of flat) {
     depth: d,
   })
 }
-

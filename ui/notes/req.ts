@@ -1,9 +1,9 @@
-import {ethers} from "ethers"
-import TX_TRACE_RES from "./data/tx-res.json"
+import { ethers } from "ethers"
+import TX_TRACE_RES from "./data/tx-2.json"
 import ABIS from "./data/abis.json"
 import env from "./env"
-import {get, post} from "./lib"
-import {TxTrace, Call, ContractInfo} from "./types"
+import { get, post } from "./lib"
+import { TxTrace, Call, ContractInfo } from "./types"
 import { dfs } from "../src/components/graph/lib/graph"
 
 // 1. Get tx trace -> getTxTrace
@@ -23,10 +23,10 @@ async function getTxTrace(txHash: string): Promise<TxTrace> {
 }
 
 async function getContract(
-  addr: string
+  addr: string,
 ): Promise<{ abi: any | null; name: string | null }> {
-  const res = await get<{result: ContractInfo[]}>(
-    `https://api.etherscan.io/api?module=contract&action=getsourcecode&address=${addr}&apikey=${env.ETHERSCAN_API_KEY}`
+  const res = await get<{ result: ContractInfo[] }>(
+    `https://api.etherscan.io/api?module=contract&action=getsourcecode&address=${addr}&apikey=${env.ETHERSCAN_API_KEY}`,
   )
 
   // @ts-ignore
@@ -46,39 +46,38 @@ async function getContract(
 }
 
 async function main() {
-    const txHash =
-      "0x5e4deab9462bec720f883522d306ec306959cb3ae1ec2eaf0d55477eed01b5a4"
+  const txHash =
+    "0x5e4deab9462bec720f883522d306ec306959cb3ae1ec2eaf0d55477eed01b5a4"
 
-    // const trace = await getTxTrace(txHash)
-    // console.log(trace)
-    const trace = TX_TRACE_RES
+  // const trace = await getTxTrace(txHash)
+  // console.log(trace)
+  const trace = TX_TRACE_RES
 
-    const calls: [number, Call][] = []
+  const calls: [number, Call][] = []
 
-    dfs<Call>(
-      // @ts-ignore
-      trace.result,
-      (c) => c?.calls || [],
-      (d, c) => {
-        calls.push([d, c])
-      },
-    )
+  dfs<Call>(
+    // @ts-ignore
+    trace.result,
+    (c) => c?.calls || [],
+    (d, c) => {
+      calls.push([d, c])
+    },
+  )
 
-    const addrs = new Set<string>()
-    for (const [_, c] of calls) {
-        addrs.add(c.from)
-        addrs.add(c.to)
-    }
+  const addrs = new Set<string>()
+  for (const [_, c] of calls) {
+    addrs.add(c.from)
+    addrs.add(c.to)
+  }
 
-    const contracts: {addr: string, name: string | null, abi: any}[] = []
-    for (const addr of addrs) {
-        const { name, abi } = await getContract(addr)
-        console.log("get", addr)
-        contracts.push({ addr, name, abi })
-    }
+  const contracts: { addr: string; name: string | null; abi: any }[] = []
+  for (const addr of addrs) {
+    const { name, abi } = await getContract(addr)
+    console.log("get", addr)
+    contracts.push({ addr, name, abi })
+  }
 
-    console.log(contracts)
+  console.log(contracts)
 }
 
 // main()
-
