@@ -57,7 +57,7 @@ export type MidPoints = {
   center: Point
 }
 
-export type Canvas = {
+export type Screen = {
   width: number
   height: number
   center: Point

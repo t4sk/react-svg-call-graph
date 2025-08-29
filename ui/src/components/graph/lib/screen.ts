@@ -5,7 +5,7 @@ import {
   MidPoints,
   Arrow,
   ArrowType,
-  Canvas,
+  Screen,
   SvgNode,
   Layout,
 } from "./types"
@@ -15,7 +15,7 @@ export function getArrowKey(a: Arrow): string {
   return `${a.s},${a.e}`
 }
 
-export function splitArrowKey(key: string): {src: number, dst: number} {
+export function splitArrowKey(key: string): { src: number; dst: number } {
   const [src, dst] = key.split(",")
   return {
     src: parseInt(src),
@@ -181,7 +181,7 @@ function arrow(
   }
 }
 
-export function map(calls: Call[], canvas: Canvas): Layout {
+export function map(calls: Call[], screen: Screen): Layout {
   const nodes: SvgNode[] = []
   const map: Map<number, SvgNode> = new Map()
 
@@ -194,10 +194,13 @@ export function map(calls: Call[], canvas: Canvas): Layout {
   let dup = 0
 
   // Add first caller as dst for calculation in the for loop
-  const _calls = [{src: null, dst: 0, depth: 0}, ...calls.map(c => ({
-    ...c,
-    depth: c.depth + 1
-  }))]
+  const _calls = [
+    { src: null, dst: 0, depth: 0 },
+    ...calls.map((c) => ({
+      ...c,
+      depth: c.depth + 1,
+    })),
+  ]
 
   for (let i = 0; i < _calls.length; i++) {
     const c = _calls[i]
@@ -216,7 +219,7 @@ export function map(calls: Call[], canvas: Canvas): Layout {
       offsets.set(k, offset)
     }
 
-    const { height, width, gapX, gapY } = canvas.node
+    const { height, width, gapX, gapY } = screen.node
     const rect = {
       x: (width >> 1) + c.depth * (width + gapX),
       y: (height >> 1) + (i + offset - dup) * (height + gapY),
@@ -226,7 +229,7 @@ export function map(calls: Call[], canvas: Canvas): Layout {
     const node = {
       id: c.dst,
       rect,
-      mid: getMidPoints(rect)
+      mid: getMidPoints(rect),
     }
 
     nodes.push(node)
@@ -237,8 +240,8 @@ export function map(calls: Call[], canvas: Canvas): Layout {
   }
 
   // Set final positions of the nodes
-  const x0 = canvas.center.x - (xMax >> 1)
-  const y0 = canvas.center.y - (yMax >> 1)
+  const x0 = screen.center.x - (xMax >> 1)
+  const y0 = screen.center.y - (yMax >> 1)
 
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i]
