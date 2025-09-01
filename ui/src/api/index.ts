@@ -1,5 +1,5 @@
 import { post, get } from "./lib"
-import { TxTrace, EtherscanContractInfo, Contract } from "./types"
+import { TxTrace, EtherscanContractInfo, ContractInfo } from "./types"
 
 // TODO: remove
 import TX from "../../notes/data/tx-2.json"
@@ -46,9 +46,9 @@ export async function getContracts(params: {
   chain: string
   chain_id: number
   addrs: string[]
-}): Promise<Contract[]> {
+}): Promise<ContractInfo[]> {
   /*
-  return post<any, Contract[]>(
+  return post<any, ContractInfo[]>(
     `${import.meta.env.VITE_API_URL}/contracts`,
     params,
   )

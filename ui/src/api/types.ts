@@ -19,7 +19,7 @@ export type EtherscanContractInfo = {
   ContractName: string
 }
 
-export type Contract = {
+export type ContractInfo = {
   chain: string
   address: string
   name?: string
