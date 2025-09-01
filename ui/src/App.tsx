@@ -17,7 +17,7 @@ import useAsync from "./hooks/useAsync"
 import styles from "./App.module.css"
 import * as api from "./api"
 import { TxCall, Contract } from "./api/types"
-import * as tx from "./tx"
+import * as tx from "./trace"
 
 // Padding for scroll
 const SCROLL = 20

@@ -10,29 +10,18 @@ export type Output = {
   value: string
 }
 
-export type Func = {
-  depth: number
-  obj: string
+export type Fn = {
+  id: string
   name: string
   inputs: Input[]
   outputs: Output[]
-  ok: boolean
-  vm?: {
-    // EVM specific
-    contract?: string
-    address: string
-    value?: bigint
-    // call, staticcall, delegatecall, event, etc...
-    type: string
-    rawInput?: string
-    rawOutput?: string
-    selector?: string
-    gas?: bigint
-  }
+  // TODO: ok + error?
 }
 
-export type Trace = {
+export type Trace<C> = {
   id: number
-  fn: Func
-  children: Trace[]
+  depth: number
+  fn: Fn
+  calls: Trace<C>[]
+  ctx: C
 }

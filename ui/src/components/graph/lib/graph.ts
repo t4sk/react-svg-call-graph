@@ -30,11 +30,12 @@ export function build(calls: Call[]): Graph {
 export function bfs<A>(
   start: A,
   get: (v: A) => A[] | null,
-  f?: (d: number, v: A) => void,
+  f?: (i: number, d: number, v: A) => void,
 ) {
   const q: [number, A][] = [[0, start]]
   const visited: Set<A> = new Set()
   let i = 0
+  let k = 0
 
   while (i < q.length) {
     // Avoid using shift() which is O(N) to get element from the head of q
@@ -46,7 +47,8 @@ export function bfs<A>(
     visited.add(v)
 
     if (f) {
-      f(d, v)
+      f(k, d, v)
+      k++
     }
 
     const neighbors = get(v)
@@ -60,13 +62,19 @@ export function bfs<A>(
   }
 }
 
-export function dfs<A>(a: A, get: (a: A) => A[], f: (d: number, a: A) => void) {
+export function dfs<A>(
+  a: A,
+  get: (a: A) => A[],
+  f: (i: number, d: number, a: A) => void,
+) {
   const q: [number, A][] = [[0, a]]
 
+  let i = 0
   while (q.length > 0) {
     const [d, a] = q.pop() as [number, A]
 
-    f(d, a)
+    f(i, d, a)
+    i++
 
     const next = get(a)
     if (next.length > 0) {
