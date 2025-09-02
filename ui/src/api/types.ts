@@ -10,10 +10,6 @@ export type TxCall = {
   calls?: TxCall[]
 }
 
-export type TxTrace = {
-  result: TxCall
-}
-
 export type EtherscanContractInfo = {
   ABI: string
   ContractName: string

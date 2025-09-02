@@ -1,14 +1,14 @@
 import { post, get } from "./lib"
-import { TxTrace, EtherscanContractInfo, ContractInfo } from "./types"
+import { TxCall, EtherscanContractInfo, ContractInfo } from "./types"
 
 // TODO: remove
 import TX from "../../notes/data/tx-2.json"
 import ABIS from "../../notes/data/abis.json"
 import NAMES from "../../notes/data/names.json"
 
-export async function getTxTrace(txHash: string): Promise<TxTrace> {
+export async function getTxTrace(txHash: string): Promise<{ result: TxCall }> {
   /*
-  return post<any, TxTrace>(import.meta.env.VITE_RPC_URL, {
+  return post<any, {result: TxCall}>(import.meta.env.VITE_RPC_URL, {
     jsonrpc: "2.0",
     method: "debug_traceTransaction",
     params: [txHash, { tracer: "callTracer" }],
