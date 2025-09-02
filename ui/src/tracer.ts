@@ -1,33 +1,12 @@
 import { ethers } from "ethers"
+import * as api from "./api"
 import { TxCall, ContractInfo } from "./api/types"
 // TODO: rename type?
 import { Call } from "./components/graph/lib/types"
 import { Trace, Input, Output, Fn } from "./components/tracer/types"
-import { dfs } from "./components/graph/lib/graph"
+import * as graph from "./components/graph/lib/graph"
 import { zip } from "./utils"
-
-// Contract and EOA
-export type Account = {
-  name?: string
-  addr: string
-  fns: Map<string, Fn>
-}
-
-export type Evm = {
-  // Name of dst contract or account
-  name?: string
-  src: string
-  dst: string
-  value?: bigint
-  // call, staticcall, delegatecall, event, etc...
-  type: string
-  raw?: {
-    input?: string
-    output?: string
-  }
-  selector?: string
-  gas?: bigint
-}
+import { Account, Evm } from "./chain"
 
 // TODO: move to graph/lib/types?
 export type Obj<V> = {
@@ -121,7 +100,7 @@ export function build(
   const arrows: Arrow<Fn>[] = []
   const stack: Trace<Evm>[] = []
 
-  dfs<TxCall>(
+  graph.dfs<TxCall>(
     root,
     (c) => c?.calls || [],
     (i, d, c) => {
@@ -133,6 +112,8 @@ export function build(
         depth: d,
         fn: {
           id: `fn:${c.to}:${fn?.selector || ""}`,
+          // @ts-ignore
+          mod: cons[c.to]?.name || c.to,
           name: fn?.name || "",
           inputs: fn?.inputs || [],
           outputs: fn?.outputs || [],
@@ -215,5 +196,42 @@ export function build(
     arrows,
     trace: stack[0],
     calls,
+  }
+}
+
+export async function getTrace(txHash: string) {
+  const t = await api.getTxTrace(txHash)
+
+  const txCalls: [number, TxCall][] = []
+  graph.dfs<TxCall>(
+    t.result,
+    (c) => c?.calls || [],
+    (_, d, c) => {
+      txCalls.push([d, c])
+    },
+  )
+
+  const addrs = new Set<string>()
+  for (const [_, c] of txCalls) {
+    addrs.add(c.from)
+    addrs.add(c.to)
+  }
+
+  const contracts: ContractInfo[] = await api.getContracts({
+    // TODO: chain params from input
+    chain: "eth-mainnet",
+    chain_id: 1,
+    addrs: [...addrs.values()],
+  })
+
+  const { calls, ids, objs, arrows, trace } = build(t.result, contracts)
+
+  return {
+    calls,
+    ids,
+    objs,
+    arrows,
+    trace,
+    graph: graph.build(calls),
   }
 }

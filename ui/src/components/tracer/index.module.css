@@ -83,7 +83,7 @@
   margin-left: 10px;
   margin-right: 10px;
 }
-.vm {
+.ctx {
   display: flex;
   flex-direction: row;
   align-items: center;

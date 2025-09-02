@@ -12,6 +12,7 @@ export type Output = {
 
 export type Fn = {
   id: string
+  mod: string
   name: string
   inputs: Input[]
   outputs: Output[]

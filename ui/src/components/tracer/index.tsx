@@ -25,7 +25,11 @@ const Fold: React.FC<{
   )
 }
 
-const Fn: React.FC<{ trace: Trace }> = ({ trace }) => {
+type FnProps<V> = {
+  trace: Trace<V>
+}
+
+function Fn<V>({ trace }: FnProps<V>) {
   const { state, fold, setHover, pin } = useTracerContext()
 
   const onClick = () => {
@@ -60,45 +64,49 @@ const Fn: React.FC<{ trace: Trace }> = ({ trace }) => {
             trace.id
           )}
         </div>
-        <Padd depth={trace.func.depth} />
+        <Padd depth={trace.depth} />
         <div className={styles.func}>
           <Fold
             show={show}
-            hasChildren={trace.children.length > 0}
+            hasChildren={trace.calls.length > 0}
             onClick={onClickFold}
           />
-          <div className={styles.obj}>{trace.func.obj}</div>
+          <div className={styles.obj}>{trace.fn.mod}</div>
           <div className={styles.dot}>.</div>
-          <div className={styles.funcName}>{trace.func.name}</div>
-          {trace.func.vm?.value ? (
-            <div className={styles.vm}>
+          <div className={styles.funcName}>{trace.fn.name}</div>
+          {trace.ctx?.value ? (
+            <div className={styles.ctx}>
               <div>{"{"}</div>
               <div className={styles.vmLabel}>value: </div>
               <div className={styles.value}>
-                {(trace.func.vm?.value || 0).toString()}
+                {(trace.ctx.value || 0).toString()}
               </div>
               <div>{"}"}</div>
             </div>
           ) : null}
           <div>(</div>
-          <Inputs inputs={trace.func.inputs} />
+          <Inputs inputs={trace.fn.inputs} />
           <div>)</div>
-          {trace.func.outputs.length > 0 ? (
+          {trace.fn.outputs.length > 0 ? (
             <div className={styles.outputs}>
               <div className={styles.arrow}>{"=>"}</div>
               <div>(</div>
-              <Outputs outputs={trace.func.outputs} />
+              <Outputs outputs={trace.fn.outputs} />
               <div>)</div>
             </div>
           ) : null}
         </div>
       </div>
-      {show ? trace.children.map((t) => <Fn key={t.id} trace={t} />) : null}
+      {show ? trace.calls.map((t) => <Fn key={t.id} trace={t} />) : null}
     </div>
   )
 }
 
-const Tracer: React.FC<{ trace: Trace }> = ({ trace }) => {
+type TracerProps<V> = {
+  trace: Trace<V>
+}
+
+function Tracer<V>({ trace }: TracerProps<V>) {
   return (
     <div className={styles.component}>
       <Fn trace={trace} />
