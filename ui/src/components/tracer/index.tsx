@@ -27,9 +27,10 @@ const Fold: React.FC<{
 
 type FnProps<V> = {
   trace: Trace<V>
+  renderCtx?: (ctx: V) => React.ReactNode
 }
 
-function Fn<V>({ trace }: FnProps<V>) {
+function Fn<V>({ trace, renderCtx }: FnProps<V>) {
   const { state, fold, setHover, pin } = useTracerContext()
 
   const onClick = () => {
@@ -74,16 +75,7 @@ function Fn<V>({ trace }: FnProps<V>) {
           <div className={styles.obj}>{trace.fn.mod}</div>
           <div className={styles.dot}>.</div>
           <div className={styles.funcName}>{trace.fn.name}</div>
-          {trace.ctx?.value ? (
-            <div className={styles.ctx}>
-              <div>{"{"}</div>
-              <div className={styles.vmLabel}>value: </div>
-              <div className={styles.value}>
-                {(trace.ctx.value || 0).toString()}
-              </div>
-              <div>{"}"}</div>
-            </div>
-          ) : null}
+          {renderCtx ? renderCtx(trace.ctx) : null}
           <div>(</div>
           <Inputs inputs={trace.fn.inputs} />
           <div>)</div>
@@ -104,12 +96,13 @@ function Fn<V>({ trace }: FnProps<V>) {
 
 type TracerProps<V> = {
   trace: Trace<V>
+  renderCtx?: (ctx: V) => React.ReactNode
 }
 
-function Tracer<V>({ trace }: TracerProps<V>) {
+function Tracer<V>({ trace, renderCtx }: TracerProps<V>) {
   return (
     <div className={styles.component}>
-      <Fn trace={trace} />
+      <Fn trace={trace} renderCtx={renderCtx} />
     </div>
   )
 }

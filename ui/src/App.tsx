@@ -11,13 +11,11 @@ import {
 import { CallGraphUi } from "./components/graph/CallGraphUi"
 import { Graph, SvgNode, Arrow, Hover } from "./components/graph/lib/types"
 import { getArrowKey, splitArrowKey } from "./components/graph/lib/screen"
-import { build, dfs } from "./components/graph/lib/graph"
 import Tracer from "./components/tracer"
+import Evm from "./components/chain/evm/tracer/Evm"
 import useAsync from "./hooks/useAsync"
 import styles from "./App.module.css"
-import * as api from "./api"
-import { TxCall, Contract } from "./api/types"
-import * as tx from "./trace"
+import { getTrace } from "./tracer"
 
 // Padding for scroll
 const SCROLL = 20
@@ -99,43 +97,6 @@ function getArrowColor(t: ArrowType): string {
   }
 }
 
-async function getTrace(txHash: string) {
-  const t = await api.getTxTrace(txHash)
-
-  const cs: [number, TxCall][] = []
-  dfs<TxCall>(
-    t.result,
-    (c) => c?.calls || [],
-    (d, c) => {
-      cs.push([d, c])
-    },
-  )
-
-  const addrs = new Set<string>()
-  for (const [_, c] of cs) {
-    addrs.add(c.from)
-    addrs.add(c.to)
-  }
-
-  const contracts: Contract[] = await api.getContracts({
-    chain: "eth-mainnet",
-    chain_id: 1,
-    addrs: [...addrs.values()],
-  })
-
-  const { calls, ids, objs, arrows, trace } = tx.build(t.result, contracts)
-  const graph = build(calls)
-
-  return {
-    calls,
-    ids,
-    objs,
-    arrows,
-    trace,
-    graph,
-  }
-}
-
 // TODO: light theme
 // TODO: dynamic graph size
 function App() {
@@ -166,14 +127,13 @@ function App() {
 
   return (
     <div className={styles.component} style={{ width, height }}>
-      {/*
       <div
         className={styles.tracer}
         style={{ height: (height * 0.4) | 0, width }}
       >
-        <Tracer trace={trace} />
+        <Tracer trace={trace} renderCtx={(ctx) => <Evm ctx={ctx} />} />
       </div>
-      */}
+      {/*
       <CallGraphUi
         calls={calls}
         tracer={tracer.state}
@@ -273,6 +233,7 @@ function App() {
           return null
         }}
       />
+      */}
     </div>
   )
 }

@@ -151,8 +151,8 @@ export function build(
       }
 
       for (const addr of [c.from, c.to]) {
-        if (!objs.has(addr)) {
-          const id = `addr:${addr}`
+        const id = `addr:${addr}`
+        if (!objs.has(id)) {
           objs.set(id, {
             id,
             val: {
@@ -166,7 +166,7 @@ export function build(
       }
 
       // @ts-ignore
-      const con = objs.get(c.to).val as Contract
+      const con = objs.get(`addr:${c.to}`).val as Contract
       if (!con.fns.has(trace.fn.id)) {
         con.fns.set(trace.fn.id, trace.fn)
       }
