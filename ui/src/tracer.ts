@@ -182,9 +182,9 @@ export function build(
       // Calls
       calls.push({
         // @ts-ignore
-        src: ids.get(c.from),
+        src: ids.get(`addr:${c.from}`),
         // @ts-ignore
-        dst: ids.get(c.to),
+        dst: ids.get(`addr:${c.to}`),
         depth: d,
       })
     },

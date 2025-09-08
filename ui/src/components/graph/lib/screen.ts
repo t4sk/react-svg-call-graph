@@ -1,4 +1,5 @@
 import {
+  Id,
   Call,
   Point,
   Rect,
@@ -6,7 +7,7 @@ import {
   Arrow,
   ArrowType,
   Screen,
-  SvgNode,
+  Node,
   Layout,
 } from "./types"
 import * as math from "./math"
@@ -15,7 +16,7 @@ export function getArrowKey(a: Arrow): string {
   return `${a.s},${a.e}`
 }
 
-export function splitArrowKey(key: string): { src: number; dst: number } {
+export function splitArrowKey(key: string): { src: Id; dst: Id } {
   const [src, dst] = key.split(",")
   return {
     src: parseInt(src),
@@ -148,14 +149,9 @@ export function box(
   }
 }
 
-function arrow(
-  map: Map<number, SvgNode>,
-  i: number,
-  start: number,
-  end: number,
-): Arrow {
-  const s = map.get(start) as SvgNode
-  const e = map.get(end) as SvgNode
+function arrow(map: Map<Id, Node>, i: number, start: Id, end: Id): Arrow {
+  const s = map.get(start) as Node
+  const e = map.get(end) as Node
 
   const m0 = getMidPoints(s.rect)
   const m1 = getMidPoints(e.rect)
@@ -172,29 +168,29 @@ function arrow(
   }
 
   return {
-    type: getArrowType(p0, p1),
     i,
     s: s.id,
     e: e.id,
+    type: getArrowType(p0, p1),
     start: p0,
     end: p1,
   }
 }
 
 export function map(calls: Call[], screen: Screen): Layout {
-  const nodes: SvgNode[] = []
-  const map: Map<number, SvgNode> = new Map()
+  const nodes: Node[] = []
+  const map: Map<Id, Node> = new Map()
 
   let xMax = 0
   let yMax = 0
 
   // depth => offset
-  const offsets: Map<number, number> = new Map()
+  const offsets: Map<Id, number> = new Map()
   offsets.set(0, 0)
   let dup = 0
 
   // Add first caller as dst for calculation in the for loop
-  const _calls = [
+  const cs: Call[] = [
     { src: null, dst: 0, depth: 0 },
     ...calls.map((c) => ({
       ...c,
@@ -202,8 +198,9 @@ export function map(calls: Call[], screen: Screen): Layout {
     })),
   ]
 
-  for (let i = 0; i < _calls.length; i++) {
-    const c = _calls[i]
+  const { height, width, gapX, gapY } = screen.node
+  for (let i = 0; i < cs.length; i++) {
+    const c = cs[i]
 
     if (map.has(c.dst)) {
       dup += 1
@@ -211,6 +208,7 @@ export function map(calls: Call[], screen: Screen): Layout {
     }
 
     const offset = offsets.get(c.depth) || 0
+    /*
     // Next depth is shifted up
     offsets.set(c.depth + 1, offset - 1)
     // Previous depths are shifted up
@@ -218,8 +216,8 @@ export function map(calls: Call[], screen: Screen): Layout {
     for (let k = 0; k <= c.depth - 1; k++) {
       offsets.set(k, offset)
     }
+    */
 
-    const { height, width, gapX, gapY } = screen.node
     const rect = {
       x: (width >> 1) + c.depth * (width + gapX),
       y: (height >> 1) + (i + offset - dup) * (height + gapY),

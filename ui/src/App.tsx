@@ -9,7 +9,7 @@ import {
   State as TracerState,
 } from "./components/tracer/TracerContext"
 import { CallGraphUi } from "./components/graph/CallGraphUi"
-import { Graph, SvgNode, Arrow, Hover } from "./components/graph/lib/types"
+import { Graph, Node, Arrow, Hover } from "./components/graph/lib/types"
 import { getArrowKey, splitArrowKey } from "./components/graph/lib/screen"
 import Tracer from "./components/tracer"
 import Evm from "./components/chain/evm/tracer/Evm"
@@ -61,7 +61,7 @@ function getArrowType(
 
 function getNodeFillColor(
   hover: Hover,
-  node: SvgNode,
+  node: Node,
   graph: Graph,
   tracer: TracerState,
 ): string {

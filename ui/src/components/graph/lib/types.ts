@@ -1,12 +1,14 @@
+export type Id = number
+
 // Call graph
 export type Call = {
-  src: number | null
-  dst: number
+  src: Id | null
+  dst: Id
   depth: number
 }
 
 // Directed graph
-export type Neighbors = Map<number, Set<number>>
+export type Neighbors = Map<Id, Set<Id>>
 
 export type Graph = {
   // Child => parents
@@ -35,19 +37,19 @@ export type Rect = {
   height: number
 }
 
+export type ArrowType = "arrow" | "zigzag" | "callback"
+
 export type Arrow = {
-  type: ArrowType
   // Call index
   i: number
   // Starting node id
-  s: number
+  s: Id
   // Ending node id
-  e: number
+  e: Id
+  type: ArrowType
   start: Point
   end: Point
 }
-
-export type ArrowType = "arrow" | "zigzag" | "callback"
 
 export type MidPoints = {
   top: Point
@@ -64,9 +66,8 @@ export type Screen = {
   node: { width: number; height: number; gapX: number; gapY: number }
 }
 
-export type SvgNode = {
-  // Node id
-  id: number
+export type Node = {
+  id: Id
   rect: Rect
   mid: MidPoints
 }
@@ -74,17 +75,17 @@ export type SvgNode = {
 export type Layout = {
   rect: Rect
   mid: MidPoints
-  nodes: SvgNode[]
+  nodes: Node[]
   arrows: Arrow[]
-  map: Map<number, SvgNode>
+  map: Map<Id, Node>
 }
 
 // UI
 export type Hover = {
-  node: number | null
-  arrows: Map<string, number> | null
+  node: Id | null
+  arrows: Map<string, Id> | null
 }
 
 export type Tracer = {
-  hover: number | null
+  hover: Id | null
 }
