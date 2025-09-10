@@ -177,7 +177,14 @@ function arrow(map: Map<Id, Node>, i: number, start: Id, end: Id): Arrow {
   }
 }
 
-export function map(calls: Call[], screen: Screen): Layout {
+export function map(mods: Map<Id, Id>, calls: Call[], screen: Screen): Layout {
+  // TODO:
+  // 1. Initialize contract nodes
+  // 2. Put functions into contracts
+  // 3. Calculate contract boxes (width and height)
+  // 4. Calculate contract x positions based on min function depth
+  // 5, Calculate contract y positions based on call index
+
   const nodes: Node[] = []
   const map: Map<Id, Node> = new Map()
 
@@ -199,6 +206,8 @@ export function map(calls: Call[], screen: Screen): Layout {
   ]
 
   const { height, width, gapX, gapY } = screen.node
+  const halfWidth = width >> 1
+  const halfHeight = height >> 1
   for (let i = 0; i < cs.length; i++) {
     const c = cs[i]
 
@@ -219,8 +228,8 @@ export function map(calls: Call[], screen: Screen): Layout {
     */
 
     const rect = {
-      x: (width >> 1) + c.depth * (width + gapX),
-      y: (height >> 1) + (i + offset - dup) * (height + gapY),
+      x: halfWidth + c.depth * (width + gapX),
+      y: halfHeight + (i + offset - dup) * (height + gapY),
       width: width,
       height: height,
     }
@@ -228,6 +237,7 @@ export function map(calls: Call[], screen: Screen): Layout {
       id: c.dst,
       rect,
       mid: getMidPoints(rect),
+      nodes: [],
     }
 
     nodes.push(node)

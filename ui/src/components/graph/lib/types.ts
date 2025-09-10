@@ -70,6 +70,7 @@ export type Node = {
   id: Id
   rect: Rect
   mid: MidPoints
+  nodes: Node[]
 }
 
 export type Layout = {
