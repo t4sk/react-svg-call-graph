@@ -1,3 +1,5 @@
+export type Id = number
+
 export type Input = {
   type: string
   name: string
@@ -11,18 +13,19 @@ export type Output = {
 }
 
 export type Fn = {
-  id: string
-  mod: string
+  id: Id
+  mod: Id
   name: string
-  inputs: Input[]
-  outputs: Output[]
-  // TODO: ok + error?
 }
 
 export type Trace<C> = {
-  id: number
+  // Call index
+  i: number
   depth: number
   fn: Fn
+  inputs: Input[]
+  outputs: Output[]
+  // TODO: ok + error?
   calls: Trace<C>[]
   ctx: C
 }

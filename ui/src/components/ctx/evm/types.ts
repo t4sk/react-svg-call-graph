@@ -1,10 +1,10 @@
-import { Fn } from "./components/tracer/types"
+import { Id, Fn } from "../../tracer/types"
 
 // Contract and EOA
 export type Account = {
   name?: string
   addr: string
-  fns: Map<string, Fn>
+  fns: Map<Id, Fn>
 }
 
 export type Evm = {

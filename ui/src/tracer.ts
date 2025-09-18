@@ -5,17 +5,18 @@ import { Id, Groups, Call } from "./components/graph/lib/types"
 import { Trace, Input, Output, Fn } from "./components/tracer/types"
 import * as graph from "./components/graph/lib/graph"
 import { zip } from "./utils"
-import { Account, Evm } from "./chain"
+import { Account, Evm } from "./components/ctx/evm/types"
 
 // TODO: move to graph/lib/types?
 export type Obj<V> = {
-  id: string
+  id: Id
   val: V
 }
 
+// TODO: store into objects?
 export type Arrow<V> = {
-  src: string
-  dst: string
+  src: Id
+  dst: Id
   val: V
 }
 
@@ -78,8 +79,7 @@ export function build(
   root: TxCall,
   contracts: ContractInfo[],
 ): {
-  ids: Map<string, number>
-  objs: Map<string, Obj<Account | Fn>>
+  objs: Map<Id, Obj<Account | Fn>>
   arrows: Arrow<Fn>[]
   groups: Groups
   calls: Call[]
@@ -91,22 +91,20 @@ export function build(
     return z
   }, {})
 
-  // id = fn => fn : address : selector
-  //    = account => addr : address
-  const objs: Map<string, Obj<Account | Fn>> = new Map()
-  // TODO: remove?
-  let id = 0
+  // contract or function to Id
   const ids: Map<string, Id> = new Map()
-  // TODO: remove?
+  const objs: Map<Id, Obj<Account | Fn>> = new Map()
   const groups: Groups = new Map()
   const calls: Call[] = []
+  // TODO: remove?
   const arrows: Arrow<Fn>[] = []
   const stack: Trace<Evm>[] = []
 
+  // TODO: clean up + add to objs
   groups.set(0, new Set())
   // @ts-ignore
   groups.get(0).add(0)
-  id++
+  ids.set("eoa", 0)
 
   graph.dfs<TxCall>(
     root,
@@ -115,17 +113,23 @@ export function build(
       // @ts-ignore
       const fn = parse(cons[c.to]?.abi, c.input, c.output)
 
+      const fnKey = `fn:${c.to}.${fn?.selector}`
+      if (!ids.has(fnKey)) {
+        ids.set(fnKey, ids.size)
+      }
+      const fnId = ids.get(fnKey) as Id
+
       const trace: Trace<Evm> = {
-        id: i,
+        i,
         depth: d,
         fn: {
-          id: `fn:${c.to}:${fn?.selector || ""}`,
+          id: fnId,
           // @ts-ignore
           mod: cons[c.to]?.name || c.to,
           name: fn?.name || "",
-          inputs: fn?.inputs || [],
-          outputs: fn?.outputs || [],
         },
+        inputs: fn?.inputs || [],
+        outputs: fn?.outputs || [],
         ctx: {
           // @ts-ignore
           name: cons[c.to]?.name,
@@ -143,6 +147,28 @@ export function build(
         calls: [],
       }
 
+      // Objects
+      if (!objs.has(trace.fn.id)) {
+        objs.set(trace.fn.id, { id: trace.fn.id, val: trace.fn })
+      }
+
+      for (const addr of [c.from, c.to]) {
+        const key = `addr:${addr}`
+        if (!ids.has(key)) {
+          ids.set(key, ids.size)
+          const id = ids.get(key) as Id
+          objs.set(id, {
+            id: id,
+            val: {
+              // @ts-ignore
+              name: cons[addr]?.name,
+              addr,
+              fns: new Map(),
+            },
+          })
+        }
+      }
+
       // Stack
       while (stack.length >= d + 1) {
         stack.pop()
@@ -153,36 +179,6 @@ export function build(
       }
       stack.push(trace)
 
-      // Objects
-      if (!objs.has(trace.fn.id)) {
-        objs.set(trace.fn.id, { id: trace.fn.id, val: trace.fn })
-        ids.set(trace.fn.id, id)
-        id++
-      }
-
-      for (const addr of [c.from, c.to]) {
-        const i = `addr:${addr}`
-        if (!objs.has(i)) {
-          objs.set(i, {
-            id: i,
-            val: {
-              // @ts-ignore
-              name: cons[addr]?.name,
-              addr,
-              fns: new Map(),
-            },
-          })
-          ids.set(i, id)
-          id++
-        }
-      }
-
-      // @ts-ignore
-      const con = objs.get(`addr:${c.to}`).val as Contract
-      if (!con.fns.has(trace.fn.id)) {
-        con.fns.set(trace.fn.id, trace.fn)
-      }
-
       if (parent) {
         arrows.push({
           src: parent.fn.id,
@@ -191,31 +187,37 @@ export function build(
         })
       }
 
-      // Groups
+      const toKey = `addr:${c.to}`
+      const toId = ids.get(toKey) as Id
       // @ts-ignore
-      if (!groups.has(ids.get(`addr:${c.to}`))) {
-        // @ts-ignore
-        groups.set(ids.get(`addr:${c.to}`), new Set())
+      const acc = objs.get(toId).val as Account
+      if (!acc.fns.has(trace.fn.id)) {
+        acc.fns.set(trace.fn.id, trace.fn)
+      }
+
+      // Groups
+      if (!groups.has(toId)) {
+        groups.set(toId, new Set())
       }
       // @ts-ignore
-      groups.get(ids.get(`addr:${c.to}`)).add(ids.get(trace.fn.id))
+      groups.get(toId).add(trace.fn.id)
 
       // Calls
       // TODO: fix parent
       calls.push({
         // @ts-ignore
-        src: ids.get(parent?.fn.id) || 0,
+        src: parent?.fn.id || 0,
         // @ts-ignore
-        dst: ids.get(trace.fn.id),
+        dst: trace.fn.id,
         depth: d,
       })
     },
   )
 
+  // TODO: remove
   console.log(calls, groups, objs)
 
   return {
-    ids,
     objs,
     arrows,
     trace: stack[0],
@@ -249,12 +251,11 @@ export async function getTrace(txHash: string) {
     addrs: [...addrs.values()],
   })
 
-  const { calls, groups, ids, objs, arrows, trace } = build(t.result, contracts)
+  const { calls, groups, objs, arrows, trace } = build(t.result, contracts)
 
   return {
     calls,
     groups,
-    ids,
     objs,
     arrows,
     trace,

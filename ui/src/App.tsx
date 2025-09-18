@@ -124,7 +124,7 @@ function App() {
     return null
   }
 
-  const { ids, trace, graph, calls, groups, objs, arrows } = _getTrace.data
+  const { trace, graph, calls, groups, objs, arrows } = _getTrace.data
 
   const height = windowSize.height - SCROLL
   const width = windowSize.width - SCROLL
@@ -171,10 +171,11 @@ function App() {
         renderNode={(hover, node) => {
           // @ts-ignore
           // TODO: fix
-          const obj = objs.get(ids.get(node.id))
+          const obj = objs.get(node.id)
           return (
             <div className={styles.node}>
               <span className={styles.nodeText}>
+                {obj?.val.name || node.id}
                 {/*obj?.name || obj?.address || node.id*/}
               </span>
             </div>

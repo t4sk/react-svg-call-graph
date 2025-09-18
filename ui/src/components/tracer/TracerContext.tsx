@@ -24,12 +24,12 @@ export const Provider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [state, setState] = useState<State>(STATE)
 
-  const fold = (id: number) => {
+  const fold = (i: number) => {
     const hidden = new Set(state.hidden)
-    if (hidden.has(id)) {
-      hidden.delete(id)
+    if (hidden.has(i)) {
+      hidden.delete(i)
     } else {
-      hidden.add(id)
+      hidden.add(i)
     }
 
     setState((state) => ({
@@ -38,19 +38,19 @@ export const Provider: React.FC<{ children: React.ReactNode }> = ({
     }))
   }
 
-  const setHover = (id: number | null) => {
+  const setHover = (i: number | null) => {
     setState((state) => ({
       ...state,
-      hover: id,
+      hover: i,
     }))
   }
 
-  const pin = (id: number) => {
+  const pin = (i: number) => {
     const pins = new Set(state.pins)
-    if (pins.has(id)) {
-      pins.delete(id)
+    if (pins.has(i)) {
+      pins.delete(i)
     } else {
-      pins.add(id)
+      pins.add(i)
     }
 
     setState((state) => ({

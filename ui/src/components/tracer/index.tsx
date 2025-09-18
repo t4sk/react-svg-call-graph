@@ -34,22 +34,22 @@ function Fn<V>({ trace, renderCtx }: FnProps<V>) {
   const { state, fold, setHover, pin } = useTracerContext()
 
   const onClick = () => {
-    pin(trace.id)
+    pin(trace.i)
   }
 
   const onClickFold = () => {
-    fold(trace.id)
+    fold(trace.i)
   }
 
   const onMouseEnter = () => {
-    setHover(trace.id)
+    setHover(trace.i)
   }
 
   const onMouseLeave = () => {
     setHover(null)
   }
 
-  const show = !state.hidden.has(trace.id)
+  const show = !state.hidden.has(trace.i)
 
   return (
     <div className={styles.fn}>
@@ -59,10 +59,10 @@ function Fn<V>({ trace, renderCtx }: FnProps<V>) {
         onMouseLeave={onMouseLeave}
       >
         <div className={styles.index} onClick={onClick}>
-          {state.pins.has(trace.id) ? (
+          {state.pins.has(trace.i) ? (
             <span className={styles.pin}>x</span>
           ) : (
-            trace.id
+            trace.i
           )}
         </div>
         <Padd depth={trace.depth} />
@@ -77,19 +77,19 @@ function Fn<V>({ trace, renderCtx }: FnProps<V>) {
           <div className={styles.funcName}>{trace.fn.name}</div>
           {renderCtx ? renderCtx(trace.ctx) : null}
           <div>(</div>
-          <Inputs inputs={trace.fn.inputs} />
+          <Inputs inputs={trace.inputs} />
           <div>)</div>
-          {trace.fn.outputs.length > 0 ? (
+          {trace.outputs.length > 0 ? (
             <div className={styles.outputs}>
               <div className={styles.arrow}>{"=>"}</div>
               <div>(</div>
-              <Outputs outputs={trace.fn.outputs} />
+              <Outputs outputs={trace.outputs} />
               <div>)</div>
             </div>
           ) : null}
         </div>
       </div>
-      {show ? trace.calls.map((t) => <Fn key={t.id} trace={t} />) : null}
+      {show ? trace.calls.map((t) => <Fn key={t.i} trace={t} />) : null}
     </div>
   )
 }
