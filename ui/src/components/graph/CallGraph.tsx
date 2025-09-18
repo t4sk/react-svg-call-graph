@@ -1,16 +1,9 @@
 import React, { useMemo } from "react"
+import { Groups, Call, Point, Node, Arrow, Hover, Tracer } from "./lib/types"
+import * as screen from "./lib/screen"
+import * as Svg from "./Svg"
 import {
-  Groups,
-  Call,
   ViewBox,
-  Point,
-  Node,
-  Arrow,
-  Hover,
-  Tracer,
-} from "./lib/types"
-import * as svg from "./lib/screen"
-import {
   SvgRect,
   SvgDot,
   SvgArrow,
@@ -31,7 +24,13 @@ const DEFAULT_FILL = "none"
 const DEFAULT_STROKE = "black"
 
 function sample(a: Arrow, xPadd: number = 0, yPadd: number = 0): Point[] {
-  const ps = svg.poly(a.type, a.start, a.end, xPadd, yPadd)
+  const ps = Svg.poly(
+    Svg.getArrowType(a.start, a.end),
+    a.start,
+    a.end,
+    xPadd,
+    yPadd,
+  )
   const [len] = math.len(ps)
 
   const n = Math.max(len > STEP ? (len / STEP) | 0 : MIN_STEPS, MIN_STEPS)
@@ -92,7 +91,7 @@ export const CallGraph: React.FC<{
   const arrowXPadd = nodeXGap >> 1
   const arrowYPadd = nodeYGap >> 1
   const layout = useMemo(() => {
-    return svg.map(groups, calls, {
+    return screen.map(groups, calls, {
       width,
       height,
       center: {
@@ -110,20 +109,22 @@ export const CallGraph: React.FC<{
     })
   }, [calls, width, height])
 
-  const overlaps = svg.overlaps(layout.arrows)
+  const overlaps = Svg.overlaps(layout.arrows)
 
   const svgX = mouse
-    ? svg.getViewBoxX(width, mouse.x, viewBox.width, viewBox.x)
+    ? Svg.getViewBoxX(width, mouse.x, viewBox.width, viewBox.x)
     : 0
   const svgY = mouse
-    ? svg.getViewBoxY(height, mouse.y, viewBox.height, viewBox.y)
+    ? Svg.getViewBoxY(height, mouse.y, viewBox.height, viewBox.y)
     : 0
   const mouseSvgXY = { x: svgX, y: svgY }
 
   const hover: Hover = { node: null, arrows: null }
+  // TODO: fix
+  /*
   if (!dragging && mouse && svgX != 0 && svgY != 0) {
     for (const node of layout.nodes.values()) {
-      if (svg.isInside(mouseSvgXY, node.rect)) {
+      if (screen.isInside(mouseSvgXY, node.rect)) {
         hover.node = node.id
       }
     }
@@ -133,28 +134,33 @@ export const CallGraph: React.FC<{
 
       for (let i = 0; i < layout.arrows.length; i++) {
         const a = layout.arrows[i]
-        const box = svg.box(
-          svg.poly(a.type, a.start, a.end, arrowXPadd, -arrowYPadd),
+        const box = Svg.box(
+          Svg.poly(a.type, a.start, a.end, arrowXPadd, -arrowYPadd),
           BOX_X_PADD,
           BOX_Y_PADD,
         )
-        if (svg.isInside(mouseSvgXY, box)) {
+        if (screen.isInside(mouseSvgXY, box)) {
           // TODO: cache?
           const points = sample(a, arrowXPadd, -arrowYPadd)
           for (let i = 0; i < points.length; i++) {
             if (math.dist(points[i], mouseSvgXY) < R) {
-              hover.arrows.set(svg.getArrowKey(a), a.i)
+              hover.arrows.set(Svg.getArrowKey(a), a.i)
             }
           }
         }
       }
     }
   }
+  */
 
   const renderArrow = (a: Arrow, type: string, style: { stroke?: string }) => {
-    const key = svg.getArrowKey(a)
+    // TODO: fix
+    /*
+    const key = Svg.getArrowKey(a)
     const offset = overlaps.get(key) || 0
     overlaps.set(key, offset > 0 ? offset - 1 : 0)
+    */
+    const offset = 0
 
     // const points = sample(a, arrowXPadd, -arrowYPadd)
 

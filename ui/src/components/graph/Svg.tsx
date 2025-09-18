@@ -1,7 +1,119 @@
 import React from "react"
 
+import { Point, Rect, Arrow } from "./lib/types"
+import * as math from "./lib/math"
+
 const FONT = "sans-serif"
 const FONT_SIZE = 18
+
+export type ArrowType = "arrow" | "zigzag" | "callback"
+
+export type ViewBox = {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+export function getArrowType(p0: Point, p1: Point): ArrowType {
+  if (p0.y == p1.y) {
+    return "arrow"
+  }
+  if (p1.x <= p0.x) {
+    return "callback"
+  }
+  return "zigzag"
+}
+
+export function poly(
+  type: ArrowType,
+  p0: Point,
+  p1: Point,
+  xPadd: number = 0,
+  yPadd: number = 0,
+): Point[] {
+  switch (type) {
+    case "zigzag": {
+      const mid = (p0.x + p1.x) >> 1
+      return [p0, { x: mid, y: p0.y }, { x: mid, y: p1.y }, p1]
+    }
+    case "callback": {
+      return [
+        p0,
+        { x: p0.x + xPadd, y: p0.y },
+        { x: p0.x + xPadd, y: p1.y + yPadd },
+        { x: p1.x, y: p1.y + yPadd },
+        p1,
+      ]
+    }
+    default:
+      return [p0, p1]
+  }
+}
+
+export function getViewBoxX(
+  width: number,
+  mouseX: number,
+  viewBoxWidth: number,
+  viewBoxX: number,
+): number {
+  return math.lin(viewBoxWidth, width, mouseX, viewBoxX)
+}
+
+export function getViewBoxY(
+  height: number,
+  mouseY: number,
+  viewBoxHeight: number,
+  viewBoxY: number,
+): number {
+  return math.lin(viewBoxHeight, height, mouseY, viewBoxY)
+}
+
+export function box(
+  points: Point[],
+  xPadd: number = 0,
+  yPadd: number = 0,
+): Rect {
+  let xMin = points[0].x
+  let xMax = points[0].x
+  let yMin = points[0].y
+  let yMax = points[0].y
+
+  for (let i = 1; i < points.length; i++) {
+    const p = points[i]
+    if (p.x < xMin) {
+      xMin = p.x
+    }
+    if (p.y < yMin) {
+      yMin = p.y
+    }
+    if (p.x > xMax) {
+      xMax = p.x
+    }
+    if (p.y > yMax) {
+      yMax = p.y
+    }
+  }
+
+  return {
+    x: xMin - xPadd,
+    y: yMin - yPadd,
+    width: xMax - xMin + 2 * xPadd,
+    height: yMax - yMin + 2 * yPadd,
+  }
+}
+
+export function overlaps(arrows: Arrow[]): Map<string, number> {
+  const m: Map<string, number> = new Map()
+  /*
+  for (let i = 0; i < arrows.length; i++) {
+    // TODO: fix
+    const key = getArrowKey(arrows[i])
+    m.set(key, (m.get(key) ?? 0) + 1)
+  }
+  */
+  return m
+}
 
 export const SvgRect: React.FC<{
   x: number

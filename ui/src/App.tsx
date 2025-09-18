@@ -10,7 +10,8 @@ import {
 } from "./components/tracer/TracerContext"
 import { CallGraphUi } from "./components/graph/CallGraphUi"
 import { Graph, Node, Arrow, Hover } from "./components/graph/lib/types"
-import { getArrowKey, splitArrowKey } from "./components/graph/lib/screen"
+// TODO: remove
+// import { getArrowKey, splitArrowKey } from "./components/graph/lib/screen"
 import Tracer from "./components/tracer"
 import Evm from "./components/ctx/evm/tracer/Evm"
 import useAsync from "./hooks/useAsync"
@@ -51,9 +52,12 @@ function getArrowType(
     return "dim"
   }
   if (hover.arrows != null && hover.arrows.size > 0) {
+    /*
+    TODO: fix
     if (hover.arrows.has(getArrowKey(arrow))) {
       return "hover"
     }
+    */
     return "dim"
   }
   return ""
@@ -166,7 +170,8 @@ function App() {
         }}
         renderNode={(hover, node) => {
           // @ts-ignore
-          const obj = objs.get(node.id)
+          // TODO: fix
+          const obj = objs.get(ids.get(node.id))
           return (
             <div className={styles.node}>
               <span className={styles.nodeText}>

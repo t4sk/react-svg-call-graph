@@ -6,43 +6,11 @@ import {
   Rect,
   MidPoints,
   Arrow,
-  ArrowType,
   Screen,
   Node,
   Layout,
 } from "./types"
-import * as math from "./math"
 import { assert } from "./utils"
-
-export function getArrowKey(a: Arrow): string {
-  return `${a.s},${a.e}`
-}
-
-export function splitArrowKey(key: string): { src: Id; dst: Id } {
-  const [src, dst] = key.split(",")
-  return {
-    src: parseInt(src),
-    dst: parseInt(dst),
-  }
-}
-
-export function getViewBoxX(
-  width: number,
-  mouseX: number,
-  viewBoxWidth: number,
-  viewBoxX: number,
-): number {
-  return math.lin(viewBoxWidth, width, mouseX, viewBoxX)
-}
-
-export function getViewBoxY(
-  height: number,
-  mouseY: number,
-  viewBoxHeight: number,
-  viewBoxY: number,
-): number {
-  return math.lin(viewBoxHeight, height, mouseY, viewBoxY)
-}
 
 export function isInside(p: Point, rect: Rect): boolean {
   return (
@@ -81,76 +49,6 @@ export function getMidPoints(rect: Rect): MidPoints {
   }
 }
 
-export function getArrowType(p0: Point, p1: Point): ArrowType {
-  if (p0.y == p1.y) {
-    return "arrow"
-  }
-  if (p1.x <= p0.x) {
-    return "callback"
-  }
-  return "zigzag"
-}
-
-export function poly(
-  type: ArrowType,
-  p0: Point,
-  p1: Point,
-  xPadd: number = 0,
-  yPadd: number = 0,
-): Point[] {
-  switch (type) {
-    case "zigzag": {
-      const mid = (p0.x + p1.x) >> 1
-      return [p0, { x: mid, y: p0.y }, { x: mid, y: p1.y }, p1]
-    }
-    case "callback": {
-      return [
-        p0,
-        { x: p0.x + xPadd, y: p0.y },
-        { x: p0.x + xPadd, y: p1.y + yPadd },
-        { x: p1.x, y: p1.y + yPadd },
-        p1,
-      ]
-    }
-    default:
-      return [p0, p1]
-  }
-}
-
-export function box(
-  points: Point[],
-  xPadd: number = 0,
-  yPadd: number = 0,
-): Rect {
-  let xMin = points[0].x
-  let xMax = points[0].x
-  let yMin = points[0].y
-  let yMax = points[0].y
-
-  for (let i = 1; i < points.length; i++) {
-    const p = points[i]
-    if (p.x < xMin) {
-      xMin = p.x
-    }
-    if (p.y < yMin) {
-      yMin = p.y
-    }
-    if (p.x > xMax) {
-      xMax = p.x
-    }
-    if (p.y > yMax) {
-      yMax = p.y
-    }
-  }
-
-  return {
-    x: xMin - xPadd,
-    y: yMin - yPadd,
-    width: xMax - xMin + 2 * xPadd,
-    height: yMax - yMin + 2 * yPadd,
-  }
-}
-
 function arrow(nodes: Map<Id, Node>, i: number, start: Id, end: Id): Arrow {
   const s = nodes.get(start) as Node
   const e = nodes.get(end) as Node
@@ -173,7 +71,6 @@ function arrow(nodes: Map<Id, Node>, i: number, start: Id, end: Id): Arrow {
     i,
     s: s.id,
     e: e.id,
-    type: getArrowType(p0, p1),
     start: p0,
     end: p1,
   }
@@ -317,13 +214,4 @@ export function map(groups: Groups, calls: Call[], screen: Screen): Layout {
     nodes,
     arrows,
   }
-}
-
-export function overlaps(arrows: Arrow[]): Map<string, number> {
-  const m: Map<string, number> = new Map()
-  for (let i = 0; i < arrows.length; i++) {
-    const key = getArrowKey(arrows[i])
-    m.set(key, (m.get(key) ?? 0) + 1)
-  }
-  return m
 }

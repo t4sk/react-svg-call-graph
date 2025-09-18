@@ -20,14 +20,6 @@ export type Graph = {
   outgoing: Neighbors
 }
 
-// SVG
-export type ViewBox = {
-  x: number
-  y: number
-  width: number
-  height: number
-}
-
 export type Point = {
   x: number
   y: number
@@ -42,8 +34,6 @@ export type Rect = {
   height: number
 }
 
-export type ArrowType = "arrow" | "zigzag" | "callback"
-
 export type Arrow = {
   // Call index
   i: number
@@ -51,7 +41,6 @@ export type Arrow = {
   s: Id
   // Ending node id
   e: Id
-  type: ArrowType
   start: Point
   end: Point
 }
@@ -90,6 +79,7 @@ export type Layout = {
 // UI
 export type Hover = {
   node: Id | null
+  // TODO: replace string with Id?
   arrows: Map<string, Id> | null
 }
 
