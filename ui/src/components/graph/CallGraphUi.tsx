@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react"
-import { Call, Point, SvgNode, Arrow, Hover, Tracer } from "./lib/types"
+import { Groups, Call, Point, Node, Arrow, Hover, Tracer } from "./lib/types"
 import styles from "./CallGraphUi.module.css"
 import { CallGraph } from "./CallGraph"
 import { GraphController } from "./GraphController"
@@ -18,9 +18,9 @@ export type Drag = {
   startViewBoxY: number
 }
 
-// TODO: dynamic node width and height
 // TODO: fix smoother drag
 export const CallGraphUi: React.FC<{
+  groups: Groups
   calls: Call[]
   tracer?: Tracer
   backgroundColor: string
@@ -28,14 +28,14 @@ export const CallGraphUi: React.FC<{
   height: number
   getNodeStyle?: (
     hover: Hover,
-    node: SvgNode,
+    node: Node,
   ) => { fill?: string; stroke?: string }
   getArrowStyle?: (
     hover: Hover,
     arrow: Arrow,
   ) => { type: string; style: { stroke?: string } }
   renderArrowText?: (arrow: Arrow) => string | number
-  renderNode?: (hover: Hover, node: SvgNode) => React.ReactNode
+  renderNode?: (hover: Hover, node: Node) => React.ReactNode
   renderHover?: (hover: Hover, mouse: Point | null) => React.ReactNode
   showDot?: boolean
   nodeWidth?: number
@@ -43,6 +43,7 @@ export const CallGraphUi: React.FC<{
   nodeXGap?: number
   nodeYGap?: number
 }> = ({
+  groups,
   calls,
   tracer,
   backgroundColor,
@@ -176,6 +177,7 @@ export const CallGraphUi: React.FC<{
       onMouseMove={onMouseMove}
     >
       <CallGraph
+        groups={groups}
         calls={calls}
         tracer={tracer}
         backgroundColor={backgroundColor}

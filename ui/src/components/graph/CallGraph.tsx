@@ -1,9 +1,10 @@
 import React, { useMemo } from "react"
 import {
+  Groups,
   Call,
   ViewBox,
   Point,
-  SvgNode,
+  Node,
   Arrow,
   Hover,
   Tracer,
@@ -42,6 +43,7 @@ function sample(a: Arrow, xPadd: number = 0, yPadd: number = 0): Point[] {
 }
 
 export const CallGraph: React.FC<{
+  groups: Groups
   calls: Call[]
   tracer?: Tracer
   backgroundColor: string
@@ -53,7 +55,7 @@ export const CallGraph: React.FC<{
   showDot?: boolean
   getNodeStyle?: (
     hover: Hover,
-    node: SvgNode,
+    node: Node,
   ) => { fill?: string; stroke?: string }
   getArrowStyle?: (
     hover: Hover,
@@ -63,10 +65,11 @@ export const CallGraph: React.FC<{
   nodeHeight?: number
   nodeXGap?: number
   nodeYGap?: number
-  renderNode?: (hover: Hover, node: SvgNode) => React.ReactNode
+  renderNode?: (hover: Hover, node: Node) => React.ReactNode
   renderArrowText?: (arrow: Arrow) => string | number
   renderHover?: (hover: Hover, mouse: Point | null) => React.ReactNode
 }> = ({
+  groups,
   calls,
   tracer,
   backgroundColor,
@@ -89,7 +92,7 @@ export const CallGraph: React.FC<{
   const arrowXPadd = nodeXGap >> 1
   const arrowYPadd = nodeYGap >> 1
   const layout = useMemo(() => {
-    return svg.map(calls, {
+    return svg.map(groups, calls, {
       width,
       height,
       center: {
@@ -99,8 +102,10 @@ export const CallGraph: React.FC<{
       node: {
         width: nodeWidth,
         height: nodeHeight,
-        gapX: nodeXGap,
-        gapY: nodeYGap,
+        gap: {
+          x: nodeXGap,
+          y: nodeYGap,
+        },
       },
     })
   }, [calls, width, height])
@@ -117,8 +122,7 @@ export const CallGraph: React.FC<{
 
   const hover: Hover = { node: null, arrows: null }
   if (!dragging && mouse && svgX != 0 && svgY != 0) {
-    for (let i = 0; i < layout.nodes.length; i++) {
-      const node = layout.nodes[i]
+    for (const node of layout.nodes.values()) {
       if (svg.isInside(mouseSvgXY, node.rect)) {
         hover.node = node.id
       }
@@ -258,7 +262,7 @@ export const CallGraph: React.FC<{
           )
         })}
 
-        {layout.nodes.map((node, i) => {
+        {[...layout.nodes.values()].map((node, i) => {
           const style = getNodeStyle(hover, node)
           return (
             <SvgRect
@@ -273,7 +277,7 @@ export const CallGraph: React.FC<{
           )
         })}
 
-        {layout.nodes.map((node, i) => {
+        {[...layout.nodes.values()].map((node, i) => {
           return (
             <foreignObject
               key={`obj-${i}`}

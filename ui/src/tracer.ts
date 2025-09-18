@@ -1,8 +1,7 @@
 import { ethers } from "ethers"
 import * as api from "./api"
 import { TxCall, ContractInfo } from "./api/types"
-// TODO: rename type?
-import { Call } from "./components/graph/lib/types"
+import { Id, Groups, Call } from "./components/graph/lib/types"
 import { Trace, Input, Output, Fn } from "./components/tracer/types"
 import * as graph from "./components/graph/lib/graph"
 import { zip } from "./utils"
@@ -74,6 +73,7 @@ function parse(
   return fn
 }
 
+// TODO: clean up
 export function build(
   root: TxCall,
   contracts: ContractInfo[],
@@ -81,6 +81,7 @@ export function build(
   ids: Map<string, number>
   objs: Map<string, Obj<Account | Fn>>
   arrows: Arrow<Fn>[]
+  groups: Groups
   calls: Call[]
   trace: Trace<Evm>
 } {
@@ -90,15 +91,22 @@ export function build(
     return z
   }, {})
 
-  // id = fn = fn : address : selector
-  //    = account = addr : address
+  // id = fn => fn : address : selector
+  //    = account => addr : address
   const objs: Map<string, Obj<Account | Fn>> = new Map()
   // TODO: remove?
-  const ids: Map<string, number> = new Map()
+  let id = 0
+  const ids: Map<string, Id> = new Map()
   // TODO: remove?
+  const groups: Groups = new Map()
   const calls: Call[] = []
   const arrows: Arrow<Fn>[] = []
   const stack: Trace<Evm>[] = []
+
+  groups.set(0, new Set())
+  // @ts-ignore
+  groups.get(0).add(0)
+  id++
 
   graph.dfs<TxCall>(
     root,
@@ -148,13 +156,15 @@ export function build(
       // Objects
       if (!objs.has(trace.fn.id)) {
         objs.set(trace.fn.id, { id: trace.fn.id, val: trace.fn })
+        ids.set(trace.fn.id, id)
+        id++
       }
 
       for (const addr of [c.from, c.to]) {
-        const id = `addr:${addr}`
-        if (!objs.has(id)) {
-          objs.set(id, {
-            id,
+        const i = `addr:${addr}`
+        if (!objs.has(i)) {
+          objs.set(i, {
+            id: i,
             val: {
               // @ts-ignore
               name: cons[addr]?.name,
@@ -162,6 +172,8 @@ export function build(
               fns: new Map(),
             },
           })
+          ids.set(i, id)
+          id++
         }
       }
 
@@ -179,22 +191,35 @@ export function build(
         })
       }
 
+      // Groups
+      // @ts-ignore
+      if (!groups.has(ids.get(`addr:${c.to}`))) {
+        // @ts-ignore
+        groups.set(ids.get(`addr:${c.to}`), new Set())
+      }
+      // @ts-ignore
+      groups.get(ids.get(`addr:${c.to}`)).add(ids.get(trace.fn.id))
+
       // Calls
+      // TODO: fix parent
       calls.push({
         // @ts-ignore
-        src: ids.get(`addr:${c.from}`),
+        src: ids.get(parent?.fn.id) || 0,
         // @ts-ignore
-        dst: ids.get(`addr:${c.to}`),
+        dst: ids.get(trace.fn.id),
         depth: d,
       })
     },
   )
+
+  console.log(calls, groups, objs)
 
   return {
     ids,
     objs,
     arrows,
     trace: stack[0],
+    groups,
     calls,
   }
 }
@@ -224,10 +249,11 @@ export async function getTrace(txHash: string) {
     addrs: [...addrs.values()],
   })
 
-  const { calls, ids, objs, arrows, trace } = build(t.result, contracts)
+  const { calls, groups, ids, objs, arrows, trace } = build(t.result, contracts)
 
   return {
     calls,
+    groups,
     ids,
     objs,
     arrows,

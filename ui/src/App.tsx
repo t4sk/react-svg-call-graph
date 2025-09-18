@@ -12,7 +12,7 @@ import { CallGraphUi } from "./components/graph/CallGraphUi"
 import { Graph, Node, Arrow, Hover } from "./components/graph/lib/types"
 import { getArrowKey, splitArrowKey } from "./components/graph/lib/screen"
 import Tracer from "./components/tracer"
-import Evm from "./components/chain/evm/tracer/Evm"
+import Evm from "./components/ctx/evm/tracer/Evm"
 import useAsync from "./hooks/useAsync"
 import styles from "./App.module.css"
 import { getTrace } from "./tracer"
@@ -120,7 +120,7 @@ function App() {
     return null
   }
 
-  const { ids, trace, graph, calls, objs, arrows } = _getTrace.data
+  const { ids, trace, graph, calls, groups, objs, arrows } = _getTrace.data
 
   const height = windowSize.height - SCROLL
   const width = windowSize.width - SCROLL
@@ -133,8 +133,8 @@ function App() {
       >
         <Tracer trace={trace} renderCtx={(ctx) => <Evm ctx={ctx} />} />
       </div>
-      {/*
       <CallGraphUi
+        groups={groups}
         calls={calls}
         tracer={tracer.state}
         backgroundColor="var(--bg-color)"
@@ -161,19 +161,23 @@ function App() {
           }
         }}
         renderArrowText={(arrow) => {
-          return `${arrow.i} ${arrows[arrow.i]?.function?.name || "?"}`
+          // return `${arrow.i} ${arrows[arrow.i]?.function?.name || "?"}`
+          return "arrow"
         }}
         renderNode={(hover, node) => {
+          // @ts-ignore
           const obj = objs.get(node.id)
           return (
             <div className={styles.node}>
               <span className={styles.nodeText}>
-                {obj?.name || obj?.address || node.id}
+                {/*obj?.name || obj?.address || node.id*/}
               </span>
             </div>
           )
         }}
         renderHover={(hover, mouse) => {
+          return null
+          /*
           if (!mouse) {
             return null
           }
@@ -231,9 +235,9 @@ function App() {
             )
           }
           return null
+          */
         }}
       />
-      */}
     </div>
   )
 }
