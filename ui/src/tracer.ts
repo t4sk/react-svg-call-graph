@@ -8,8 +8,10 @@ import { zip } from "./utils"
 import { Account, Evm } from "./components/ctx/evm/types"
 
 // TODO: move to graph/lib/types?
-export type Obj<V> = {
+export type ObjType = "acc" | "fn"
+export type Obj<T, V> = {
   id: Id
+  type: T
   val: V
 }
 
@@ -79,7 +81,7 @@ export function build(
   root: TxCall,
   contracts: ContractInfo[],
 ): {
-  objs: Map<Id, Obj<Account | Fn>>
+  objs: Map<Id, Obj<ObjType, Account | Fn>>
   arrows: Arrow<Fn>[]
   groups: Groups
   calls: Call[]
@@ -93,7 +95,7 @@ export function build(
 
   // contract or function to Id
   const ids: Map<string, Id> = new Map()
-  const objs: Map<Id, Obj<Account | Fn>> = new Map()
+  const objs: Map<Id, Obj<ObjType, Account | Fn>> = new Map()
   const groups: Groups = new Map()
   const calls: Call[] = []
   // TODO: remove?
@@ -149,7 +151,7 @@ export function build(
 
       // Objects
       if (!objs.has(trace.fn.id)) {
-        objs.set(trace.fn.id, { id: trace.fn.id, val: trace.fn })
+        objs.set(trace.fn.id, { id: trace.fn.id, type: "fn", val: trace.fn })
       }
 
       for (const addr of [c.from, c.to]) {
@@ -159,6 +161,7 @@ export function build(
           const id = ids.get(key) as Id
           objs.set(id, {
             id: id,
+            type: "acc",
             val: {
               // @ts-ignore
               name: cons[addr]?.name,

@@ -232,6 +232,35 @@ export const CallGraph: React.FC<{
         viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`}
         style={{ backgroundColor }}
       >
+        {[...layout.nodes.values()].map((node, i) => {
+          const style = getNodeStyle(hover, node)
+          return (
+            <SvgRect
+              key={`node-${i}`}
+              x={node.rect.x}
+              y={node.rect.y}
+              width={node.rect.width}
+              height={node.rect.height}
+              fill={style?.fill || DEFAULT_FILL}
+              stroke={style?.stroke || DEFAULT_STROKE}
+            />
+          )
+        })}
+
+        {[...layout.nodes.values()].map((node, i) => {
+          return (
+            <foreignObject
+              key={`obj-${i}`}
+              x={node.rect.x}
+              y={node.rect.y}
+              width={node.rect.width}
+              height={node.rect.height}
+            >
+              {renderNode(hover, node)}
+            </foreignObject>
+          )
+        })}
+
         {layout.arrows.map((a, i) => {
           // Render arrows that are not hovered
           if (
@@ -265,35 +294,6 @@ export const CallGraph: React.FC<{
             <React.Fragment key={`arrow-hover-${i}`}>
               {renderArrow(a, style.type, style.style)}
             </React.Fragment>
-          )
-        })}
-
-        {[...layout.nodes.values()].map((node, i) => {
-          const style = getNodeStyle(hover, node)
-          return (
-            <SvgRect
-              key={`node-${i}`}
-              x={node.rect.x}
-              y={node.rect.y}
-              width={node.rect.width}
-              height={node.rect.height}
-              fill={style?.fill || DEFAULT_FILL}
-              stroke={style?.stroke || DEFAULT_STROKE}
-            />
-          )
-        })}
-
-        {[...layout.nodes.values()].map((node, i) => {
-          return (
-            <foreignObject
-              key={`obj-${i}`}
-              x={node.rect.x}
-              y={node.rect.y}
-              width={node.rect.width}
-              height={node.rect.height}
-            >
-              {renderNode(hover, node)}
-            </foreignObject>
           )
         })}
 

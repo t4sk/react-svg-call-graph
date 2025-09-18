@@ -175,8 +175,8 @@ function App() {
           return (
             <div className={styles.node}>
               <span className={styles.nodeText}>
-                {obj?.val.name || node.id}
-                {/*obj?.name || obj?.address || node.id*/}
+                {/* @ts-ignore */}
+                {obj?.val.name || obj?.val?.addr || node.id}
               </span>
             </div>
           )
