@@ -1,6 +1,7 @@
 import {
   Id,
   Call,
+  Groups,
   Point,
   Rect,
   MidPoints,
@@ -11,6 +12,7 @@ import {
   Layout,
 } from "./types"
 import * as math from "./math"
+import { assert } from "./utils"
 
 export function getArrowKey(a: Arrow): string {
   return `${a.s},${a.e}`
@@ -52,29 +54,29 @@ export function isInside(p: Point, rect: Rect): boolean {
 }
 
 export function getMidPoints(rect: Rect): MidPoints {
-  const midWidth = rect.width >> 1
-  const midHeight = rect.height >> 1
+  const mw = rect.width >> 1
+  const mh = rect.height >> 1
 
   return {
     top: {
-      x: rect.x + midWidth,
+      x: rect.x + mw,
       y: rect.y,
     },
     bottom: {
-      x: rect.x + midWidth,
+      x: rect.x + mw,
       y: rect.y + rect.height,
     },
     left: {
       x: rect.x,
-      y: rect.y + midHeight,
+      y: rect.y + mh,
     },
     right: {
       x: rect.x + rect.width,
-      y: rect.y + midHeight,
+      y: rect.y + mh,
     },
     center: {
-      x: rect.x + midWidth,
-      y: rect.y + midHeight,
+      x: rect.x + mw,
+      y: rect.y + mh,
     },
   }
 }
@@ -149,9 +151,9 @@ export function box(
   }
 }
 
-function arrow(map: Map<Id, Node>, i: number, start: Id, end: Id): Arrow {
-  const s = map.get(start) as Node
-  const e = map.get(end) as Node
+function arrow(nodes: Map<Id, Node>, i: number, start: Id, end: Id): Arrow {
+  const s = nodes.get(start) as Node
+  const e = nodes.get(end) as Node
 
   const m0 = getMidPoints(s.rect)
   const m1 = getMidPoints(e.rect)
@@ -177,120 +179,143 @@ function arrow(map: Map<Id, Node>, i: number, start: Id, end: Id): Arrow {
   }
 }
 
-export function map(mods: Map<Id, Id>, calls: Call[], screen: Screen): Layout {
-  // TODO:
-  // 1. Initialize contract nodes
-  // 2. Put functions into contracts
-  // 3. Calculate contract boxes (width and height)
-  // 4. Calculate contract x positions based on min function depth
-  // 5, Calculate contract y positions based on call index
+export function map(groups: Groups, calls: Call[], screen: Screen): Layout {
+  const nodes: Map<Id, Node> = new Map()
+  // Reverse look up call.src or call.dst to group id
+  const rev: Map<Id, Id> = new Map()
 
-  const nodes: Node[] = []
-  const map: Map<Id, Node> = new Map()
-
-  let xMax = 0
-  let yMax = 0
-
-  // depth => offset
-  const offsets: Map<Id, number> = new Map()
-  offsets.set(0, 0)
-  let dup = 0
-
-  // Add first caller as dst for calculation in the for loop
-  const cs: Call[] = [
-    { src: null, dst: 0, depth: 0 },
-    ...calls.map((c) => ({
-      ...c,
-      depth: c.depth + 1,
-    })),
-  ]
-
-  const { height, width, gapX, gapY } = screen.node
-  const halfWidth = width >> 1
-  const halfHeight = height >> 1
-  for (let i = 0; i < cs.length; i++) {
-    const c = cs[i]
-
-    if (map.has(c.dst)) {
-      dup += 1
-      continue
-    }
-
-    const offset = offsets.get(c.depth) || 0
-    /*
-    // Next depth is shifted up
-    offsets.set(c.depth + 1, offset - 1)
-    // Previous depths are shifted up
-    offsets.set(c.depth - 1, offset)
-    for (let k = 0; k <= c.depth - 1; k++) {
-      offsets.set(k, offset)
-    }
-    */
-
-    const rect = {
-      x: halfWidth + c.depth * (width + gapX),
-      y: halfHeight + (i + offset - dup) * (height + gapY),
-      width: width,
-      height: height,
-    }
+  // Calculate module width and height
+  for (const [g, fs] of groups) {
     const node = {
-      id: c.dst,
-      rect,
-      mid: getMidPoints(rect),
-      nodes: [],
+      id: g,
+      rect: {
+        x: 0,
+        y: 0,
+        width: screen.node.width,
+        height: screen.node.height * (fs.size + 1),
+      },
     }
+    nodes.set(g, node)
 
-    nodes.push(node)
-    map.set(c.dst, node)
-
-    xMax = Math.max(xMax, node.mid.right.x)
-    yMax = Math.max(yMax, node.mid.bottom.y)
+    for (const f of fs.values()) {
+      rev.set(f, g)
+    }
   }
 
-  // Set final positions of the nodes
+  // Calculate group x position based on min call depth
+  // Calculate group y position based on call index
+  // Group id => depth
+  const xOffsets: Map<Id, number> = new Map()
+  // Depth => y offset
+  const yOffsets: Map<number, number> = new Map()
+
+  for (let i = 0; i < calls.length; i++) {
+    const c = calls[i]
+    // src and dst group ids
+    const src = rev.get(c.src) as Id
+    const dst = rev.get(c.dst) as Id
+    assert(src != undefined, `missing group for src ${c.src}`)
+    assert(dst != undefined, `missing group for dst ${c.dst}`)
+
+    if (!xOffsets.has(src)) {
+      const d = c.depth
+      xOffsets.set(src, d)
+
+      const node = nodes.get(src) as Node
+      const x0 = d * (node.rect.width + screen.node.gap.x)
+      const y0 = yOffsets.get(d) ?? 0
+      node.rect.x = x0
+      node.rect.y = y0
+
+      // Next node at this depth is rendered below this node
+      const y1 = y0 + node.rect.height + screen.node.gap.y
+      yOffsets.set(d, y1)
+      // Nodes to be rendered at next depth is aligned to this node's top y position
+      yOffsets.set(d + 1, Math.max(yOffsets.get(d + 1) ?? 0, y0))
+      // Nodes to be rendered at previous depths are shifted up to
+      // this node's bottom y position or yMax
+      let yMax = y0
+      for (let i = 0; i <= d - 1; i++) {
+        yMax = Math.max(yOffsets.get(i) ?? 0, yMax)
+      }
+      for (let i = 0; i <= d - 1; i++) {
+        yOffsets.set(i, yMax)
+      }
+    }
+    if (!xOffsets.has(dst)) {
+      const d = c.depth + 1
+      xOffsets.set(dst, d)
+
+      const node = nodes.get(dst) as Node
+      const x0 = d * (node.rect.width + screen.node.gap.x)
+      const y0 = yOffsets.get(d) ?? 0
+      node.rect.x = x0
+      node.rect.y = y0
+
+      // Same algorithm as yOffsets for src
+      const y1 = y0 + node.rect.height + screen.node.gap.y
+      yOffsets.set(d, y1)
+      yOffsets.set(d + 1, Math.max(yOffsets.get(d + 1) ?? 0, y0))
+
+      let yMax = y0
+      for (let i = 0; i <= d - 1; i++) {
+        yMax = Math.max(yOffsets.get(i) ?? 0, yMax)
+      }
+      for (let i = 0; i <= d - 1; i++) {
+        yOffsets.set(i, yMax)
+      }
+    }
+  }
+
+  // Position nodes to center of the screen
+  let xMax = 0
+  let yMax = 0
+  for (const [_, node] of nodes) {
+    xMax = Math.max(xMax, getMidPoints(node.rect).right.x)
+    yMax = Math.max(yMax, getMidPoints(node.rect).bottom.y)
+  }
+
   const x0 = screen.center.x - (xMax >> 1)
   const y0 = screen.center.y - (yMax >> 1)
+  for (const [_, node] of nodes) {
+    node.rect.x += x0
+    node.rect.y += y0
+  }
 
-  for (let i = 0; i < nodes.length; i++) {
-    const node = nodes[i]
-    const rect = {
-      x: x0 + node.rect.x,
-      y: y0 + node.rect.y,
-      width: node.rect.width,
-      height: node.rect.height,
+  // Calculate function positions
+  for (const [g, fs] of groups) {
+    const group = nodes.get(g) as Node
+    assert(group != undefined, `group undefined: ${g}`)
+    let i = 0
+    for (const f of fs) {
+      nodes.set(f, {
+        id: f,
+        rect: {
+          x: group.rect.x,
+          y: group.rect.y + (i + 1) * screen.node.height,
+          width: screen.node.width,
+          height: screen.node.height,
+        },
+      })
+      i++
     }
-    const mid = getMidPoints(rect)
-    nodes[i] = {
-      ...node,
-      rect,
-      mid,
-    }
-    map.set(node.id, nodes[i])
   }
 
   const arrows: Arrow[] = []
   for (let i = 0; i < calls.length; i++) {
     const c = calls[i]
-    if (c.src != null) {
-      arrows.push(arrow(map, i, c.src, c.dst))
-    }
+    arrows.push(arrow(nodes, i, c.src, c.dst))
   }
-
-  const rect = {
-    x: x0,
-    y: y0,
-    width: xMax,
-    height: yMax,
-  }
-
-  const mid = getMidPoints(rect)
 
   return {
-    rect,
-    mid,
+    rect: {
+      x: x0,
+      y: y0,
+      width: xMax,
+      height: yMax,
+    },
     nodes,
     arrows,
-    map,
   }
 }
 

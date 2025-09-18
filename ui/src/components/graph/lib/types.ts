@@ -2,10 +2,13 @@ export type Id = number
 
 // Call graph
 export type Call = {
-  src: Id | null
+  src: Id
   dst: Id
   depth: number
 }
+
+// Group id => function ids
+export type Groups = Map<Id, Set<Id>>
 
 // Directed graph
 export type Neighbors = Map<Id, Set<Id>>
@@ -31,7 +34,9 @@ export type Point = {
 }
 
 export type Rect = {
+  // left
   x: number
+  // top
   y: number
   width: number
   height: number
@@ -63,22 +68,23 @@ export type Screen = {
   width: number
   height: number
   center: Point
-  node: { width: number; height: number; gapX: number; gapY: number }
+  node: {
+    width: number
+    height: number
+    // Space between 2 nodes
+    gap: { x: number; y: number }
+  }
 }
 
 export type Node = {
   id: Id
   rect: Rect
-  mid: MidPoints
-  nodes: Node[]
 }
 
 export type Layout = {
   rect: Rect
-  mid: MidPoints
-  nodes: Node[]
+  nodes: Map<Id, Node>
   arrows: Arrow[]
-  map: Map<Id, Node>
 }
 
 // UI
