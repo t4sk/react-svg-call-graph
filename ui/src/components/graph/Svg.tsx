@@ -114,6 +114,7 @@ export function overlaps(arrows: Arrow[]): Map<string, number> {
   */
   return m
 }
+// TODO: defs component
 
 export const SvgRect: React.FC<{
   x: number

@@ -13,7 +13,7 @@
    --arrow-pin-color: rgb(254, 200, 75);
    --arrow-tracer-color: #32cd32;
    --node-color: rgb(6, 44, 65);
-   --node-text-color: rgb(124, 212, 253);
+   --node-text-color: white;
    --node-border-color: transparent;
    --node-hover-color: rgb(10, 60, 90);
    --node-hover-text-color: rgb(160, 230, 255);

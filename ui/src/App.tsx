@@ -9,14 +9,16 @@ import {
   State as TracerState,
 } from "./components/tracer/TracerContext"
 import { CallGraphUi } from "./components/graph/CallGraphUi"
-import { Graph, Node, Arrow, Hover } from "./components/graph/lib/types"
+import { Id, Graph, Node, Arrow, Hover } from "./components/graph/lib/types"
 // TODO: remove
 // import { getArrowKey, splitArrowKey } from "./components/graph/lib/screen"
 import Tracer from "./components/tracer"
 import Evm from "./components/ctx/evm/tracer/Evm"
+import { Fn } from "./components/tracer/types"
+import { Account } from "./components/ctx/evm/types"
 import useAsync from "./hooks/useAsync"
 import styles from "./App.module.css"
-import { getTrace } from "./tracer"
+import { getTrace, Obj, ObjType } from "./tracer"
 
 // Padding for scroll
 const SCROLL = 20
@@ -64,12 +66,19 @@ function getArrowType(
 }
 
 function getNodeFillColor(
+  objs: Map<Id, Obj<ObjType, Account | Fn>>,
   hover: Hover,
   node: Node,
   graph: Graph,
   tracer: TracerState,
 ): string {
+  //TODO: fix
+  // @ts-ignore
+  const obj = objs.get(node.id)
   if (hover.node == null) {
+    if (obj?.type == "fn") {
+      return "transparent"
+    }
     return "var(--node-color)"
   }
   if (
@@ -103,6 +112,7 @@ function getArrowColor(t: ArrowType): string {
 
 // TODO: light theme
 // TODO: dynamic graph size
+// TODO: drag tracer height
 function App() {
   const windowSize = useWindowSizeContext()
   const tracer = useTracerContext()
@@ -145,13 +155,13 @@ function App() {
         width={width}
         height={(height * 0.6) | 0}
         showDot={true}
-        nodeWidth={200}
-        nodeHeight={50}
+        nodeWidth={220}
+        nodeHeight={40}
         nodeXGap={100}
         nodeYGap={80}
         getNodeStyle={(hover, node) => {
           return {
-            fill: getNodeFillColor(hover, node, graph, tracer.state),
+            fill: getNodeFillColor(objs, hover, node, graph, tracer.state),
             stroke: "var(--node-border-color)",
           }
         }}
@@ -166,17 +176,26 @@ function App() {
         }}
         renderArrowText={(arrow) => {
           // return `${arrow.i} ${arrows[arrow.i]?.function?.name || "?"}`
-          return "arrow"
+          // return "arrow"
+          return `${arrow.i}`
         }}
         renderNode={(hover, node) => {
-          // @ts-ignore
           // TODO: fix
-          const obj = objs.get(node.id)
+          // @ts-ignore
+          const obj = objs.get(node.id) as Obj<ObjType, Account>
+          if (obj?.type == "acc") {
+            return (
+              <div className={styles.accNode}>
+                <span className={styles.nodeText}>
+                  {obj?.val.name || obj?.val?.addr || node.id}
+                </span>
+              </div>
+            )
+          }
           return (
-            <div className={styles.node}>
+            <div className={styles.fnNode}>
               <span className={styles.nodeText}>
-                {/* @ts-ignore */}
-                {obj?.val.name || obj?.val?.addr || node.id}
+                {obj?.val.name || node.id}
               </span>
             </div>
           )
