@@ -109,8 +109,6 @@ export const CallGraph: React.FC<{
     })
   }, [calls, width, height])
 
-  const overlaps = Svg.overlaps(layout.arrows)
-
   const svgX = mouse
     ? Svg.getViewBoxX(width, mouse.x, viewBox.width, viewBox.x)
     : 0
@@ -154,13 +152,7 @@ export const CallGraph: React.FC<{
   */
 
   const renderArrow = (a: Arrow, type: string, style: { stroke?: string }) => {
-    // TODO: fix
-    /*
-    const key = Svg.getArrowKey(a)
-    const offset = overlaps.get(key) || 0
-    overlaps.set(key, offset > 0 ? offset - 1 : 0)
-    */
-    const offset = 0
+    const offset = 1
 
     // const points = sample(a, arrowXPadd, -arrowYPadd)
 
@@ -298,7 +290,6 @@ export const CallGraph: React.FC<{
         })}
 
         {/* Debug */}
-
         {/*Object.values(layout.mid).map((p, i) => (
           <SvgDot x={p.x} y={p.y} key={i} radius={4} />
         ))*/}

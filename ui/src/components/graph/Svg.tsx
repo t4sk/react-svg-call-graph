@@ -103,17 +103,6 @@ export function box(
   }
 }
 
-export function overlaps(arrows: Arrow[]): Map<string, number> {
-  const m: Map<string, number> = new Map()
-  /*
-  for (let i = 0; i < arrows.length; i++) {
-    // TODO: fix
-    const key = getArrowKey(arrows[i])
-    m.set(key, (m.get(key) ?? 0) + 1)
-  }
-  */
-  return m
-}
 // TODO: defs component
 
 export const SvgRect: React.FC<{
