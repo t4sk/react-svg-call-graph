@@ -1,7 +1,7 @@
 import { ethers } from "ethers"
 import * as api from "./api"
 import { TxCall, ContractInfo } from "./api/types"
-import { Id, Groups, Call } from "./components/graph/lib/types"
+import { Id, Mods, Call } from "./components/graph/lib/types"
 import { Trace, Input, Output, Fn } from "./components/tracer/types"
 import * as graph from "./components/graph/lib/graph"
 import { zip } from "./utils"
@@ -83,7 +83,7 @@ export function build(
 ): {
   objs: Map<Id, Obj<ObjType, Account | Fn>>
   arrows: Arrow<Fn>[]
-  groups: Groups
+  mods: Mods
   calls: Call[]
   trace: Trace<Evm>
 } {
@@ -93,25 +93,39 @@ export function build(
     return z
   }, {})
 
-  // contract or function to Id
+  // Account or function to Id
   const ids: Map<string, Id> = new Map()
   const objs: Map<Id, Obj<ObjType, Account | Fn>> = new Map()
-  const groups: Groups = new Map()
-  const calls: Call[] = []
-  // TODO: remove?
   const arrows: Arrow<Fn>[] = []
+  const mods: Mods = new Map()
+  const calls: Call[] = []
   const stack: Trace<Evm>[] = []
 
-  // TODO: clean up + add to objs
-  groups.set(0, new Set())
-  // @ts-ignore
-  groups.get(0).add(0)
-  ids.set("eoa", 0)
+  // Put initial caller into it's own group
+  mods.set(0, new Set())
 
   graph.dfs<TxCall>(
     root,
     (c) => c?.calls || [],
     (i, d, c) => {
+      for (const addr of [c.from, c.to]) {
+        const key = `addr:${addr}`
+        if (!ids.has(key)) {
+          ids.set(key, ids.size)
+          const id = ids.get(key) as Id
+          objs.set(id, {
+            id: id,
+            type: "acc",
+            val: {
+              // @ts-ignore
+              name: cons[addr]?.name,
+              addr,
+              fns: new Map(),
+            },
+          })
+        }
+      }
+
       // @ts-ignore
       const fn = parse(cons[c.to]?.abi, c.input, c.output)
 
@@ -154,24 +168,6 @@ export function build(
         objs.set(trace.fn.id, { id: trace.fn.id, type: "fn", val: trace.fn })
       }
 
-      for (const addr of [c.from, c.to]) {
-        const key = `addr:${addr}`
-        if (!ids.has(key)) {
-          ids.set(key, ids.size)
-          const id = ids.get(key) as Id
-          objs.set(id, {
-            id: id,
-            type: "acc",
-            val: {
-              // @ts-ignore
-              name: cons[addr]?.name,
-              addr,
-              fns: new Map(),
-            },
-          })
-        }
-      }
-
       // Stack
       while (stack.length >= d + 1) {
         stack.pop()
@@ -190,20 +186,19 @@ export function build(
         })
       }
 
-      const toKey = `addr:${c.to}`
-      const toId = ids.get(toKey) as Id
+      const toId = ids.get(`addr:${c.to}`) as Id
       // @ts-ignore
       const acc = objs.get(toId).val as Account
       if (!acc.fns.has(trace.fn.id)) {
         acc.fns.set(trace.fn.id, trace.fn)
       }
 
-      // Groups
-      if (!groups.has(toId)) {
-        groups.set(toId, new Set())
+      // Mods
+      if (!mods.has(toId)) {
+        mods.set(toId, new Set())
       }
       // @ts-ignore
-      groups.get(toId).add(trace.fn.id)
+      mods.get(toId).add(trace.fn.id)
 
       // Calls
       // TODO: fix parent
@@ -217,14 +212,11 @@ export function build(
     },
   )
 
-  // TODO: remove
-  console.log(calls, groups, objs)
-
   return {
     objs,
     arrows,
     trace: stack[0],
-    groups,
+    mods,
     calls,
   }
 }
@@ -254,11 +246,11 @@ export async function getTrace(txHash: string) {
     addrs: [...addrs.values()],
   })
 
-  const { calls, groups, objs, arrows, trace } = build(t.result, contracts)
+  const { calls, mods, objs, arrows, trace } = build(t.result, contracts)
 
   return {
     calls,
-    groups,
+    mods,
     objs,
     arrows,
     trace,

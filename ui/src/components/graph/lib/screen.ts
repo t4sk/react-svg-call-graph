@@ -1,7 +1,7 @@
 import {
   Id,
   Call,
-  Groups,
+  Mods,
   Point,
   Rect,
   MidPoints,
@@ -76,15 +76,15 @@ function arrow(nodes: Map<Id, Node>, i: number, start: Id, end: Id): Arrow {
   }
 }
 
-export function map(groups: Groups, calls: Call[], screen: Screen): Layout {
+export function map(mods: Mods, calls: Call[], screen: Screen): Layout {
   const nodes: Map<Id, Node> = new Map()
-  // Reverse look up call.src or call.dst to group id
+  // Reverse look up call.src or call.dst to mod id
   const rev: Map<Id, Id> = new Map()
 
   // Calculate module width and height
-  for (const [g, fs] of groups) {
+  for (const [m, fs] of mods) {
     const node = {
-      id: g,
+      id: m,
       rect: {
         x: 0,
         y: 0,
@@ -92,27 +92,27 @@ export function map(groups: Groups, calls: Call[], screen: Screen): Layout {
         height: screen.node.height * (fs.size + 1),
       },
     }
-    nodes.set(g, node)
+    nodes.set(m, node)
 
     for (const f of fs.values()) {
-      rev.set(f, g)
+      rev.set(f, m)
     }
   }
 
-  // Calculate group x position based on min call depth
-  // Calculate group y position based on call index
-  // Group id => depth
+  // Calculate mod x position based on min call depth
+  // Calculate mod y position based on call index
+  // Mod id => depth
   const xOffsets: Map<Id, number> = new Map()
   // Depth => y offset
   const yOffsets: Map<number, number> = new Map()
 
   for (let i = 0; i < calls.length; i++) {
     const c = calls[i]
-    // src and dst group ids
-    const src = rev.get(c.src) as Id
+    // src and dst mod ids (src for i = 0, is not a function)
+    const src = (i == 0 ? c.src : rev.get(c.src)) as Id
     const dst = rev.get(c.dst) as Id
-    assert(src != undefined, `missing group for src ${c.src}`)
-    assert(dst != undefined, `missing group for dst ${c.dst}`)
+    assert(src != undefined, `missing mod for src ${c.src}`)
+    assert(dst != undefined, `missing mod for dst ${c.dst}`)
 
     if (!xOffsets.has(src)) {
       const d = c.depth
@@ -164,6 +164,12 @@ export function map(groups: Groups, calls: Call[], screen: Screen): Layout {
     }
   }
 
+  // Shift initial caller's y position down by 1 node height
+  if (calls.length > 0) {
+    const node = nodes.get(calls[0].src) as Node
+    node.rect.y += screen.node.height
+  }
+
   // Position nodes to center of the screen
   let xMax = 0
   let yMax = 0
@@ -180,16 +186,16 @@ export function map(groups: Groups, calls: Call[], screen: Screen): Layout {
   }
 
   // Calculate function positions
-  for (const [g, fs] of groups) {
-    const group = nodes.get(g) as Node
-    assert(group != undefined, `group undefined: ${g}`)
+  for (const [m, fs] of mods) {
+    const mod = nodes.get(m) as Node
+    assert(mod != undefined, `mod undefined: ${m}`)
     let i = 0
     for (const f of fs) {
       nodes.set(f, {
         id: f,
         rect: {
-          x: group.rect.x,
-          y: group.rect.y + (i + 1) * screen.node.height,
+          x: mod.rect.x,
+          y: mod.rect.y + (i + 1) * screen.node.height,
           width: screen.node.width,
           height: screen.node.height,
         },

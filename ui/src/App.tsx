@@ -134,7 +134,7 @@ function App() {
     return null
   }
 
-  const { trace, graph, calls, groups, objs, arrows } = _getTrace.data
+  const { trace, graph, calls, mods, objs, arrows } = _getTrace.data
 
   const height = windowSize.height - SCROLL
   const width = windowSize.width - SCROLL
@@ -148,7 +148,7 @@ function App() {
         <Tracer trace={trace} renderCtx={(ctx) => <Evm ctx={ctx} />} />
       </div>
       <CallGraphUi
-        groups={groups}
+        mods={mods}
         calls={calls}
         tracer={tracer.state}
         backgroundColor="var(--bg-color)"

@@ -7,8 +7,8 @@ export type Call = {
   depth: number
 }
 
-// Group id => function ids
-export type Groups = Map<Id, Set<Id>>
+// Mod id => function ids
+export type Mods = Map<Id, Set<Id>>
 
 // Directed graph
 export type Neighbors = Map<Id, Set<Id>>
