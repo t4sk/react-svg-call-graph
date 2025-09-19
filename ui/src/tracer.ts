@@ -1,7 +1,7 @@
 import { ethers } from "ethers"
 import * as api from "./api"
 import { TxCall, ContractInfo } from "./api/types"
-import { Id, Mods, Call } from "./components/graph/lib/types"
+import { Id, Groups, Call } from "./components/graph/lib/types"
 import { Trace, Input, Output, Fn } from "./components/tracer/types"
 import * as graph from "./components/graph/lib/graph"
 import { zip } from "./utils"
@@ -83,7 +83,7 @@ export function build(
 ): {
   objs: Map<Id, Obj<ObjType, Account | Fn>>
   arrows: Arrow<Fn>[]
-  mods: Mods
+  groups: Groups
   calls: Call[]
   trace: Trace<Evm>
 } {
@@ -97,12 +97,12 @@ export function build(
   const ids: Map<string, Id> = new Map()
   const objs: Map<Id, Obj<ObjType, Account | Fn>> = new Map()
   const arrows: Arrow<Fn>[] = []
-  const mods: Mods = new Map()
+  const groups: Groups = new Map()
   const calls: Call[] = []
   const stack: Trace<Evm>[] = []
 
   // Put initial caller into it's own group
-  mods.set(0, new Set())
+  groups.set(0, new Set())
 
   graph.dfs<TxCall>(
     root,
@@ -193,12 +193,12 @@ export function build(
         acc.fns.set(trace.fn.id, trace.fn)
       }
 
-      // Mods
-      if (!mods.has(toId)) {
-        mods.set(toId, new Set())
+      // Groups
+      if (!groups.has(toId)) {
+        groups.set(toId, new Set())
       }
       // @ts-ignore
-      mods.get(toId).add(trace.fn.id)
+      groups.get(toId).add(trace.fn.id)
 
       // Calls
       // TODO: fix parent
@@ -216,7 +216,7 @@ export function build(
     objs,
     arrows,
     trace: stack[0],
-    mods,
+    groups,
     calls,
   }
 }
@@ -246,11 +246,11 @@ export async function getTrace(txHash: string) {
     addrs: [...addrs.values()],
   })
 
-  const { calls, mods, objs, arrows, trace } = build(t.result, contracts)
+  const { calls, groups, objs, arrows, trace } = build(t.result, contracts)
 
   return {
     calls,
-    mods,
+    groups,
     objs,
     arrows,
     trace,

@@ -1,5 +1,5 @@
 import React, { useMemo } from "react"
-import { Mods, Call, Point, Node, Arrow, Hover, Tracer } from "./lib/types"
+import { Groups, Call, Point, Node, Arrow, Hover, Tracer } from "./lib/types"
 import * as screen from "./lib/screen"
 import * as Svg from "./Svg"
 import {
@@ -42,7 +42,7 @@ function sample(a: Arrow, xPadd: number = 0, yPadd: number = 0): Point[] {
 }
 
 export const CallGraph: React.FC<{
-  mods: Mods
+  groups: Groups
   calls: Call[]
   tracer?: Tracer
   backgroundColor: string
@@ -68,7 +68,7 @@ export const CallGraph: React.FC<{
   renderArrowText?: (arrow: Arrow) => string | number
   renderHover?: (hover: Hover, mouse: Point | null) => React.ReactNode
 }> = ({
-  mods,
+  groups,
   calls,
   tracer,
   backgroundColor,
@@ -91,7 +91,7 @@ export const CallGraph: React.FC<{
   const arrowXPadd = nodeXGap >> 1
   const arrowYPadd = nodeYGap >> 1
   const layout = useMemo(() => {
-    return screen.map(mods, calls, {
+    return screen.map(groups, calls, {
       width,
       height,
       center: {
