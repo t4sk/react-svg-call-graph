@@ -68,21 +68,25 @@ function getNodeFillColor(
   tracer: TracerState,
 ): string {
   const obj = objs.get(node.id) as Obj<ObjType, Account | Fn>
-  if (hover.node == null) {
+  // Arrows are hovered
+  if (hover.arrows != null && hover?.arrows?.size > 0) {
     if (obj?.type == "acc") {
-      return "var(--node-color)"
+      return "var(--node-dim-color)"
     }
     return "transparent"
   }
+  // Hover or incoming or outgoing node
   if (
-    hover.node == node.id ||
-    graph.incoming.get(hover.node)?.has(node.id) ||
-    graph.outgoing.get(hover.node)?.has(node.id)
+    hover.node != null &&
+    (hover.node == node.id ||
+      graph.incoming.get(hover.node)?.has(node.id) ||
+      graph.outgoing.get(hover.node)?.has(node.id))
   ) {
     return "var(--node-hover-color)"
   }
+  // Default (no hovered node or arrow)
   if (obj?.type == "acc") {
-    return "var(--node-dim-color)"
+    return "var(--node-color)"
   }
   return "transparent"
 }
@@ -118,7 +122,7 @@ function App() {
   useEffect(() => {
     const f = async () => {
       const txHash =
-        "0x5e4deab9462bec720f883522d306ec306959cb3ae1ec2eaf0d55477eed01b5a4"
+        "0xebc2f7d95ed5fe06a3f55d8fdc0644034b756478f3e833f86ff1698f8c46a55c"
       // const txHash = "0xa542508dfd209f23cb306861ea25b5c131e82dcdf75c86d874644b4c436d9f6f"
       await _getTrace.exec(txHash)
     }
@@ -217,6 +221,7 @@ function App() {
               </div>
             )
           }
+          // TODO: fix hover - incorrect function calls rendered
           if (hover.arrows && hover.arrows.size > 0) {
             const arrs = [...hover.arrows.values()]
             arrs.sort((a, b) => a - b)

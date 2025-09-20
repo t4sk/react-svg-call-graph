@@ -8,7 +8,7 @@ import NAMES from "../../notes/data/names.json"
 
 export async function getTxTrace(txHash: string): Promise<{ result: TxCall }> {
   /*
-  return post<any, {result: TxCall}>(import.meta.env.VITE_RPC_URL, {
+  return post<any, { result: TxCall }>(import.meta.env.VITE_RPC_URL, {
     jsonrpc: "2.0",
     method: "debug_traceTransaction",
     params: [txHash, { tracer: "callTracer" }],
