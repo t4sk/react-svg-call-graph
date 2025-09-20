@@ -24,7 +24,6 @@ const SCROLL = 20
 // TODO: import foundry trace
 // TODO: graph - token transfers
 // TODO: graph - ETH transfer
-// TODO: graph - animation to expand -> contract + functions inside a box
 // TODO: on click graph -> pin trace
 
 type ArrowType = "in" | "out" | "hover" | "dim" | "pin" | "tracer" | ""
@@ -53,12 +52,9 @@ function getArrowType(
     return "dim"
   }
   if (hover.arrows != null && hover.arrows.size > 0) {
-    /*
-    TODO: fix
-    if (hover.arrows.has(getArrowKey(arrow))) {
+    if (hover.arrows.has(arrow.i)) {
       return "hover"
     }
-    */
     return "dim"
   }
   return ""
@@ -71,14 +67,12 @@ function getNodeFillColor(
   graph: Graph,
   tracer: TracerState,
 ): string {
-  //TODO: fix
-  // @ts-ignore
-  const obj = objs.get(node.id)
+  const obj = objs.get(node.id) as Obj<ObjType, Account | Fn>
   if (hover.node == null) {
-    if (obj?.type == "fn") {
-      return "transparent"
+    if (obj?.type == "acc") {
+      return "var(--node-color)"
     }
-    return "var(--node-color)"
+    return "transparent"
   }
   if (
     hover.node == node.id ||
@@ -87,7 +81,10 @@ function getNodeFillColor(
   ) {
     return "var(--node-hover-color)"
   }
-  return "var(--node-dim-color)"
+  if (obj?.type == "acc") {
+    return "var(--node-dim-color)"
+  }
+  return "transparent"
 }
 
 function getArrowColor(t: ArrowType): string {
@@ -173,8 +170,6 @@ function App() {
           }
         }}
         renderArrowText={(arrow) => {
-          // return `${arrow.i} ${arrows[arrow.i]?.function?.name || "?"}`
-          // return "arrow"
           return `${arrow.i}`
         }}
         renderNode={(hover, node) => {
@@ -199,13 +194,16 @@ function App() {
           )
         }}
         renderHover={(hover, mouse) => {
-          // TODO: fix
-          return null
           if (!mouse) {
             return null
           }
-          if (hover.node) {
+          if (hover.node != null) {
             const obj = objs.get(hover.node)
+            const text =
+              obj?.val?.name ||
+              // @ts-ignore
+              (obj?.type == "acc" ? obj?.val?.addr : "?") ||
+              "?"
             return (
               <div
                 className={styles.hoverNode}
@@ -215,7 +213,7 @@ function App() {
                   left: mouse.x + 10,
                 }}
               >
-                {obj?.val?.name ? <div>{obj?.val?.name}</div> : null}
+                {text}
               </div>
             )
           }
@@ -234,14 +232,17 @@ function App() {
               >
                 {arrs.map((i) => {
                   const arr = arrows[i]
-                  const s = objs.get(arr.src)
-                  const d = objs.get(arr.dst)
+                  if (!arr) {
+                    return null
+                  }
+                  const s = objs.get(arr.src)?.val as Fn
+                  const d = objs.get(arr.dst)?.val as Fn
                   return (
                     <div className={styles.call} key={i}>
                       <div className={styles.index}>{i}</div>
-                      <div className={styles.obj}>{s?.val?.name || "?"}</div>
+                      <div className={styles.obj}>{s?.mod || "?"}</div>
                       <div className={styles.arrow}>{"->"}</div>
-                      <div className={styles.obj}>{d?.val?.name || "?"}</div>
+                      <div className={styles.obj}>{d?.mod || "?"}</div>
                       <div>.</div>
                       <div className={styles.func}>{arr?.val?.name || "?"}</div>
                     </div>

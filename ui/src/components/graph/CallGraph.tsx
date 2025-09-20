@@ -122,6 +122,7 @@ export const CallGraph: React.FC<{
   if (!dragging && mouse && svgX != 0 && svgY != 0) {
     for (const node of layout.nodes.values()) {
       if (screen.isInside(mouseSvgXY, node.rect)) {
+        // Assign to the last node that the mouse is hovering - don't break from for loop
         hover.node = node.id
       }
     }
@@ -156,6 +157,7 @@ export const CallGraph: React.FC<{
   }
 
   const renderArrow = (a: Arrow, type: string, style: { stroke?: string }) => {
+    // TODO: fix arrow text overlap
     if (a.start.y == a.end.y) {
       return (
         <SvgArrow
@@ -195,7 +197,6 @@ export const CallGraph: React.FC<{
         />
       )
     }
-
     return (
       <SvgZigZagArrow
         x0={a.start.x}
@@ -205,7 +206,7 @@ export const CallGraph: React.FC<{
         type={type}
         stroke={style?.stroke || DEFAULT_STROKE}
         text={renderArrowText(a)}
-        textYGap={TEXT_GAP}
+        textYGap={0}
       />
     )
   }
