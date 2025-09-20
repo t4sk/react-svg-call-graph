@@ -15,7 +15,8 @@ import * as math from "./lib/math"
 const TEXT_GAP = -30
 const STEP = 50
 const MIN_STEPS = 4
-// R >= STEP / 2?
+// Radius around mouse
+// TODO: R >= STEP / 2?
 const R = 25
 const BOX_X_PADD = 10
 const BOX_Y_PADD = 10
@@ -118,8 +119,6 @@ export const CallGraph: React.FC<{
   const mouseSvgXY = { x: svgX, y: svgY }
 
   const hover: Hover = { node: null, arrows: null }
-  // TODO: fix
-  /*
   if (!dragging && mouse && svgX != 0 && svgY != 0) {
     for (const node of layout.nodes.values()) {
       if (screen.isInside(mouseSvgXY, node.rect)) {
@@ -128,12 +127,18 @@ export const CallGraph: React.FC<{
     }
 
     if (hover.node == null) {
-      hover.arrows = new Map()
+      hover.arrows = new Set()
 
       for (let i = 0; i < layout.arrows.length; i++) {
         const a = layout.arrows[i]
         const box = Svg.box(
-          Svg.poly(a.type, a.start, a.end, arrowXPadd, -arrowYPadd),
+          Svg.poly(
+            Svg.getArrowType(a.start, a.end),
+            a.start,
+            a.end,
+            arrowXPadd,
+            -arrowYPadd,
+          ),
           BOX_X_PADD,
           BOX_Y_PADD,
         )
@@ -142,67 +147,18 @@ export const CallGraph: React.FC<{
           const points = sample(a, arrowXPadd, -arrowYPadd)
           for (let i = 0; i < points.length; i++) {
             if (math.dist(points[i], mouseSvgXY) < R) {
-              hover.arrows.set(Svg.getArrowKey(a), a.i)
+              hover.arrows.add(a.i)
             }
           }
         }
       }
     }
   }
-  */
 
   const renderArrow = (a: Arrow, type: string, style: { stroke?: string }) => {
-    const offset = 1
-
-    // const points = sample(a, arrowXPadd, -arrowYPadd)
-
     if (a.start.y == a.end.y) {
       return (
-        <>
-          {/*points.map((p, i) => (
-             <SvgDot x={p.x} y={p.y} radius={4} key={i} />
-             ))*/}
-          <SvgArrow
-            x0={a.start.x}
-            y0={a.start.y}
-            x1={a.end.x}
-            y1={a.end.y}
-            type={type}
-            stroke={style?.stroke || DEFAULT_STROKE}
-            text={renderArrowText(a)}
-            textYGap={offset * TEXT_GAP}
-          />
-        </>
-      )
-    }
-    if (a.end.x <= a.start.x) {
-      return (
-        <>
-          {/*points.map((p, i) => (
-             <SvgDot x={p.x} y={p.y} radius={4} key={i} />
-             ))*/}
-          <SvgCallBackArrow
-            x0={a.start.x}
-            y0={a.start.y}
-            x1={a.end.x}
-            y1={a.end.y}
-            xPadd={arrowXPadd}
-            yPadd={-arrowYPadd}
-            type={type}
-            stroke={style?.stroke || DEFAULT_STROKE}
-            text={renderArrowText(a)}
-            textYGap={offset * TEXT_GAP}
-          />
-        </>
-      )
-    }
-
-    return (
-      <>
-        {/*points.map((p, i) => (
-           <SvgDot x={p.x} y={p.y} radius={4} key={i} />
-           ))*/}
-        <SvgZigZagArrow
+        <SvgArrow
           x0={a.start.x}
           y0={a.start.y}
           x1={a.end.x}
@@ -210,9 +166,47 @@ export const CallGraph: React.FC<{
           type={type}
           stroke={style?.stroke || DEFAULT_STROKE}
           text={renderArrowText(a)}
-          textYGap={offset * TEXT_GAP}
+          textYGap={TEXT_GAP}
         />
-      </>
+      )
+    }
+    if (a.end.x <= a.start.x) {
+      // Call back arrow goes above the position of the destination group
+      const g = layout.rev.get(a.e)
+      let yPadd = -arrowYPadd
+      if (g != undefined) {
+        const group = layout.nodes.get(g)
+        if (group) {
+          yPadd -= a.end.y - group.rect.y
+        }
+      }
+      return (
+        <SvgCallBackArrow
+          x0={a.start.x}
+          y0={a.start.y}
+          x1={a.end.x}
+          y1={a.end.y}
+          xPadd={arrowXPadd}
+          yPadd={yPadd}
+          type={type}
+          stroke={style?.stroke || DEFAULT_STROKE}
+          text={renderArrowText(a)}
+          textYGap={TEXT_GAP}
+        />
+      )
+    }
+
+    return (
+      <SvgZigZagArrow
+        x0={a.start.x}
+        y0={a.start.y}
+        x1={a.end.x}
+        y1={a.end.y}
+        type={type}
+        stroke={style?.stroke || DEFAULT_STROKE}
+        text={renderArrowText(a)}
+        textYGap={TEXT_GAP}
+      />
     )
   }
 
@@ -237,24 +231,6 @@ export const CallGraph: React.FC<{
           const style = getArrowStyle(hover, a)
           return (
             <React.Fragment key={`arrow-${i}`}>
-              {renderArrow(a, style.type, style.style)}
-            </React.Fragment>
-          )
-        })}
-
-        {layout.arrows.map((a, i) => {
-          // Render arrows that are hovered second
-          if (
-            a.s != hover.node &&
-            a.e != hover.node &&
-            a.s != tracer?.hover &&
-            a.e != tracer?.hover
-          ) {
-            return null
-          }
-          const style = getArrowStyle(hover, a)
-          return (
-            <React.Fragment key={`arrow-hover-${i}`}>
               {renderArrow(a, style.type, style.style)}
             </React.Fragment>
           )
@@ -289,10 +265,23 @@ export const CallGraph: React.FC<{
           )
         })}
 
-        {/* Debug */}
-        {/*Object.values(layout.mid).map((p, i) => (
-          <SvgDot x={p.x} y={p.y} key={i} radius={4} />
-        ))*/}
+        {layout.arrows.map((a, i) => {
+          // Render arrows that are hovered second
+          if (
+            a.s != hover.node &&
+            a.e != hover.node &&
+            a.s != tracer?.hover &&
+            a.e != tracer?.hover
+          ) {
+            return null
+          }
+          const style = getArrowStyle(hover, a)
+          return (
+            <React.Fragment key={`arrow-hover-${i}`}>
+              {renderArrow(a, style.type, style.style)}
+            </React.Fragment>
+          )
+        })}
 
         {mouse && showDot ? (
           <SvgDot x={svgX} y={svgY} radius={R} fill="rgba(255, 0, 0, 0.5)" />

@@ -1,6 +1,6 @@
 import React from "react"
 
-import { Point, Rect, Arrow } from "./lib/types"
+import { Point, Rect } from "./lib/types"
 import * as math from "./lib/math"
 
 const FONT = "sans-serif"

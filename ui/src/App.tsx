@@ -10,8 +10,6 @@ import {
 } from "./components/tracer/TracerContext"
 import { CallGraphUi } from "./components/graph/CallGraphUi"
 import { Id, Graph, Node, Arrow, Hover } from "./components/graph/lib/types"
-// TODO: remove
-// import { getArrowKey, splitArrowKey } from "./components/graph/lib/screen"
 import Tracer from "./components/tracer"
 import Evm from "./components/ctx/evm/tracer/Evm"
 import { Fn } from "./components/tracer/types"
@@ -27,6 +25,7 @@ const SCROLL = 20
 // TODO: graph - token transfers
 // TODO: graph - ETH transfer
 // TODO: graph - animation to expand -> contract + functions inside a box
+// TODO: on click graph -> pin trace
 
 type ArrowType = "in" | "out" | "hover" | "dim" | "pin" | "tracer" | ""
 
@@ -121,10 +120,9 @@ function App() {
 
   useEffect(() => {
     const f = async () => {
-      // const txHash =
-      // "0x5e4deab9462bec720f883522d306ec306959cb3ae1ec2eaf0d55477eed01b5a4"
       const txHash =
-        "0xa542508dfd209f23cb306861ea25b5c131e82dcdf75c86d874644b4c436d9f6f"
+        "0x5e4deab9462bec720f883522d306ec306959cb3ae1ec2eaf0d55477eed01b5a4"
+      // const txHash = "0xa542508dfd209f23cb306861ea25b5c131e82dcdf75c86d874644b4c436d9f6f"
       await _getTrace.exec(txHash)
     }
     f()
@@ -201,8 +199,8 @@ function App() {
           )
         }}
         renderHover={(hover, mouse) => {
+          // TODO: fix
           return null
-          /*
           if (!mouse) {
             return null
           }
@@ -217,14 +215,13 @@ function App() {
                   left: mouse.x + 10,
                 }}
               >
-                {obj?.name ? <div>{obj?.name}</div> : null}
-                {obj?.address ? <div>{obj?.address}</div> : null}
+                {obj?.val?.name ? <div>{obj?.val?.name}</div> : null}
               </div>
             )
           }
           if (hover.arrows && hover.arrows.size > 0) {
-            const arrs = [...hover.arrows.entries()]
-            arrs.sort((a, b) => a[1] - b[1])
+            const arrs = [...hover.arrows.values()]
+            arrs.sort((a, b) => a - b)
 
             return (
               <div
@@ -235,24 +232,18 @@ function App() {
                   left: mouse.x + 10,
                 }}
               >
-                {arrs.map(([k, v]) => {
-                  const { src, dst } = splitArrowKey(k)
-                  const s = objs.get(src)
-                  const d = objs.get(dst)
+                {arrs.map((i) => {
+                  const arr = arrows[i]
+                  const s = objs.get(arr.src)
+                  const d = objs.get(arr.dst)
                   return (
-                    <div className={styles.call} key={k}>
-                      <div className={styles.index}>{v}</div>
-                      <div className={styles.obj}>
-                        {s?.name || s?.address || "?"}
-                      </div>
+                    <div className={styles.call} key={i}>
+                      <div className={styles.index}>{i}</div>
+                      <div className={styles.obj}>{s?.val?.name || "?"}</div>
                       <div className={styles.arrow}>{"->"}</div>
-                      <div className={styles.obj}>
-                        {d?.name || d?.address || "?"}
-                      </div>
+                      <div className={styles.obj}>{d?.val?.name || "?"}</div>
                       <div>.</div>
-                      <div className={styles.func}>
-                        {arrows[v]?.function?.name || "?"}
-                      </div>
+                      <div className={styles.func}>{arr?.val?.name || "?"}</div>
                     </div>
                   )
                 })}
@@ -260,7 +251,6 @@ function App() {
             )
           }
           return null
-          */
         }}
       />
     </div>

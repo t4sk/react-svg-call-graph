@@ -219,5 +219,6 @@ export function map(groups: Groups, calls: Call[], screen: Screen): Layout {
     },
     nodes,
     arrows,
+    rev,
   }
 }

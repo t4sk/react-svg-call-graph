@@ -10,6 +10,10 @@ export type Call = {
 // Group id => ids
 export type Groups = Map<Id, Set<Id>>
 
+// Reverse look up
+// Id => group id
+export type Rev = Map<Id, Id>
+
 // Directed graph
 export type Neighbors = Map<Id, Set<Id>>
 
@@ -74,13 +78,14 @@ export type Layout = {
   rect: Rect
   nodes: Map<Id, Node>
   arrows: Arrow[]
+  rev: Rev
 }
 
 // UI
 export type Hover = {
   node: Id | null
-  // TODO: replace string with Id?
-  arrows: Map<string, Id> | null
+  // Set of Arrow.i
+  arrows: Set<number> | null
 }
 
 export type Tracer = {
