@@ -1,9 +1,6 @@
 import { Point } from "./types"
 
-export function lerp(a: number, b: number, t: number): number {
-  return a * (1 - t) + t * b
-}
-
+// Linear equation y = dx / dx * x + y0
 export function lin(dy: number, dx: number, x: number, y0: number): number {
   return (dy / dx) * x + y0
 }
@@ -14,8 +11,9 @@ export function dist(p0: Point, p1: Point): number {
   return Math.sqrt(dx * dx + dy * dy)
 }
 
+// Calculates total distance between points
 export function len(points: Point[]): [number, number[]] {
-  const segs = []
+  const segs: number[] = []
   let l = 0
   for (let i = 0; i < points.length - 1; i++) {
     const p0 = points[i]
@@ -26,6 +24,11 @@ export function len(points: Point[]): [number, number[]] {
   }
 
   return [l, segs]
+}
+
+// Linear interpolation
+export function lerp(a: number, b: number, t: number): number {
+  return a * (1 - t) + t * b
 }
 
 // Polyline interpolation
@@ -55,7 +58,7 @@ export function perp(points: Point[], t: number): Point {
   }
 }
 
-// Samples from 0 to n
+// Samples f(i) for i in 0 to n
 export function sample<A>(n: number, f: (i: number) => A): A[] {
   const data = []
   for (let i = 0; i <= n; i++) {

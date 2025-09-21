@@ -1,5 +1,7 @@
 import { Call, Neighbors, Graph } from "./types"
+import { assert } from "./utils"
 
+// Build adjaceny map
 export function build(calls: Call[]): Graph {
   // dst => sources
   const incoming: Neighbors = new Map()
@@ -9,24 +11,21 @@ export function build(calls: Call[]): Graph {
   for (let i = 0; i < calls.length; i++) {
     const c = calls[i]
 
+    if (!outgoing.has(c.src)) {
+      outgoing.set(c.src, new Set())
+    }
+    outgoing.get(c.src)?.add(c.dst)
+
     if (!incoming.has(c.dst)) {
       incoming.set(c.dst, new Set())
     }
-
-    if (c.src) {
-      incoming.get(c.dst)?.add(c.src)
-
-      if (!outgoing.has(c.src)) {
-        outgoing.set(c.src, new Set())
-      }
-
-      outgoing.get(c.src)?.add(c.dst)
-    }
+    incoming.get(c.dst)?.add(c.src)
   }
 
   return { incoming, outgoing }
 }
 
+// Breadth first search
 export function bfs<A>(
   start: A,
   get: (v: A) => A[] | null,
@@ -62,6 +61,7 @@ export function bfs<A>(
   }
 }
 
+// Depth first search
 export function dfs<A>(
   a: A,
   get: (a: A) => A[],
@@ -83,4 +83,37 @@ export function dfs<A>(
       }
     }
   }
+}
+
+// Binary search
+export function search<A>(
+  arr: A[],
+  get: (a: A) => number,
+  x: number,
+): number | null {
+  if (arr.length == 0) {
+    return null
+  }
+
+  if (arr.length == 1) {
+    return 0
+  }
+
+  let low = 0
+  let high = arr.length - 1
+
+  assert(get(arr[low]) < get(arr[high]), "data not sorted")
+
+  // Binary search
+  while (low < high) {
+    let mid = ((low + high) / 2) >> 0
+
+    if (get(arr[mid]) > x) {
+      high = mid
+    } else {
+      low = mid + 1
+    }
+  }
+
+  return low
 }
