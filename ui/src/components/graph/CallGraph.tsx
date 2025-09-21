@@ -133,20 +133,29 @@ export const CallGraph: React.FC<{
 
       for (let i = 0; i < layout.arrows.length; i++) {
         const a = layout.arrows[i]
+        let yPadd = -arrowYPadd
+        if (Svg.getArrowType(a.start, a.end) == "callback") {
+          const g = layout.rev.get(a.e)
+          if (g != undefined) {
+            const group = layout.nodes.get(g)
+            if (group) {
+              yPadd -= a.end.y - group.rect.y
+            }
+          }
+        }
         const box = Svg.box(
           Svg.poly(
             Svg.getArrowType(a.start, a.end),
             a.start,
             a.end,
             arrowXPadd,
-            -arrowYPadd,
+            yPadd,
           ),
           BOX_X_PADD,
           BOX_Y_PADD,
         )
         if (screen.isInside(mouseSvgXY, box)) {
-          // TODO: cache?
-          const points = sample(a, arrowXPadd, -arrowYPadd)
+          const points = sample(a, arrowXPadd, yPadd)
           for (let i = 0; i < points.length; i++) {
             if (math.dist(points[i], mouseSvgXY) < R) {
               hover.arrows.add(a.i)
@@ -183,19 +192,25 @@ export const CallGraph: React.FC<{
           yPadd -= a.end.y - group.rect.y
         }
       }
+      // const points = sample(a, arrowXPadd, yPadd)
       return (
-        <SvgCallBackArrow
-          x0={a.start.x}
-          y0={a.start.y}
-          x1={a.end.x}
-          y1={a.end.y}
-          xPadd={arrowXPadd}
-          yPadd={yPadd}
-          type={type}
-          stroke={style?.stroke || DEFAULT_STROKE}
-          text={renderArrowText(a)}
-          textYGap={TEXT_GAP}
-        />
+        <>
+          {/*points.map((p) => (
+            <SvgDot x={p.x} y={p.y} radius={10} fill="rgba(255, 0, 0, 0.5)" />
+          ))*/}
+          <SvgCallBackArrow
+            x0={a.start.x}
+            y0={a.start.y}
+            x1={a.end.x}
+            y1={a.end.y}
+            xPadd={arrowXPadd}
+            yPadd={yPadd}
+            type={type}
+            stroke={style?.stroke || DEFAULT_STROKE}
+            text={renderArrowText(a)}
+            textYGap={TEXT_GAP}
+          />
+        </>
       )
     }
     return (
