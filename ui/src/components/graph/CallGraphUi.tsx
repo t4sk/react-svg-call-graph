@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react"
-import { Groups, Call, Point, Node, Arrow, Hover, Tracer } from "./lib/types"
+import { Groups, Call, Point, Node, Arrow } from "./lib/types"
+import { Hover, Tracer } from "./types"
 import styles from "./CallGraphUi.module.css"
 import { CallGraph } from "./CallGraph"
 import { GraphController } from "./GraphController"

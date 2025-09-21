@@ -9,7 +9,8 @@ import {
   State as TracerState,
 } from "./components/tracer/TracerContext"
 import { CallGraphUi } from "./components/graph/CallGraphUi"
-import { Id, Graph, Node, Arrow, Hover } from "./components/graph/lib/types"
+import { Id, Graph, Node, Arrow } from "./components/graph/lib/types"
+import { Hover } from "./components/graph/types"
 import Tracer from "./components/tracer"
 import Evm from "./components/ctx/evm/tracer/Evm"
 import { Fn } from "./components/tracer/types"

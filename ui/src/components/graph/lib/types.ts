@@ -24,6 +24,7 @@ export type Graph = {
   outgoing: Neighbors
 }
 
+// SVG
 export type Point = {
   x: number
   y: number
@@ -36,17 +37,6 @@ export type Rect = {
   y: number
   width: number
   height: number
-}
-
-export type Arrow = {
-  // Call index
-  i: number
-  // Starting node id
-  s: Id
-  // Ending node id
-  e: Id
-  start: Point
-  end: Point
 }
 
 export type MidPoints = {
@@ -69,6 +59,17 @@ export type Screen = {
   }
 }
 
+export type Arrow = {
+  // Call index
+  i: number
+  // Starting node id
+  s: Id
+  // Ending node id
+  e: Id
+  p0: Point
+  p1: Point
+}
+
 export type Node = {
   id: Id
   rect: Rect
@@ -79,15 +80,4 @@ export type Layout = {
   nodes: Map<Id, Node>
   arrows: Arrow[]
   rev: Rev
-}
-
-// UI
-export type Hover = {
-  node: Id | null
-  // Set of Arrow.i
-  arrows: Set<number> | null
-}
-
-export type Tracer = {
-  hover: Id | null
 }

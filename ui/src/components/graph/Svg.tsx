@@ -26,12 +26,12 @@ export function getArrowType(p0: Point, p1: Point): ArrowType {
 }
 
 export function poly(
-  type: ArrowType,
   p0: Point,
   p1: Point,
   xPadd: number = 0,
   yPadd: number = 0,
 ): Point[] {
+  const type = getArrowType(p0, p1)
   switch (type) {
     case "zigzag": {
       const mid = (p0.x + p1.x) >> 1
@@ -49,24 +49,6 @@ export function poly(
     default:
       return [p0, p1]
   }
-}
-
-export function getViewBoxX(
-  width: number,
-  mouseX: number,
-  viewBoxWidth: number,
-  viewBoxX: number,
-): number {
-  return math.lin(viewBoxWidth, width, mouseX, viewBoxX)
-}
-
-export function getViewBoxY(
-  height: number,
-  mouseY: number,
-  viewBoxHeight: number,
-  viewBoxY: number,
-): number {
-  return math.lin(viewBoxHeight, height, mouseY, viewBoxY)
 }
 
 export function box(
@@ -103,7 +85,23 @@ export function box(
   }
 }
 
-// TODO: defs component
+export function getViewBoxX(
+  width: number,
+  mouseX: number,
+  viewBoxWidth: number,
+  viewBoxX: number,
+): number {
+  return math.lin(viewBoxWidth, width, mouseX, viewBoxX)
+}
+
+export function getViewBoxY(
+  height: number,
+  mouseY: number,
+  viewBoxHeight: number,
+  viewBoxY: number,
+): number {
+  return math.lin(viewBoxHeight, height, mouseY, viewBoxY)
+}
 
 export const SvgRect: React.FC<{
   x: number

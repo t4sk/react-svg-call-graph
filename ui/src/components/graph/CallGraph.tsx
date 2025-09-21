@@ -1,5 +1,6 @@
 import React, { useMemo } from "react"
-import { Groups, Call, Point, Node, Arrow, Hover, Tracer } from "./lib/types"
+import { Groups, Call, Point, Node, Arrow } from "./lib/types"
+import { Hover, Tracer } from "./types"
 import * as screen from "./lib/screen"
 import * as Svg from "./Svg"
 import {
@@ -16,7 +17,6 @@ const TEXT_GAP = -30
 const STEP = 50
 const MIN_STEPS = 4
 // Radius around mouse
-// TODO: R >= STEP / 2?
 const R = 25
 const BOX_X_PADD = 10
 const BOX_Y_PADD = 10
@@ -25,14 +25,7 @@ const DEFAULT_FILL = "none"
 const DEFAULT_STROKE = "black"
 
 function sample(a: Arrow, xPadd: number = 0, yPadd: number = 0): Point[] {
-  // TODO: fix for callback arrow
-  const ps = Svg.poly(
-    Svg.getArrowType(a.start, a.end),
-    a.start,
-    a.end,
-    xPadd,
-    yPadd,
-  )
+  const ps = Svg.poly(a.p0, a.p1, xPadd, yPadd)
   const [len] = math.len(ps)
 
   const n = Math.max(len > STEP ? (len / STEP) | 0 : MIN_STEPS, MIN_STEPS)
@@ -134,23 +127,17 @@ export const CallGraph: React.FC<{
       for (let i = 0; i < layout.arrows.length; i++) {
         const a = layout.arrows[i]
         let yPadd = -arrowYPadd
-        if (Svg.getArrowType(a.start, a.end) == "callback") {
+        if (Svg.getArrowType(a.p0, a.p1) == "callback") {
           const g = layout.rev.get(a.e)
           if (g != undefined) {
             const group = layout.nodes.get(g)
             if (group) {
-              yPadd -= a.end.y - group.rect.y
+              yPadd -= a.p1.y - group.rect.y
             }
           }
         }
         const box = Svg.box(
-          Svg.poly(
-            Svg.getArrowType(a.start, a.end),
-            a.start,
-            a.end,
-            arrowXPadd,
-            yPadd,
-          ),
+          Svg.poly(a.p0, a.p1, arrowXPadd, yPadd),
           BOX_X_PADD,
           BOX_Y_PADD,
         )
@@ -167,14 +154,14 @@ export const CallGraph: React.FC<{
   }
 
   const renderArrow = (a: Arrow, type: string, style: { stroke?: string }) => {
-    // TODO: fix arrow text overlap
-    if (a.start.y == a.end.y) {
+    // TODO:: fix arrow text overlap
+    if (a.p0.y == a.p1.y) {
       return (
         <SvgArrow
-          x0={a.start.x}
-          y0={a.start.y}
-          x1={a.end.x}
-          y1={a.end.y}
+          x0={a.p0.x}
+          y0={a.p0.y}
+          x1={a.p1.x}
+          y1={a.p1.y}
           type={type}
           stroke={style?.stroke || DEFAULT_STROKE}
           text={renderArrowText(a)}
@@ -182,43 +169,43 @@ export const CallGraph: React.FC<{
         />
       )
     }
-    if (a.end.x <= a.start.x) {
+    if (a.p1.x <= a.p0.x) {
       // Call back arrow goes above the position of the destination group
       const g = layout.rev.get(a.e)
       let yPadd = -arrowYPadd
       if (g != undefined) {
         const group = layout.nodes.get(g)
         if (group) {
-          yPadd -= a.end.y - group.rect.y
+          yPadd -= a.p1.y - group.rect.y
         }
       }
-      // const points = sample(a, arrowXPadd, yPadd)
+      /* Use for debugging
+      const points = sample(a, arrowXPadd, yPadd)
+      {points.map((p) => (
+        <SvgDot x={p.x} y={p.y} radius={10} fill="rgba(255, 0, 0, 0.5)" />
+      ))}
+      */
       return (
-        <>
-          {/*points.map((p) => (
-            <SvgDot x={p.x} y={p.y} radius={10} fill="rgba(255, 0, 0, 0.5)" />
-          ))*/}
-          <SvgCallBackArrow
-            x0={a.start.x}
-            y0={a.start.y}
-            x1={a.end.x}
-            y1={a.end.y}
-            xPadd={arrowXPadd}
-            yPadd={yPadd}
-            type={type}
-            stroke={style?.stroke || DEFAULT_STROKE}
-            text={renderArrowText(a)}
-            textYGap={TEXT_GAP}
-          />
-        </>
+        <SvgCallBackArrow
+          x0={a.p0.x}
+          y0={a.p0.y}
+          x1={a.p1.x}
+          y1={a.p1.y}
+          xPadd={arrowXPadd}
+          yPadd={yPadd}
+          type={type}
+          stroke={style?.stroke || DEFAULT_STROKE}
+          text={renderArrowText(a)}
+          textYGap={TEXT_GAP}
+        />
       )
     }
     return (
       <SvgZigZagArrow
-        x0={a.start.x}
-        y0={a.start.y}
-        x1={a.end.x}
-        y1={a.end.y}
+        x0={a.p0.x}
+        y0={a.p0.y}
+        x1={a.p1.x}
+        y1={a.p1.y}
         type={type}
         stroke={style?.stroke || DEFAULT_STROKE}
         text={renderArrowText(a)}
@@ -283,7 +270,7 @@ export const CallGraph: React.FC<{
         })}
 
         {layout.arrows.map((a, i) => {
-          // Render arrows that are hovered second
+          // Render arrows that are hovered last
           if (
             a.s != hover.node &&
             a.e != hover.node &&

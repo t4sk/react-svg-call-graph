@@ -2,6 +2,7 @@ import {
   Id,
   Call,
   Groups,
+  Rev,
   Point,
   Rect,
   MidPoints,
@@ -60,9 +61,11 @@ function arrow(nodes: Map<Id, Node>, i: number, start: Id, end: Id): Arrow {
   let p1 = { x: 0, y: 0 }
 
   if (m0.center.x < m1.center.x) {
+    // Call forward
     p0 = m0.right
     p1 = m1.left
   } else {
+    // Call back
     p0 = m0.right
     p1 = m1.top
   }
@@ -71,15 +74,15 @@ function arrow(nodes: Map<Id, Node>, i: number, start: Id, end: Id): Arrow {
     i,
     s: s.id,
     e: e.id,
-    start: p0,
-    end: p1,
+    p0,
+    p1,
   }
 }
 
 export function map(groups: Groups, calls: Call[], screen: Screen): Layout {
   const nodes: Map<Id, Node> = new Map()
   // Reverse look up call.src or call.dst to group id
-  const rev: Map<Id, Id> = new Map()
+  const rev: Rev = new Map()
 
   // Calculate group width and height
   for (const [g, fs] of groups) {
