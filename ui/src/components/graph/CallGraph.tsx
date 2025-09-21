@@ -25,6 +25,7 @@ const DEFAULT_FILL = "none"
 const DEFAULT_STROKE = "black"
 
 function sample(a: Arrow, xPadd: number = 0, yPadd: number = 0): Point[] {
+  // TODO: fix for callback arrow
   const ps = Svg.poly(
     Svg.getArrowType(a.start, a.end),
     a.start,

@@ -60,6 +60,7 @@ function getArrowType(
   return ""
 }
 
+// TODO: change text color on hover
 function getNodeFillColor(
   objs: Map<Id, Obj<ObjType, Account | Fn>>,
   hover: Hover,
@@ -76,13 +77,20 @@ function getNodeFillColor(
     return "transparent"
   }
   // Hover or incoming or outgoing node
-  if (
-    hover.node != null &&
-    (hover.node == node.id ||
+  if (hover.node != null) {
+    if (hover.node == node.id) {
+      return "var(--node-hover-color)"
+    }
+    if (
       graph.incoming.get(hover.node)?.has(node.id) ||
-      graph.outgoing.get(hover.node)?.has(node.id))
-  ) {
-    return "var(--node-hover-color)"
+      graph.outgoing.get(hover.node)?.has(node.id)
+    ) {
+      return "var(--node-hover-color)"
+    }
+    if (obj?.type == "acc") {
+      return "var(--node-dim-color)"
+    }
+    return "transparent"
   }
   // Default (no hovered node or arrow)
   if (obj?.type == "acc") {
@@ -218,41 +226,6 @@ function App() {
                 }}
               >
                 {text}
-              </div>
-            )
-          }
-          // TODO: fix hover - incorrect function calls rendered
-          if (hover.arrows && hover.arrows.size > 0) {
-            const arrs = [...hover.arrows.values()]
-            arrs.sort((a, b) => a - b)
-
-            return (
-              <div
-                className={styles.hoverArrows}
-                style={{
-                  position: "absolute",
-                  top: mouse.y + 10,
-                  left: mouse.x + 10,
-                }}
-              >
-                {arrs.map((i) => {
-                  const arr = arrows[i]
-                  if (!arr) {
-                    return null
-                  }
-                  const s = objs.get(arr.src)?.val as Fn
-                  const d = objs.get(arr.dst)?.val as Fn
-                  return (
-                    <div className={styles.call} key={i}>
-                      <div className={styles.index}>{i}</div>
-                      <div className={styles.obj}>{s?.mod || "?"}</div>
-                      <div className={styles.arrow}>{"->"}</div>
-                      <div className={styles.obj}>{d?.mod || "?"}</div>
-                      <div>.</div>
-                      <div className={styles.func}>{arr?.val?.name || "?"}</div>
-                    </div>
-                  )
-                })}
               </div>
             )
           }
