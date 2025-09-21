@@ -62,6 +62,7 @@ function getArrowType(
 }
 
 // TODO: change text color on hover
+// TODO: change node color on hover arrow
 function getNodeFillColor(
   objs: Map<Id, Obj<ObjType, Account | Fn>>,
   hover: Hover,
