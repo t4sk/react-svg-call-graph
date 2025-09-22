@@ -36,7 +36,6 @@
    --tracer-dot-color: white;
    --tracer-vm-value-color: #e863e3;
 
-   background-color: var(--bg-color);
    height: 100vh;
    width: 100vw;
    padding: 0;
@@ -80,4 +79,14 @@
    /*stroke: url(#cold-gradient)*/
    stroke-dasharray: 20 10;
    animation: flow 14s linear infinite;
+ }
+
+ body.light {
+   --bg-color: white;
+   --text-color: black;
+ }
+
+ body.dark {
+   --bg-color: black;
+   --text-color: white;
  }
