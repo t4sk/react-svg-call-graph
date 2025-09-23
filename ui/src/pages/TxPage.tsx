@@ -1,23 +1,24 @@
 import { useEffect } from "react"
+import { useParams, useSearchParams } from "react-router-dom"
 import {
   Provider as WindowSizeProvider,
   useWindowSizeContext,
-} from "./contexts/WindowSize"
+} from "../contexts/WindowSize"
 import {
   Provider as TracerProvider,
   useTracerContext,
   State as TracerState,
-} from "./components/tracer/TracerContext"
-import { CallGraphUi } from "./components/graph/CallGraphUi"
-import { Id, Graph, Node, Arrow } from "./components/graph/lib/types"
-import { Hover } from "./components/graph/types"
-import Tracer from "./components/tracer"
-import Evm from "./components/ctx/evm/tracer/Evm"
-import { Fn } from "./components/tracer/types"
-import { Account } from "./components/ctx/evm/types"
-import useAsync from "./hooks/useAsync"
-import styles from "./App.module.css"
-import { getTrace, Obj, ObjType } from "./tracer"
+} from "../components/tracer/TracerContext"
+import { CallGraphUi } from "../components/graph/CallGraphUi"
+import { Id, Graph, Node, Arrow } from "../components/graph/lib/types"
+import { Hover } from "../components/graph/types"
+import Tracer from "../components/tracer"
+import Evm from "../components/ctx/evm/tracer/Evm"
+import { Fn } from "../components/tracer/types"
+import { Account } from "../components/ctx/evm/types"
+import useAsync from "../hooks/useAsync"
+import styles from "../App.module.css"
+import { getTrace, Obj, ObjType } from "../tracer"
 
 // Padding for scroll
 const SCROLL = 20
@@ -123,7 +124,10 @@ function getArrowColor(t: ArrowType): string {
 // TODO: light theme
 // TODO: dynamic graph size
 // TODO: drag tracer height
-function App() {
+function TxPage() {
+  const { txHash } = useParams()
+  const [q] = useSearchParams()
+
   const windowSize = useWindowSizeContext()
   const tracer = useTracerContext()
 
@@ -242,7 +246,7 @@ export default () => {
   return (
     <WindowSizeProvider>
       <TracerProvider>
-        <App />
+        <TxPage />
       </TracerProvider>
     </WindowSizeProvider>
   )
