@@ -1,4 +1,5 @@
  :root {
+   /* TODO: move to body.light and dark */
    --bg-color: #121212;
    --bg-dim-color: #232329;
    --bg-dim-hover-color: #2e2d39;
