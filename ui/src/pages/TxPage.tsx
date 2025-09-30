@@ -1,9 +1,6 @@
 import { useEffect } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
-import {
-  Provider as WindowSizeProvider,
-  useWindowSizeContext,
-} from "../contexts/WindowSize"
+import { useWindowSizeContext } from "../contexts/WindowSize"
 import {
   Provider as TracerProvider,
   useTracerContext,
@@ -17,11 +14,11 @@ import Evm from "../components/ctx/evm/tracer/Evm"
 import { Fn } from "../components/tracer/types"
 import { Account } from "../components/ctx/evm/types"
 import useAsync from "../hooks/useAsync"
-import styles from "../App.module.css"
+import styles from "./TxPage.module.css"
 import { getTrace, Obj, ObjType } from "../tracer"
 
 // Padding for scroll
-const SCROLL = 20
+const SCROLL = 0
 
 // TODO: import foundry trace
 // TODO: graph - token transfers
@@ -244,10 +241,8 @@ function TxPage() {
 
 export default () => {
   return (
-    <WindowSizeProvider>
-      <TracerProvider>
-        <TxPage />
-      </TracerProvider>
-    </WindowSizeProvider>
+    <TracerProvider>
+      <TxPage />
+    </TracerProvider>
   )
 }

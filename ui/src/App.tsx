@@ -1,8 +1,17 @@
+import { useEffect } from "react"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { Provider as AppProvider, useAppContext } from "./contexts/App"
+import { Provider as WindowSizeProvider } from "./contexts/WindowSize"
 import HomePage from "./pages/HomePage"
 import TxPage from "./pages/TxPage"
 
 function App() {
+  const app = useAppContext()
+
+  useEffect(() => {
+    app.init()
+  }, [])
+
   return (
     <BrowserRouter>
       <Routes>
@@ -13,4 +22,12 @@ function App() {
   )
 }
 
-export default App
+export default () => {
+  return (
+    <WindowSizeProvider>
+      <AppProvider>
+        <App />
+      </AppProvider>
+    </WindowSizeProvider>
+  )
+}
