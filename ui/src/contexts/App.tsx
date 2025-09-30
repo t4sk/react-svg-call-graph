@@ -8,7 +8,7 @@ import React, {
 import { Mode } from "../types/app"
 
 // Local storage keys
-const KEY = "tx-call-graph"
+const KEY = "local"
 
 type LocalStorageData = {
   mode: string
@@ -112,7 +112,7 @@ export const Provider: React.FC<{ children: React.ReactNode }> = ({
   }, [])
 
   const setMode = useCallback((mode: Mode) => {
-    // NOTE: also update _document.tsx
+    // NOTE: also update index.html
     if (mode == "dark") {
       document.body.classList.remove("light")
       document.body.classList.add("dark")

@@ -81,6 +81,11 @@
    animation: flow 14s linear infinite;
  }
 
+*:focus {
+  outline: none;
+  box-shadow: none;
+}
+
  body {
    margin: 0;
    padding: 0;
@@ -89,8 +94,8 @@
  }
 
  body.light {
-   --bg-color: white;
-   --text-color: black;
+   --bg-color: black;
+   --text-color: white;
  }
 
  body.dark {
@@ -101,4 +106,6 @@
  #root {
    width: 100vw;
    height: 100vh;
+   background-color: var(--bg-color);
+   color: var(--text-color);
  }

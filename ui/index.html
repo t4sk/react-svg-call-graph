@@ -11,13 +11,12 @@
     (function () {
       var mode = "light";
       try {
-        var val = localStorage.getItem("tx-call-graph") == "dark" ? "dark" : "light";
+        var val = localStorage.getItem("local")
         if (val) {
-          mode = JSON.parse(val).mode;
+          mode = JSON.parse(val).mode == "dark" ? "dark" : "light";
         }
       } catch (err) {}
 
-      console.log("HERE", mode);
       document.body.className = mode;
     })();
     </script>

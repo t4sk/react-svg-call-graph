@@ -1,0 +1,24 @@
+.component {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.form {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.select {
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+.input {
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 240px;
+}
