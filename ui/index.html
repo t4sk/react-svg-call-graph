@@ -7,6 +7,20 @@
     <title>Vite + React + TS</title>
   </head>
   <body>
+    <script>
+    (function () {
+      var mode = "light";
+      try {
+        var val = localStorage.getItem("tx-call-graph") == "dark" ? "dark" : "light";
+        if (val) {
+          mode = JSON.parse(val).mode;
+        }
+      } catch (err) {}
+
+      console.log("HERE", mode);
+      document.body.className = mode;
+    })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -1,6 +1,5 @@
 import React, {
   useReducer,
-  useEffect,
   createContext,
   useContext,
   useMemo,
@@ -67,10 +66,6 @@ export function useAppContext() {
 }
 
 function saveToLocalStorage(state: State) {
-  if (!state.initialized) {
-    return
-  }
-
   const { mode }: LocalStorageData = state
 
   try {
@@ -81,7 +76,7 @@ function saveToLocalStorage(state: State) {
       }),
     )
   } catch (error) {
-    console.error(error)
+    console.log("Save local storage error:", error)
   }
 }
 
@@ -94,7 +89,7 @@ function getFromLocalStorage(): Partial<LocalStorageData> {
       mode: mode ?? STATE.mode,
     }
   } catch (error) {
-    console.error(error)
+    console.log("Get local storage error:", error)
   }
 
   return data
