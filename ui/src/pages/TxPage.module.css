@@ -6,6 +6,7 @@
 }
 .tracer {
   overflow: auto;
+  height: 100%;
 }
 /* Graph */
 .accNode {

@@ -8,3 +8,13 @@ export function zip<A, B, C>(a: A[], b: B[], f: (a: A, b: B) => C): C[] {
 
   return c
 }
+
+export function bound(v: number, min: number, max: number): number {
+  return Math.min(Math.max(v, min), max)
+}
+
+export function assert(b: boolean, msg: string) {
+  if (!b) {
+    throw new Error(msg)
+  }
+}
