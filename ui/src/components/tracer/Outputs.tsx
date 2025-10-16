@@ -1,9 +1,9 @@
 import React from "react"
-import styles from "./Inputs.module.css"
+import CopyText from "../CopyText"
 import { Output } from "./types"
+import styles from "./Inputs.module.css"
 
 const Outputs: React.FC<{ outputs: Output[] }> = ({ outputs }) => {
-  // TODO: highight address type
   const len = outputs.length
   return (
     <div className={styles.component}>
@@ -15,7 +15,9 @@ const Outputs: React.FC<{ outputs: Output[] }> = ({ outputs }) => {
               <span className={styles.eq}>=</span>
             </>
           ) : null}
-          <span className={styles.value}>{output.value.toString()}</span>
+          <span className={styles.value}>
+            <CopyText text={output.value.toString()} />
+          </span>
           {i < len - 1 ? <span className={styles.comma}>,</span> : null}
         </div>
       ))}
