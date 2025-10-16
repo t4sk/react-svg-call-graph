@@ -7,6 +7,19 @@
 .tracer {
   overflow: auto;
   height: 100%;
+  padding: 10px 14px 10px 14px;
+}
+.tx {
+  display: flex;
+  flex-direction: row;
+}
+.txHashLabel {
+  padding-right: 10px;
+}
+.txHash {
+  display: flex;
+  flex-direction: row;
+  color: var(--text-2-color);
 }
 /* Graph */
 .accNode {

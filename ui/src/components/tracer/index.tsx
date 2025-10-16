@@ -99,6 +99,7 @@ type TracerProps<V> = {
   renderCtx?: (ctx: V) => React.ReactNode
 }
 
+// TODO: hover and copy
 function Tracer<V>({ trace, renderCtx }: TracerProps<V>) {
   return (
     <div className={styles.component}>

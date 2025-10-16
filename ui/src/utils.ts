@@ -18,3 +18,14 @@ export function assert(b: boolean, msg: string) {
     throw new Error(msg)
   }
 }
+
+export function clip(s: string, max: number, half: number = 10): string {
+  if (s.length <= max) {
+    return s
+  }
+  return `${s.slice(0, half)}...${s.slice(-half)}`
+}
+
+export function fmt(addr: string): string {
+  return `${addr.slice(0, 5)}...${addr.slice(-3)}`
+}

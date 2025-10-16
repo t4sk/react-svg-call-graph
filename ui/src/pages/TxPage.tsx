@@ -13,6 +13,7 @@ import { Hover } from "../components/graph/types"
 import Tracer from "../components/tracer"
 import Evm from "../components/ctx/evm/tracer/Evm"
 import { Fn } from "../components/tracer/types"
+import CopyText from "../components/CopyText"
 import { Account } from "../components/ctx/evm/types"
 import useAsync from "../hooks/useAsync"
 import styles from "./TxPage.module.css"
@@ -120,7 +121,7 @@ function getArrowColor(t: ArrowType): string {
 // TODO: light theme
 // TODO: dynamic graph size
 function TxPage() {
-  const { txHash } = useParams()
+  const { txHash = "" } = useParams()
   const [q] = useSearchParams()
 
   const windowSize = useWindowSizeContext()
@@ -148,6 +149,12 @@ function TxPage() {
     <div className={styles.component}>
       <Splits>
         <div className={styles.tracer}>
+          <div className={styles.tx}>
+            <div className={styles.txHashLabel}>TX hash:</div>
+            <div className={styles.txHash}>
+              <CopyText text={txHash} />
+            </div>
+          </div>
           <Tracer trace={trace} renderCtx={(ctx) => <Evm ctx={ctx} />} />
         </div>
         <CallGraphUi

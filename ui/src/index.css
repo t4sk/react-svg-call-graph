@@ -99,6 +99,7 @@ body.light {
   --bg-1-color: white;
   --bg-2-color: white;
   --text-0-color: black;
+
 }
 
 body.dark {
@@ -108,6 +109,9 @@ body.dark {
   --text-0-color: white;
   --text-1-color: #f3f3f3;
   --text-2-color: #afafaf;
+  --icon-color: #afafaf;
+  --icon-hover-color: #f3f3f3;
+  --copy-text-color: #edc389 ;
 }
 
 #root {
