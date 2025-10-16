@@ -70,22 +70,6 @@ struct PostContractsRequest {
     addrs: Vec<String>,
 }
 
-// TODO: db
-// # contracts
-// chain => address => contract
-//                     - chain (index)
-//                     - address (index)
-//                     - name
-//                     - abi
-//                     - label
-// # function selectors
-// - selector (index)
-// - inputs
-// - outputs
-// # trace
-// - tx hash
-// - calls
-
 // #[debug_handler]
 async fn post_contracts(
     Extension(pool): Extension<Pool<Postgres>>,

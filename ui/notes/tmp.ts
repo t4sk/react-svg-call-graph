@@ -166,7 +166,6 @@ dfs<TxCall>(
         name: func?.name || "",
         inputs: func?.inputs || [],
         outputs: func?.outputs || [],
-        // TODO:
         ok: true,
         vm: {
           // @ts-ignore

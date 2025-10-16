@@ -1,35 +1,5 @@
 # react-svg-digraph
 
-### Memo
-
-https://app.blocksec.com/explorer/tx/eth/0x69b09bf5d3bf96cc8bb4871d5423512738dc112684aecb33ea40cc15c71ea3f6
-
-https://www.quicknode.com/docs/ethereum/debug_traceTransaction
-
-https://github.com/openchainxyz/openchain-monorepo/tree/main
-
-```
-// TODO: db
-// # contracts
-// chain => address => contract
-//                     - chain (index)
-//                     - address (index)
-//                     - name
-//                     - abi
-//                     - label
-// # function selectors
-// - selector (index)
-// - inputs
-// - outputs
-// # trace
-// - tx hash
-// - calls
-```
-
-https://www.rustfinity.com/blog/create-high-performance-rest-api-with-rust#what-is-sqlx
-
-https://github.com/koskeller/axum-postgres-template
-
 ```shell
 docker run --name rust-postgres-db \
 --rm \
@@ -52,3 +22,11 @@ sqlx migrate run
 sqlx migrate add create_table_contracts
 
 ```
+
+### Memo
+
+https://app.blocksec.com/explorer/tx/eth/0x69b09bf5d3bf96cc8bb4871d5423512738dc112684aecb33ea40cc15c71ea3f6
+
+https://www.quicknode.com/docs/ethereum/debug_traceTransaction
+
+https://github.com/openchainxyz/openchain-monorepo/tree/main
