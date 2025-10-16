@@ -20,8 +20,7 @@ import styles from "./TxPage.module.css"
 import { getTrace, Obj, ObjType } from "../tracer"
 
 // TODO: import foundry trace
-// TODO: graph - token transfers
-// TODO: graph - ETH transfer
+// TODO: graph - ETH and token transfers
 // TODO: on click graph -> pin trace
 // TODO: error handling
 
