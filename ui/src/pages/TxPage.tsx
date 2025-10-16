@@ -22,6 +22,7 @@ import { getTrace, Obj, ObjType } from "../tracer"
 // TODO: graph - token transfers
 // TODO: graph - ETH transfer
 // TODO: on click graph -> pin trace
+// TODO: error handling
 
 type ArrowType = "in" | "out" | "hover" | "dim" | "pin" | "tracer" | ""
 

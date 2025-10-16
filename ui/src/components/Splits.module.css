@@ -6,13 +6,10 @@
 .split {
   width: 8px;
   cursor: row-resize;
-  background-color: transparent;
+  background-color: var(--bg-1-color);
   transition: background-color 0.2s;
   touch-action: none;
 }
 .split:hover {
-  /*
-  background-color: var(--hover-split-bg-color);
-  */
-  background-color: red;
+  background-color: var(--bg-2-color);
 }

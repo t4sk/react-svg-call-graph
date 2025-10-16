@@ -47,6 +47,7 @@ export function HomePage() {
           value={inputs.txHash}
           onChange={(e) => setTxHash(e.target.value)}
           placeholder="tx hash"
+          autoFocus
         />
       </form>
     </div>
