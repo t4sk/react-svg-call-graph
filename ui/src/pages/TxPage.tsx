@@ -160,7 +160,7 @@ function TxPage() {
           groups={groups}
           calls={calls}
           tracer={tracer.state}
-          backgroundColor="var(--bg-color)"
+          backgroundColor="var(--bg-dark-color)"
           width={windowSize.width}
           height={
             windowSize.height - (windowSize.height >> 2) - (SPLIT_HEIGHT >> 1)
