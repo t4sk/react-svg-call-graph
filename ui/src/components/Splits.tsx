@@ -13,7 +13,12 @@ type DragRef = {
 }
 
 const Splits: React.FC<{
-  children: React.ReactNode[]
+  children: ((rect: {
+    top: number
+    left: number
+    width: number
+    height: number
+  }) => React.ReactNode)[]
 }> = ({ children }) => {
   const windowSize = useWindowSizeContext()
   const splits = useSplits()
@@ -76,7 +81,12 @@ const Splits: React.FC<{
           height: splits.state.split - (SPLIT_HEIGHT >> 1),
         }}
       >
-        {children[0]}
+        {children[0]({
+          top: splits.state.root.top,
+          left: splits.state.root.left,
+          width: splits.state.root.width,
+          height: splits.state.split - (SPLIT_HEIGHT >> 1),
+        })}
       </div>
       <div
         className={styles.split}
@@ -98,7 +108,12 @@ const Splits: React.FC<{
           height: splits.state.root.height - splits.state.split,
         }}
       >
-        {children[1]}
+        {children[1]({
+          top: splits.state.root.top + splits.state.split + (SPLIT_HEIGHT >> 1),
+          left: splits.state.root.left,
+          width: splits.state.root.width,
+          height: splits.state.root.height - splits.state.split,
+        })}
       </div>
     </div>
   )

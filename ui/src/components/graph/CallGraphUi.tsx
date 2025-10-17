@@ -76,6 +76,14 @@ export const CallGraphUi: React.FC<{
     zoom(4)
   }, [])
 
+  useEffect(() => {
+    setViewBox({
+      ...viewBox,
+      width,
+      height,
+    })
+  }, [width, height])
+
   const zoom = (next: number) => {
     // Zoom in -> view box decrease width and height
     // Zoom out -> view box increase width and height
