@@ -73,10 +73,6 @@ export const CallGraphUi: React.FC<{
   const [zoomIndex, setZoomIndex] = useState<number>(9)
 
   useEffect(() => {
-    zoom(4)
-  }, [])
-
-  useEffect(() => {
     setViewBox({
       ...viewBox,
       width,
@@ -85,9 +81,12 @@ export const CallGraphUi: React.FC<{
   }, [width, height])
 
   const zoom = (next: number) => {
+    if (next == zoomIndex) {
+      return
+    }
     // Zoom in -> view box decrease width and height
     // Zoom out -> view box increase width and height
-    const up = next >= zoomIndex
+    const up = next > zoomIndex
     const nextZoomIndex = up
       ? Math.min(next, MAX_ZOOM_INDEX)
       : Math.max(next, MIN_ZOOM_INDEX)
