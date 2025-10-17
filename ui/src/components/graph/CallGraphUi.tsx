@@ -172,7 +172,6 @@ export const CallGraphUi: React.FC<{
 
   const zoomPercentage = Math.floor((width / viewBox.width) * 100)
 
-  // TODO: fix - sticky zoom control on drag splitter
   return (
     <div
       style={{
