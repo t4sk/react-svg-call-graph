@@ -2,6 +2,7 @@ import React from "react"
 import styles from "./index.module.css"
 import { Trace } from "./types"
 import { useTracerContext } from "./TracerContext"
+import DropDown from "./DropDown"
 import Inputs from "./Inputs"
 import Outputs from "./Outputs"
 
@@ -72,7 +73,9 @@ function Fn<V>({ trace, renderCtx }: FnProps<V>) {
             hasChildren={trace.calls.length > 0}
             onClick={onClickFold}
           />
-          <div className={styles.obj}>{trace.fn.mod}</div>
+          <div className={styles.obj}>
+            <DropDown label={trace.fn.mod} />
+          </div>
           <div className={styles.dot}>.</div>
           <div className={styles.funcName}>{trace.fn.name}</div>
           {renderCtx ? renderCtx(trace.ctx) : null}
