@@ -113,6 +113,7 @@ body.dark {
   --icon-color: #afafaf;
   --icon-hover-color: #f3f3f3;
   --copy-text-color: #edc389 ;
+  --border-color: #414141;
 }
 
 #root {

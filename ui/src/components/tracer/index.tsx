@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import styles from "./index.module.css"
 import { Trace } from "./types"
 import { useTracerContext } from "./TracerContext"
@@ -29,9 +29,11 @@ const Fold: React.FC<{
 type FnProps<V> = {
   trace: Trace<V>
   renderCtx?: (ctx: V) => React.ReactNode
+  highlights: { [key: string]: boolean }
+  setHighlight: (key: string, on: boolean) => void
 }
 
-function Fn<V>({ trace, renderCtx }: FnProps<V>) {
+function Fn<V>({ trace, renderCtx, highlights, setHighlight }: FnProps<V>) {
   const { state, fold, setHover, pin } = useTracerContext()
 
   const onClick = () => {
@@ -74,7 +76,14 @@ function Fn<V>({ trace, renderCtx }: FnProps<V>) {
             onClick={onClickFold}
           />
           <div className={styles.obj}>
-            <DropDown label={trace.fn.mod} />
+            <DropDown
+              label={trace.fn.mod}
+              highlight={highlights[trace.fn.mod]}
+              onMouseEnter={() => setHighlight(trace.fn.mod, true)}
+              onMouseLeave={() => setHighlight(trace.fn.mod, false)}
+            >
+              TODO
+            </DropDown>
           </div>
           <div className={styles.dot}>.</div>
           <div className={styles.funcName}>{trace.fn.name}</div>
@@ -92,7 +101,16 @@ function Fn<V>({ trace, renderCtx }: FnProps<V>) {
           ) : null}
         </div>
       </div>
-      {show ? trace.calls.map((t) => <Fn key={t.i} trace={t} />) : null}
+      {show
+        ? trace.calls.map((t) => (
+            <Fn
+              key={t.i}
+              trace={t}
+              highlights={highlights}
+              setHighlight={setHighlight}
+            />
+          ))
+        : null}
     </div>
   )
 }
@@ -105,9 +123,24 @@ type TracerProps<V> = {
 // TODO: hover and copy contract address
 // TODO: hover and copy func selector, etc
 function Tracer<V>({ trace, renderCtx }: TracerProps<V>) {
+  // Highlight state of modules and functions
+  const [highlights, setHighlights] = useState<{ [key: string]: boolean }>({})
+
+  const setHighlight = (key: string, on: boolean) => {
+    setHighlights((state) => ({
+      ...state,
+      [key]: on,
+    }))
+  }
+
   return (
     <div className={styles.component}>
-      <Fn trace={trace} renderCtx={renderCtx} />
+      <Fn
+        trace={trace}
+        renderCtx={renderCtx}
+        highlights={highlights}
+        setHighlight={setHighlight}
+      />
     </div>
   )
 }

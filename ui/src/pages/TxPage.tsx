@@ -139,7 +139,7 @@ function TxPage() {
   }, [txHash])
 
   if (!windowSize || !_getTrace.data) {
-    return null
+    return <div>loading...</div>
   }
 
   const { trace, graph, calls, groups, objs, arrows } = _getTrace.data

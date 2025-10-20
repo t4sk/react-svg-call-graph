@@ -12,6 +12,7 @@
 .tx {
   display: flex;
   flex-direction: row;
+  margin: 10px 0 10px 0;
 }
 .txHashLabel {
   padding-right: 10px;
