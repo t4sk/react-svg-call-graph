@@ -40,6 +40,7 @@ export async function getEtherscanContract(
   return { abi: parse(abi), name }
 }
 
+// TODO: remove chain_id, get chain id from chain
 export async function getContracts(params: {
   chain: string
   chain_id: number

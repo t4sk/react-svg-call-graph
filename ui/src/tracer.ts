@@ -221,7 +221,8 @@ export function build(
   }
 }
 
-export async function getTrace(txHash: string) {
+export async function getTrace(params: { txHash: string; chain: string }) {
+  const { txHash, chain } = params
   const t = await api.getTxTrace(txHash)
 
   const txCalls: [number, TxCall][] = []
@@ -241,7 +242,7 @@ export async function getTrace(txHash: string) {
 
   const contracts: ContractInfo[] = await api.getContracts({
     // TODO: chain params from input
-    chain: "eth-mainnet",
+    chain,
     chain_id: 1,
     addrs: [...addrs.values()],
   })

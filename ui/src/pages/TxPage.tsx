@@ -120,10 +120,10 @@ function getArrowColor(t: ArrowType): string {
 }
 
 // TODO: light theme
-// TODO: dynamic graph size
 function TxPage() {
   const { txHash = "" } = useParams()
   const [q] = useSearchParams()
+  const chain = q.get("chain")
 
   const windowSize = useWindowSizeContext()
   const tracer = useTracerContext()
@@ -131,14 +131,14 @@ function TxPage() {
   const _getTrace = useAsync(getTrace)
 
   useEffect(() => {
-    if (txHash) {
+    if (txHash && chain) {
       const f = async () => {
         // const txHash = "0xa542508dfd209f23cb306861ea25b5c131e82dcdf75c86d874644b4c436d9f6f"
-        await _getTrace.exec(txHash)
+        await _getTrace.exec({ txHash, chain })
       }
       f()
     }
-  }, [txHash])
+  }, [txHash, chain])
 
   if (!windowSize || !_getTrace.data) {
     return <div>loading...</div>
