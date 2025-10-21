@@ -29,11 +29,12 @@ const Fold: React.FC<{
 type FnProps<V> = {
   trace: Trace<V>
   renderCtx?: (ctx: V) => React.ReactNode
+  renderModDropDown: (ctx: V) => React.ReactNode
   highlights: { [key: string]: boolean }
   setHighlight: (key: string, on: boolean) => void
 }
 
-function Fn<V>({ trace, renderCtx, highlights, setHighlight }: FnProps<V>) {
+function Fn<V>({ trace, renderCtx, highlights, setHighlight, renderModDropDown }: FnProps<V>) {
   const { state, fold, setHover, pin } = useTracerContext()
 
   const onClick = () => {
@@ -82,7 +83,7 @@ function Fn<V>({ trace, renderCtx, highlights, setHighlight }: FnProps<V>) {
               onMouseEnter={() => setHighlight(trace.fn.mod, true)}
               onMouseLeave={() => setHighlight(trace.fn.mod, false)}
             >
-              TODO
+            {renderModDropDown(trace.ctx)}
             </DropDown>
           </div>
           <div className={styles.dot}>.</div>
@@ -108,6 +109,8 @@ function Fn<V>({ trace, renderCtx, highlights, setHighlight }: FnProps<V>) {
               trace={t}
               highlights={highlights}
               setHighlight={setHighlight}
+              renderCtx={renderCtx}
+              renderModDropDown={renderModDropDown}
             />
           ))
         : null}
@@ -118,11 +121,12 @@ function Fn<V>({ trace, renderCtx, highlights, setHighlight }: FnProps<V>) {
 type TracerProps<V> = {
   trace: Trace<V>
   renderCtx?: (ctx: V) => React.ReactNode
+  renderModDropDown: (ctx: V) => React.ReactNode
 }
 
 // TODO: hover and copy contract address
 // TODO: hover and copy func selector, etc
-function Tracer<V>({ trace, renderCtx }: TracerProps<V>) {
+function Tracer<V>({ trace, renderCtx, renderModDropDown }: TracerProps<V>) {
   // Highlight state of modules and functions
   const [highlights, setHighlights] = useState<{ [key: string]: boolean }>({})
 
@@ -138,6 +142,7 @@ function Tracer<V>({ trace, renderCtx }: TracerProps<V>) {
       <Fn
         trace={trace}
         renderCtx={renderCtx}
+        renderModDropDown={renderModDropDown}
         highlights={highlights}
         setHighlight={setHighlight}
       />
