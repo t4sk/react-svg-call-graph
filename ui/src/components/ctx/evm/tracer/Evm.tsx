@@ -1,6 +1,7 @@
 import React from "react"
 import styles from "./Evm.module.css"
 
+// TODO: CSS for dark and light mode
 const Evm: React.FC<{ ctx: { value?: bigint } }> = ({ ctx }) => {
   if (!ctx.value) {
     return null

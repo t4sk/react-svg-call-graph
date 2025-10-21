@@ -13,6 +13,7 @@ import { Hover } from "../components/graph/types"
 import Tracer from "../components/tracer"
 import Evm from "../components/ctx/evm/tracer/Evm"
 import ContractDropDown from "../components/ctx/evm/tracer/ContractDropDown"
+import FnDropDown from "../components/ctx/evm/tracer/FnDropDown"
 import { Fn } from "../components/tracer/types"
 import CopyText from "../components/CopyText"
 import { Account } from "../components/ctx/evm/types"
@@ -156,7 +157,12 @@ function TxPage() {
                 <CopyText text={txHash} />
               </div>
             </div>
-            <Tracer trace={trace} renderCtx={(ctx) => <Evm ctx={ctx} />} renderModDropDown={(ctx) => <ContractDropDown ctx={ctx} />} />
+            <Tracer
+              trace={trace}
+              renderCallCtx={(ctx) => <Evm ctx={ctx} />}
+              renderModDropDown={(ctx) => <ContractDropDown ctx={ctx} />}
+              renderFnDropDown={(ctx) => <FnDropDown ctx={ctx} />}
+            />
           </div>
         )}
         {(rect) => (

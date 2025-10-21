@@ -28,13 +28,21 @@ const Fold: React.FC<{
 
 type FnProps<V> = {
   trace: Trace<V>
-  renderCtx?: (ctx: V) => React.ReactNode
-  renderModDropDown: (ctx: V) => React.ReactNode
+  renderCallCtx?: (ctx: V) => React.ReactNode
+  renderModDropDown?: (ctx: V) => React.ReactNode
+  renderFnDropDown?: (ctx: V) => React.ReactNode
   highlights: { [key: string]: boolean }
   setHighlight: (key: string, on: boolean) => void
 }
 
-function Fn<V>({ trace, renderCtx, highlights, setHighlight, renderModDropDown }: FnProps<V>) {
+function Fn<V>({
+  trace,
+  renderCallCtx,
+  renderModDropDown,
+  renderFnDropDown,
+  highlights,
+  setHighlight,
+}: FnProps<V>) {
   const { state, fold, setHover, pin } = useTracerContext()
 
   const onClick = () => {
@@ -70,25 +78,42 @@ function Fn<V>({ trace, renderCtx, highlights, setHighlight, renderModDropDown }
           )}
         </div>
         <Padd depth={trace.depth} />
-        <div className={styles.func}>
+        <div className={styles.call}>
           <Fold
             show={show}
             hasChildren={trace.calls.length > 0}
             onClick={onClickFold}
           />
           <div className={styles.obj}>
-            <DropDown
-              label={trace.fn.mod}
-              highlight={highlights[trace.fn.mod]}
-              onMouseEnter={() => setHighlight(trace.fn.mod, true)}
-              onMouseLeave={() => setHighlight(trace.fn.mod, false)}
-            >
-            {renderModDropDown(trace.ctx)}
-            </DropDown>
+            {renderModDropDown ? (
+              <DropDown
+                label={trace.fn.mod}
+                highlight={highlights[trace.fn.mod]}
+                onMouseEnter={() => setHighlight(trace.fn.mod, true)}
+                onMouseLeave={() => setHighlight(trace.fn.mod, false)}
+              >
+                {renderModDropDown(trace.ctx)}
+              </DropDown>
+            ) : (
+              trace.fn.mod
+            )}
           </div>
           <div className={styles.dot}>.</div>
-          <div className={styles.funcName}>{trace.fn.name}</div>
-          {renderCtx ? renderCtx(trace.ctx) : null}
+          <div className={styles.funcName}>
+            {renderFnDropDown ? (
+              <DropDown
+                label={trace.fn.name}
+                highlight={highlights[trace.fn.name]}
+                onMouseEnter={() => setHighlight(trace.fn.name, true)}
+                onMouseLeave={() => setHighlight(trace.fn.name, false)}
+              >
+                {renderFnDropDown(trace.ctx)}
+              </DropDown>
+            ) : (
+              trace.fn.name
+            )}
+          </div>
+          {renderCallCtx ? renderCallCtx(trace.ctx) : null}
           <div>(</div>
           <Inputs inputs={trace.inputs} />
           <div>)</div>
@@ -107,10 +132,11 @@ function Fn<V>({ trace, renderCtx, highlights, setHighlight, renderModDropDown }
             <Fn
               key={t.i}
               trace={t}
+              renderCallCtx={renderCallCtx}
+              renderModDropDown={renderModDropDown}
+              renderFnDropDown={renderFnDropDown}
               highlights={highlights}
               setHighlight={setHighlight}
-              renderCtx={renderCtx}
-              renderModDropDown={renderModDropDown}
             />
           ))
         : null}
@@ -120,13 +146,18 @@ function Fn<V>({ trace, renderCtx, highlights, setHighlight, renderModDropDown }
 
 type TracerProps<V> = {
   trace: Trace<V>
-  renderCtx?: (ctx: V) => React.ReactNode
-  renderModDropDown: (ctx: V) => React.ReactNode
+  renderCallCtx?: (ctx: V) => React.ReactNode
+  renderModDropDown?: (ctx: V) => React.ReactNode
+  renderFnDropDown?: (ctx: V) => React.ReactNode
 }
 
-// TODO: hover and copy contract address
 // TODO: hover and copy func selector, etc
-function Tracer<V>({ trace, renderCtx, renderModDropDown }: TracerProps<V>) {
+function Tracer<V>({
+  trace,
+  renderCallCtx,
+  renderModDropDown,
+  renderFnDropDown,
+}: TracerProps<V>) {
   // Highlight state of modules and functions
   const [highlights, setHighlights] = useState<{ [key: string]: boolean }>({})
 
@@ -141,8 +172,9 @@ function Tracer<V>({ trace, renderCtx, renderModDropDown }: TracerProps<V>) {
     <div className={styles.component}>
       <Fn
         trace={trace}
-        renderCtx={renderCtx}
+        renderCallCtx={renderCallCtx}
         renderModDropDown={renderModDropDown}
+        renderFnDropDown={renderFnDropDown}
         highlights={highlights}
         setHighlight={setHighlight}
       />

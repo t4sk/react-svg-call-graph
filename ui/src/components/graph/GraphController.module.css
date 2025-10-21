@@ -24,7 +24,7 @@
   padding: 10px;
   box-shadow: none;
   border: none;
-  border-radius: .5rem;
+  border-radius: 0.5rem;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   color: var(--text-color);
@@ -44,7 +44,7 @@
   padding: 10px;
   box-shadow: none;
   border: none;
-  border-radius: .5rem;
+  border-radius: 0.5rem;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   color: var(--text-color);

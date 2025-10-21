@@ -3,10 +3,10 @@
   --bg-color: #212121;
   --bg-dim-color: #232329;
   --bg-dim-hover-color: #2e2d39;
-  --text-color: #E0E0E0;
+  --text-color: #e0e0e0;
   --text-hover-color: white;
-  --secondary-text-color: #A0A0A0;
-  --arrow-color: #A4A4A4;
+  --secondary-text-color: #a0a0a0;
+  --arrow-color: #a4a4a4;
   --arrow-dim-color: rgba(255, 255, 255, 0.2);
   --arrow-in-color: rgb(145, 32, 24);
   --arrow-out-color: rgb(70, 173, 221);
@@ -99,7 +99,6 @@ body.light {
   --bg-1-color: white;
   --bg-2-color: white;
   --text-0-color: black;
-
 }
 
 body.dark {
@@ -112,7 +111,7 @@ body.dark {
   --text-2-color: #afafaf;
   --icon-color: #afafaf;
   --icon-hover-color: #f3f3f3;
-  --copy-text-color: #edc389 ;
+  --copy-text-color: #edc389;
   --border-color: #414141;
 }
 
